@@ -1,5 +1,5 @@
 [package]
-name = "chapter-11-loadsave"
+name = "digger_rs"
 version = "0.1.0"
 authors = ["Herbert Wolverson <herberticus@gmail.com>"]
 edition = "2018"
