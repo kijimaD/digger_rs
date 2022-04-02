@@ -2,7 +2,7 @@ use rltk::{VirtualKeyCode, Rltk, Point};
 use specs::prelude::*;
 use std::cmp::{max, min};
 use super::{Position, Player, Viewshed, State, Map, RunState, CombatStats, WantsToMelee, Item,
-    gamelog::GameLog, WantsToPickupItem, TileType, Monster};
+            gamelog::GameLog, WantsToPickupItem, TileType, Monster, Name};
 
 pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let mut positions = ecs.write_storage::<Position>();
@@ -34,6 +34,35 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
             ppos.x = pos.x;
             ppos.y = pos.y;
         }
+    }
+
+    // 足元のアイテムを表示
+    let player_pos = ecs.fetch::<Point>();
+    let entities = ecs.entities();
+    let items = ecs.read_storage::<Item>();
+    let mut gamelog = ecs.fetch_mut::<GameLog>();
+    let names = ecs.read_storage::<Name>();
+
+    let mut target : Option<Entity> = None;
+    for (entity, _item, position) in (&entities, &items, &positions).join() {
+        if position.x == player_pos.x && position.y == player_pos.y {
+            target = Some(entity);
+        }
+    }
+
+    match target {
+        None => {},
+        Some(target) => {
+            match target {
+                _item => { gamelog.entries.push(format!("{} is there.", names.get(target).unwrap().name)) }
+            }
+        }
+    }
+
+    // 足元の地形で表示
+    let player_idx = map.xy_idx(player_pos.x, player_pos.y);
+    if map.tiles[player_idx] == TileType::DownStairs {
+        gamelog.entries.push(format!("downstairs."))
     }
 }
 
