@@ -33,20 +33,21 @@ pub mod random_table;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState { AwaitingInput,
-    PreRun,
-    PlayerTurn,
-    MonsterTurn,
-    BattleCommand,
-    BattleTurn,
-    BattleResult,
-    ShowInventory,
-    ShowDropItem,
-    ShowTargeting { range : i32, item : Entity},
-    MainMenu { menu_selection : gui::MainMenuSelection },
-    SaveGame,
-    NextLevel,
-    ShowRemoveItem,
-    GameOver
+                    PreRun,
+                    PlayerTurn,
+                    MonsterTurn,
+                    BattleCommand,
+                    BattleInventory,
+                    BattleTurn,
+                    BattleResult,
+                    ShowInventory,
+                    ShowDropItem,
+                    ShowTargeting { range : i32, item : Entity},
+                    MainMenu { menu_selection : gui::MainMenuSelection },
+                    SaveGame,
+                    NextLevel,
+                    ShowRemoveItem,
+                    GameOver
 }
 
 pub struct State {
@@ -93,6 +94,7 @@ impl GameState for State {
             RunState::MainMenu{ .. } |
             RunState::GameOver |
             RunState::BattleCommand |
+            RunState::BattleInventory |
             RunState::BattleTurn |
             RunState::BattleResult => {}
             _ => {
@@ -118,6 +120,7 @@ impl GameState for State {
         // 戦闘UI表示
         match newrunstate {
             RunState::BattleCommand |
+            RunState::BattleInventory |
             RunState::BattleTurn |
             RunState::BattleResult => {
                 gui::draw_battle_ui(&self.ecs, ctx)
@@ -149,11 +152,20 @@ impl GameState for State {
                 // 戦闘コマンド
                 let result = gui::battle_command(ctx);
 
-                // メニュー表示 〜〜が現れた(enter押すだけ)
+                // メインメニュー表示
                 match result {
-                    gui::BattleStartResult::NoResponse => {},
-                    gui::BattleStartResult::Entered => newrunstate = RunState::BattleCommand,
-                    gui::BattleStartResult::RunAway => newrunstate = RunState::AwaitingInput
+                    gui::BattleCommandResult::NoResponse => {}
+                    gui::BattleCommandResult::Attack => {}
+                    gui::BattleCommandResult::ShowInventory => {newrunstate = RunState::BattleInventory}
+                    gui::BattleCommandResult::RunAway => {newrunstate = RunState::AwaitingInput}
+                }
+            }
+            RunState::BattleInventory => {
+                let result = gui::show_inventory(self, ctx);
+                match result.0 {
+                    gui::ItemMenuResult::Cancel => {newrunstate = RunState::BattleCommand}
+                    gui::ItemMenuResult::NoResponse => {}
+                    gui::ItemMenuResult::Selected => {}
                 }
             }
             RunState::BattleTurn => {
@@ -451,7 +463,7 @@ fn main() -> rltk::BError {
 
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
     for room in map.rooms.iter().skip(1) {
-        spawner::spawn_room(&mut gs.ecs, room, 100);
+        spawner::spawn_room(&mut gs.ecs, room, 10);
     }
 
     gs.ecs.insert(map);

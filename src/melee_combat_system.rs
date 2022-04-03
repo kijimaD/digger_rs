@@ -57,12 +57,12 @@ impl<'a> System<'a> for MeleeCombatSystem {
 
 pub fn delete_combat_event(ecs : &mut World) {
     let mut wants_melee = ecs.write_storage::<WantsToMelee>();
-    let mut gamelog = ecs.write_resource::<BattleLog>();
+    let mut battlelog = ecs.write_resource::<BattleLog>();
 
     for _wants_melee in (&wants_melee).join() {
         let mut runstate = ecs.write_resource::<RunState>();
         *runstate = RunState::BattleCommand;
-        gamelog.entries.push(format!("Enter Battle"));
+        battlelog.entries.push(format!("Enter Battle"));
     }
 
     wants_melee.clear();

@@ -337,26 +337,31 @@ pub fn main_menu(gs : &mut State, ctx : &mut Rltk) -> MainMenuResult {
 pub fn draw_battle_ui(ecs: &World, ctx : &mut Rltk) {
     ctx.draw_box(0, 43, 79, 6, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
 
-    let log = ecs.fetch::<BattleLog>();
-    let mut y = 44;
-    for s in log.entries.iter().rev() {
-        if y < 49 { ctx.print(2, y, s); }
-        y += 1;
-    }
+    // let log = ecs.fetch::<BattleLog>();
+    // let mut y = 44;
+    // for s in log.entries.iter().rev() {
+    //     if y < 49 { ctx.print(2, y, s); }
+    //     y += 1;
+    // }
 }
 
 #[derive(PartialEq, Copy, Clone)]
-pub enum BattleStartResult { NoResponse, Entered, RunAway }
+pub enum BattleCommandResult { NoResponse, Attack, ShowInventory, RunAway }
 
-pub fn battle_command(ctx : &mut Rltk)  -> BattleStartResult {
+pub fn battle_command(ctx : &mut Rltk)  -> BattleCommandResult {
+    let y = 44;
+    ctx.print(2, y, "[a] Attack");
+    ctx.print(2, y+1, "[i] Inventory");
+    ctx.print(2, y+2, "[r] Run away");
+
     match ctx.key {
-        None => {BattleStartResult::NoResponse},
+        None => {BattleCommandResult::NoResponse},
         Some(key) => {
             match key {
-                VirtualKeyCode::Escape => {
-                    BattleStartResult::RunAway
-                }
-                _ => { BattleStartResult::NoResponse }
+                VirtualKeyCode::A => {BattleCommandResult::Attack}
+                VirtualKeyCode::I => {BattleCommandResult::ShowInventory}
+                VirtualKeyCode::R => {BattleCommandResult::RunAway}
+                _ => { BattleCommandResult::NoResponse }
             }
         }
     }
