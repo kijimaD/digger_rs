@@ -165,11 +165,18 @@ impl GameState for State {
                 match result.0 {
                     gui::ItemMenuResult::Cancel => {newrunstate = RunState::BattleCommand}
                     gui::ItemMenuResult::NoResponse => {}
-                    gui::ItemMenuResult::Selected => {}
+                    gui::ItemMenuResult::Selected => {
+                        let item_entity = result.1.unwrap();
+                        let mut intent = self.ecs.write_storage::<WantsToUseItem>();
+                        intent.insert(*self.ecs.fetch::<Entity>(), WantsToUseItem{ item: item_entity, target: None }).expect("Unable to insert intent");
+                        newrunstate = RunState::BattleCommand;
+                    }
                 }
             }
             RunState::BattleTurn => {
-                // 選んだコマンドを実行
+                // 選んだコマンドを実行 + AIのコマンドを実行
+                // 行動1つ1つでenter送りにできるのが望ましいが、よくわからんので一度に実行して結果を表示してcommandに戻る
+                // newrunstate = RunState::BattleCommand
             }
             RunState::BattleResult => {
                 // 戦闘終了(勝利)
