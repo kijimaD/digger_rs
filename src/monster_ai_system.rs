@@ -1,5 +1,5 @@
 use specs::prelude::*;
-use super::{Viewshed, Monster, Map, Position, WantsToMelee, RunState, Confusion};
+use super::{Viewshed, Monster, Map, Position, WantsToEncounter, RunState, Confusion};
 use rltk::{Point};
 
 pub struct MonsterAI {}
@@ -14,11 +14,11 @@ impl<'a> System<'a> for MonsterAI {
                         WriteStorage<'a, Viewshed>,
                         ReadStorage<'a, Monster>,
                         WriteStorage<'a, Position>,
-                        WriteStorage<'a, WantsToMelee>,
+                        WriteStorage<'a, WantsToEncounter>,
                         WriteStorage<'a, Confusion>);
 
     fn run(&mut self, data : Self::SystemData) {
-        let (mut map, player_pos, player_entity, runstate, entities, mut viewshed, monster, mut position, mut wants_to_melee, mut confused) = data;
+        let (mut map, player_pos, player_entity, runstate, entities, mut viewshed, monster, mut position, mut wants_to_encounter, mut confused) = data;
 
         if *runstate != RunState::MonsterTurn { return; }
 
@@ -37,7 +37,7 @@ impl<'a> System<'a> for MonsterAI {
             if can_act {
                 let distance = rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), *player_pos);
                 if distance < 1.5 {
-                    wants_to_melee.insert(entity, WantsToMelee{ target: *player_entity }).expect("Unable to insert attack");
+                    wants_to_encounter.insert(entity, WantsToEncounter{ monster: entity }).expect("Unable to insert attack");
                 }
                 else if viewshed.visible_tiles.contains(&*player_pos) {
                     // Path to the player

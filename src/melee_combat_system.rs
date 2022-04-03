@@ -1,7 +1,11 @@
 use specs::prelude::*;
-use super::{CombatStats, WantsToMelee, Name, SufferDamage, gamelog::{GameLog, BattleLog}, MeleePowerBonus, DefenseBonus, Equipped, RunState};
+use super::{CombatStats, WantsToMelee, WantsToEncounter, Name, SufferDamage, gamelog::{GameLog, BattleLog}, MeleePowerBonus, DefenseBonus, Equipped, RunState};
 
 pub struct MeleeCombatSystem {}
+
+// battle state用のsystem
+// コマンドを入力するたびに実行して敵とプレイヤーの双方の攻撃を行う
+// 回すたびにwants_to_meleeを一つ消してenter待ちstateにすれば一つずつ攻撃ができそう
 
 impl<'a> System<'a> for MeleeCombatSystem {
     #[allow(clippy::type_complexity)]
@@ -56,14 +60,18 @@ impl<'a> System<'a> for MeleeCombatSystem {
 }
 
 pub fn delete_combat_event(ecs : &mut World) {
-    let mut wants_melee = ecs.write_storage::<WantsToMelee>();
+    let mut wants_encounter = ecs.write_storage::<WantsToEncounter>();
     let mut battlelog = ecs.write_resource::<BattleLog>();
 
-    for _wants_melee in (&wants_melee).join() {
+    for _wants_encounter in (&wants_encounter).join() {
         let mut runstate = ecs.write_resource::<RunState>();
         *runstate = RunState::BattleCommand;
+        // 現在は、戦闘に入ったentityを知ることができない
         battlelog.entries.push(format!("Enter Battle"));
+
+        // wants_to_encounterはエンカウントに使っている
+        // 実際の攻撃を発生させるタイミングがない。
     }
 
-    wants_melee.clear();
+    wants_encounter.clear();
 }

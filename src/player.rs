@@ -1,7 +1,7 @@
 use rltk::{VirtualKeyCode, Rltk, Point};
 use specs::prelude::*;
 use std::cmp::{max, min};
-use super::{Position, Player, Viewshed, State, Map, RunState, CombatStats, WantsToMelee, Item,
+use super::{Position, Player, Viewshed, State, Map, RunState, CombatStats, WantsToEncounter, Item,
             gamelog::GameLog, WantsToPickupItem, TileType, Monster, Name};
 
 pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
@@ -11,7 +11,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let entities = ecs.entities();
     let combat_stats = ecs.read_storage::<CombatStats>();
     let map = ecs.fetch::<Map>();
-    let mut wants_to_melee = ecs.write_storage::<WantsToMelee>();
+    let mut wants_to_encounter = ecs.write_storage::<WantsToEncounter>();
 
     for (entity, _player, pos, viewshed) in (&entities, &players, &mut positions, &mut viewsheds).join() {
         if pos.x + delta_x < 1 || pos.x + delta_x > map.width-1 || pos.y + delta_y < 1 || pos.y + delta_y > map.height-1 { return; }
@@ -20,7 +20,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
         for potential_target in map.tile_content[destination_idx].iter() {
             let target = combat_stats.get(*potential_target);
             if let Some(_target) = target {
-                wants_to_melee.insert(entity, WantsToMelee{ target: *potential_target }).expect("Add target failed");
+                wants_to_encounter.insert(entity, WantsToEncounter{ monster: *potential_target }).expect("Add target failed");
                 return;
             }
         }
