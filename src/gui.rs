@@ -1,7 +1,7 @@
 use rltk::{ RGB, Rltk, Point, VirtualKeyCode };
 use specs::prelude::*;
 use super::{CombatStats, Player, gamelog::GameLog, gamelog::BattleLog, Map, Name, Position, State, InBackpack,
-    Viewshed, RunState, Equipped, Consumable};
+    Viewshed, RunState, Equipped, Consumable, WantsToEncounter};
 
 pub fn draw_ui(ecs: &World, ctx : &mut Rltk) {
     ctx.draw_box(0, 43, 79, 6, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
@@ -405,8 +405,17 @@ pub fn draw_battle_ui(ecs: &World, ctx : &mut Rltk) {
 #[derive(PartialEq, Copy, Clone)]
 pub enum BattleCommandResult { NoResponse, Attack, ShowInventory, RunAway }
 
-pub fn battle_command(ctx : &mut Rltk)  -> BattleCommandResult {
-    let y = 44;
+pub fn battle_command(ecs: &World, ctx : &mut Rltk)  -> BattleCommandResult {
+    let mut wants_encounter = ecs.write_storage::<WantsToEncounter>();
+    let name = ecs.read_storage::<Name>();
+
+    let mut i = 0;
+    for (_wants_encounter, name) in (&wants_encounter, &name).join() {
+        ctx.print(2, 20+i, format!("encounter {}!", name.name));
+        i += 1;
+    }
+
+    let y = 30;
     ctx.print(2, y, "[a] Attack");
     ctx.print(2, y+1, "[i] Inventory");
     ctx.print(2, y+2, "[r] Run away");
@@ -417,7 +426,10 @@ pub fn battle_command(ctx : &mut Rltk)  -> BattleCommandResult {
             match key {
                 VirtualKeyCode::A => {BattleCommandResult::Attack}
                 VirtualKeyCode::I => {BattleCommandResult::ShowInventory}
-                VirtualKeyCode::R => {BattleCommandResult::RunAway}
+                VirtualKeyCode::R => {
+                    wants_encounter.clear();
+                    return BattleCommandResult::RunAway;
+                }
                 _ => { BattleCommandResult::NoResponse }
             }
         }

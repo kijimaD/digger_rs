@@ -150,7 +150,7 @@ impl GameState for State {
             }
             RunState::BattleCommand => {
                 // 戦闘コマンド
-                let result = gui::battle_command(ctx);
+                let result = gui::battle_command(&self.ecs, ctx);
 
                 // メインメニュー表示
                 match result {

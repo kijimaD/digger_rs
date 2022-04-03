@@ -70,8 +70,14 @@ pub fn delete_combat_event(ecs : &mut World) {
         battlelog.entries.push(format!("Enter Battle"));
 
         // wants_to_encounterはエンカウントに使っている
+
+        // wants_to_meleeは戦闘内で使うことにする。
         // 実際の攻撃を発生させるタイミングがない。
+        // 戦闘に参加しているエンティティからwant_to_meleeを追加させて、wants_to_meleeをまとめて処理して戦闘にする
     }
 
     wants_encounter.clear();
+    // すぐに消す方式だと1回だけstateを切り替えられるが、モンスターの情報を取ることができない
+    // TODO: エンカウント用と戦闘用のentityを分ける
+    // エンカウントを元に、戦闘用entityを生成して、戦闘用entityでforして、それぞれ攻撃させる。空っぽにすれば勝ち
 }
