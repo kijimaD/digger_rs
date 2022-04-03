@@ -1,6 +1,6 @@
 use rltk::{ RGB, Rltk, Point, VirtualKeyCode };
 use specs::prelude::*;
-use super::{CombatStats, Player, gamelog::GameLog, Map, Name, Position, State, InBackpack,
+use super::{CombatStats, Player, gamelog::GameLog, gamelog::BattleLog, Map, Name, Position, State, InBackpack,
     Viewshed, RunState, Equipped};
 
 pub fn draw_ui(ecs: &World, ctx : &mut Rltk) {
@@ -334,15 +334,31 @@ pub fn main_menu(gs : &mut State, ctx : &mut Rltk) -> MainMenuResult {
     MainMenuResult::NoSelection { selected: MainMenuSelection::NewGame }
 }
 
+pub fn draw_battle_ui(ecs: &World, ctx : &mut Rltk) {
+    ctx.draw_box(0, 43, 79, 6, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
+
+    let log = ecs.fetch::<BattleLog>();
+    let mut y = 44;
+    for s in log.entries.iter().rev() {
+        if y < 49 { ctx.print(2, y, s); }
+        y += 1;
+    }
+}
+
 #[derive(PartialEq, Copy, Clone)]
-pub enum BattleStartResult { NoResponse, Entered }
+pub enum BattleStartResult { NoResponse, Entered, RunAway }
 
 pub fn battle_command(ctx : &mut Rltk)  -> BattleStartResult {
-    ctx.draw_box(0, 0, 60, 30, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
-
     match ctx.key {
         None => {BattleStartResult::NoResponse},
-        Some(_) => {BattleStartResult::Entered}
+        Some(key) => {
+            match key {
+                VirtualKeyCode::Escape => {
+                    BattleStartResult::RunAway
+                }
+                _ => { BattleStartResult::NoResponse }
+            }
+        }
     }
 }
 

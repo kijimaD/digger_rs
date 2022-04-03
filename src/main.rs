@@ -88,9 +88,13 @@ impl GameState for State {
 
         ctx.cls();
 
+        // マップUI表示
         match newrunstate {
-            RunState::MainMenu{..} => {}
-            RunState::GameOver{..} => {}
+            RunState::MainMenu{ .. } |
+            RunState::GameOver |
+            RunState::BattleCommand |
+            RunState::BattleTurn |
+            RunState::BattleResult => {}
             _ => {
                 draw_map(&self.ecs, ctx);
 
@@ -111,6 +115,17 @@ impl GameState for State {
             }
         }
 
+        // 戦闘UI表示
+        match newrunstate {
+            RunState::BattleCommand |
+            RunState::BattleTurn |
+            RunState::BattleResult => {
+                gui::draw_battle_ui(&self.ecs, ctx)
+            }
+            _ => {}
+        }
+
+        // 全体処理
         match newrunstate {
             RunState::PreRun => {
                 self.run_systems();
@@ -137,7 +152,8 @@ impl GameState for State {
                 // メニュー表示 〜〜が現れた(enter押すだけ)
                 match result {
                     gui::BattleStartResult::NoResponse => {},
-                    gui::BattleStartResult::Entered => newrunstate = RunState::BattleCommand
+                    gui::BattleStartResult::Entered => newrunstate = RunState::BattleCommand,
+                    gui::BattleStartResult::RunAway => newrunstate = RunState::AwaitingInput
                 }
             }
             RunState::BattleTurn => {
@@ -435,7 +451,7 @@ fn main() -> rltk::BError {
 
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
     for room in map.rooms.iter().skip(1) {
-        spawner::spawn_room(&mut gs.ecs, room, 1);
+        spawner::spawn_room(&mut gs.ecs, room, 100);
     }
 
     gs.ecs.insert(map);
@@ -443,6 +459,7 @@ fn main() -> rltk::BError {
     gs.ecs.insert(player_entity);
     gs.ecs.insert(RunState::MainMenu{ menu_selection: gui::MainMenuSelection::NewGame });
     gs.ecs.insert(gamelog::GameLog{ entries : vec!["Welcome to Rusty Roguelike".to_string()] });
+    gs.ecs.insert(gamelog::BattleLog{ entries : vec!["".to_string()] });
 
     rltk::main_loop(context, gs)
 }
