@@ -1,5 +1,5 @@
 use specs::prelude::*;
-use super::{CombatStats, WantsToMelee, Name, SufferDamage, gamelog::GameLog, MeleePowerBonus, DefenseBonus, Equipped};
+use super::{CombatStats, WantsToMelee, Name, SufferDamage, gamelog::GameLog, MeleePowerBonus, DefenseBonus, Equipped, RunState};
 
 pub struct MeleeCombatSystem {}
 
@@ -17,7 +17,7 @@ impl<'a> System<'a> for MeleeCombatSystem {
                       );
 
     fn run(&mut self, data : Self::SystemData) {
-        let (entities, mut log, mut wants_melee, names, combat_stats, mut inflict_damage, melee_power_bonuses, defense_bonuses, equipped) = data;
+        let (entities, mut log, wants_melee, names, combat_stats, mut inflict_damage, melee_power_bonuses, defense_bonuses, equipped) = data;
 
         for (entity, wants_melee, name, stats) in (&entities, &wants_melee, &names, &combat_stats).join() {
             if stats.hp > 0 {
@@ -51,6 +51,17 @@ impl<'a> System<'a> for MeleeCombatSystem {
             }
         }
 
-        wants_melee.clear();
+        // wants_melee.clear();
     }
+}
+
+pub fn delete_combat_event(ecs : &mut World) {
+    let mut wants_melee = ecs.write_storage::<WantsToMelee>();
+
+    for _wants_melee in (&wants_melee).join() {
+        let mut runstate = ecs.write_resource::<RunState>();
+        *runstate = RunState::BattleCommand;
+    }
+
+    wants_melee.clear();
 }

@@ -36,6 +36,9 @@ pub enum RunState { AwaitingInput,
     PreRun,
     PlayerTurn,
     MonsterTurn,
+    BattleCommand,
+    BattleTurn,
+    BattleResult,
     ShowInventory,
     ShowDropItem,
     ShowTargeting { range : i32, item : Entity},
@@ -127,6 +130,23 @@ impl GameState for State {
                 self.ecs.maintain();
                 newrunstate = RunState::AwaitingInput;
             }
+            RunState::BattleCommand => {
+                // 戦闘コマンド
+                let result = gui::battle_command(ctx);
+
+                // メニュー表示 〜〜が現れた(enter押すだけ)
+                match result {
+                    gui::BattleStartResult::NoResponse => {},
+                    gui::BattleStartResult::Entered => newrunstate = RunState::BattleCommand
+                }
+            }
+            RunState::BattleTurn => {
+                // 選んだコマンドを実行
+            }
+            RunState::BattleResult => {
+                // 戦闘終了(勝利)
+            }
+
             RunState::ShowInventory => {
                 let result = gui::show_inventory(self, ctx);
                 match result.0 {
@@ -226,6 +246,7 @@ impl GameState for State {
             *runwriter = newrunstate;
         }
         damage_system::delete_the_dead(&mut self.ecs);
+        melee_combat_system::delete_combat_event(&mut self.ecs);
     }
 }
 
@@ -370,7 +391,7 @@ impl State {
 fn main() -> rltk::BError {
     use rltk::RltkBuilder;
     let mut context = RltkBuilder::simple80x50()
-        .with_title("Roguelike Tutorial")
+        .with_title("Battle Digger Clone")
         .build()?;
     context.with_post_scanlines(true);
     let mut gs = State {
