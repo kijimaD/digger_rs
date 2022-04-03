@@ -161,7 +161,7 @@ impl GameState for State {
                 }
             }
             RunState::BattleInventory => {
-                let result = gui::show_inventory(self, ctx);
+                let result = gui::show_battle_inventory(self, ctx);
                 match result.0 {
                     gui::ItemMenuResult::Cancel => {newrunstate = RunState::BattleCommand}
                     gui::ItemMenuResult::NoResponse => {}
@@ -176,7 +176,7 @@ impl GameState for State {
             }
 
             RunState::ShowInventory => {
-                let result = gui::show_inventory(self, ctx);
+                let result = gui::show_field_inventory(self, ctx);
                 match result.0 {
                     gui::ItemMenuResult::Cancel => newrunstate = RunState::AwaitingInput,
                     gui::ItemMenuResult::NoResponse => {}
