@@ -21,6 +21,8 @@ mod melee_combat_system;
 use melee_combat_system::MeleeCombatSystem;
 mod damage_system;
 use damage_system::DamageSystem;
+mod battle_action_system;
+use battle_action_system::BattleActionSystem;
 mod gui;
 mod gamelog;
 mod spawner;
@@ -78,6 +80,8 @@ impl State {
     }
 
     fn run_battle_systems(&mut self) {
+        let mut battle_action = BattleActionSystem{};
+        battle_action.run_now(&self.ecs);
         let mut melee = MeleeCombatSystem{};
         melee.run_now(&self.ecs);
 
@@ -189,7 +193,7 @@ impl GameState for State {
                 self.run_battle_systems();
                 self.ecs.maintain();
 
-                newrunstate = RunState::BattleAwaiting;
+                newrunstate = RunState::BattleCommand;
             }
             RunState::BattleAwaiting => {
                 // 1つmelee_combatを処理したあとにenter待ち状態にする
