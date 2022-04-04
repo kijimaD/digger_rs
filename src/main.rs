@@ -206,7 +206,6 @@ impl GameState for State {
             RunState::BattleResult => {
                 // 戦闘終了(勝利)
             }
-
             RunState::ShowInventory => {
                 let result = gui::show_field_inventory(self, ctx);
                 match result.0 {

@@ -1,6 +1,6 @@
 use specs::prelude::*;
+use rltk::{RandomNumberGenerator};
 use super::{CombatStats, WantsToMelee, WantsToEncounter, Name, gamelog::{GameLog, BattleLog}, MeleePowerBonus, DefenseBonus, Equipped, RunState, BattleEntity};
-
 pub struct MeleeCombatSystem {}
 
 // battle state用のsystem
@@ -11,7 +11,7 @@ pub struct MeleeCombatSystem {}
 // 1. 接触したときwants_to_encounterを生成してstateを切り替え
 // 2. wants_to_encounterを削除
 // 3. battle_entityを生成(entityはwants_to_encounterからcopy)
-// 4. battle_entityそれぞれでプレイヤーコマンド or AIによってwants_to_meleeを生成＋処理でダメージを発生させる。これで1ターンとする
+// 4. battle_entityそれぞれでプレイヤーコマンド or AIによってwants_to_meleeを生成＋処理でダメージを発生させる。これで1ターンとする。プレイヤーのwantsはコマンドで生成し、AIのwantsはbattle_entityから生成するか。
 // 5. 敵のbattle_entityが残っていれば再度コマンド選択に戻る
 // 6. 敵のbattle_entityが残っていなければbattle_resultに移動して戦闘を終了する
 
@@ -22,7 +22,7 @@ pub struct MeleeCombatSystem {}
 impl<'a> System<'a> for MeleeCombatSystem {
     #[allow(clippy::type_complexity)]
     type SystemData = ( Entities<'a>,
-                        WriteExpect<'a, GameLog>,
+                        WriteExpect<'a, BattleLog>,
                         WriteStorage<'a, WantsToMelee>,
                         ReadStorage<'a, Name>,
                         ReadStorage<'a, CombatStats>,
@@ -54,7 +54,8 @@ impl<'a> System<'a> for MeleeCombatSystem {
                         }
                     }
 
-                    let damage = i32::max(0, (stats.power + offensive_bonus) - (target_stats.defense + defensive_bonus));
+                    let mut rng = RandomNumberGenerator::new();
+                    let damage = i32::max(0, (stats.power + offensive_bonus) - (target_stats.defense + defensive_bonus)) + rng.range(1, 5);
 
                     if damage == 0 {
                         log.entries.push(format!("{} is unable to hurt {}", &name.name, &target_name.name));
@@ -65,8 +66,6 @@ impl<'a> System<'a> for MeleeCombatSystem {
                 }
             }
         }
-
-        // wants_melee.clear();
     }
 }
 
