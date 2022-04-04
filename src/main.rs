@@ -1,5 +1,5 @@
 extern crate serde;
-use rltk::{GameState, Rltk, Point};
+use rltk::{GameState, Rltk, Point, VirtualKeyCode};
 use specs::prelude::*;
 use specs::saveload::{SimpleMarker, SimpleMarkerAllocator};
 
@@ -40,6 +40,7 @@ pub enum RunState { AwaitingInput,
                     BattleInventory,
                     BattleTurn,
                     BattleResult,
+                    BattleAwaiting,
                     ShowInventory,
                     ShowDropItem,
                     ShowTargeting { range : i32, item : Entity},
@@ -62,8 +63,6 @@ impl State {
         mob.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem{};
         mapindex.run_now(&self.ecs);
-        let mut melee = MeleeCombatSystem{};
-        melee.run_now(&self.ecs);
         let mut damage = DamageSystem{};
         damage.run_now(&self.ecs);
         let mut pickup = ItemCollectionSystem{};
@@ -74,6 +73,13 @@ impl State {
         drop_items.run_now(&self.ecs);
         let mut item_remove = ItemRemoveSystem{};
         item_remove.run_now(&self.ecs);
+
+        self.ecs.maintain();
+    }
+
+    fn run_battle_systems(&mut self) {
+        let mut melee = MeleeCombatSystem{};
+        melee.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -91,11 +97,13 @@ impl GameState for State {
 
         // マップUI表示
         match newrunstate {
+            // 除外
             RunState::MainMenu{ .. } |
             RunState::GameOver |
             RunState::BattleCommand |
             RunState::BattleInventory |
             RunState::BattleTurn |
+            RunState::BattleAwaiting |
             RunState::BattleResult => {}
             _ => {
                 draw_map(&self.ecs, ctx);
@@ -122,6 +130,7 @@ impl GameState for State {
             RunState::BattleCommand |
             RunState::BattleInventory |
             RunState::BattleTurn |
+            RunState::BattleAwaiting |
             RunState::BattleResult => {
                 gui::draw_battle_ui(&self.ecs, ctx)
             }
@@ -155,7 +164,7 @@ impl GameState for State {
                 // メインメニュー表示
                 match result {
                     gui::BattleCommandResult::NoResponse => {}
-                    gui::BattleCommandResult::Attack => {}
+                    gui::BattleCommandResult::Attack => {newrunstate = RunState::BattleTurn}
                     gui::BattleCommandResult::ShowInventory => {newrunstate = RunState::BattleInventory}
                     gui::BattleCommandResult::RunAway => {newrunstate = RunState::AwaitingInput}
                 }
@@ -177,6 +186,22 @@ impl GameState for State {
                 // 選んだコマンドを実行 + AIのコマンドを実行
                 // 行動1つ1つでenter送りにできるのが望ましいが、よくわからんので一度に実行して結果を表示してcommandに戻る
                 // newrunstate = RunState::BattleCommand
+                self.run_battle_systems();
+                self.ecs.maintain();
+
+                newrunstate = RunState::BattleAwaiting;
+            }
+            RunState::BattleAwaiting => {
+                // 1つmelee_combatを処理したあとにenter待ち状態にする
+                match ctx.key {
+                    None => {},
+                    Some(key) => {
+                        match key {
+                            VirtualKeyCode::Return => {newrunstate = RunState::BattleTurn;}
+                            _ => {}
+                        }
+                    }
+                }
             }
             RunState::BattleResult => {
                 // 戦闘終了(勝利)

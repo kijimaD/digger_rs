@@ -411,7 +411,7 @@ pub fn battle_command(ecs: &World, ctx : &mut Rltk)  -> BattleCommandResult {
 
     let mut i = 0;
     for (_battle_entity, name) in (&battle_entity, &name).join() {
-        ctx.print(2, 20+i, format!("encounter {}!", name.name));
+        ctx.print(2 + i * 10, 20, format!("[{}]", name.name));
         i += 1;
     }
 

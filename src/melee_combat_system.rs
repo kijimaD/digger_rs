@@ -15,6 +15,9 @@ pub struct MeleeCombatSystem {}
 // 5. 敵のbattle_entityが残っていれば再度コマンド選択に戻る
 // 6. 敵のbattle_entityが残っていなければbattle_resultに移動して戦闘を終了する
 
+// TODO: entityが複数の攻撃手段を持つようにする。player entityの場合はコマンドで選択肢、モンスターの場合はAI選択。
+// <wants_to_melee method, from, to>
+
 // 未実装
 impl<'a> System<'a> for MeleeCombatSystem {
     #[allow(clippy::type_complexity)]
