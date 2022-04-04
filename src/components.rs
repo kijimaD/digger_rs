@@ -54,7 +54,12 @@ pub struct WantsToMelee {
 }
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]
-pub struct  WantsToEncounter {
+pub struct WantsToEncounter {
+    pub monster: Entity
+}
+
+#[derive(Component, Debug, ConvertSaveload, Clone)]
+pub struct BattleEntity {
     pub monster: Entity
 }
 

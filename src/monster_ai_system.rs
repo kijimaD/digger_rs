@@ -8,7 +8,6 @@ impl<'a> System<'a> for MonsterAI {
     #[allow(clippy::type_complexity)]
     type SystemData = ( WriteExpect<'a, Map>,
                         ReadExpect<'a, Point>,
-                        ReadExpect<'a, Entity>,
                         ReadExpect<'a, RunState>,
                         Entities<'a>,
                         WriteStorage<'a, Viewshed>,
@@ -18,7 +17,7 @@ impl<'a> System<'a> for MonsterAI {
                         WriteStorage<'a, Confusion>);
 
     fn run(&mut self, data : Self::SystemData) {
-        let (mut map, player_pos, player_entity, runstate, entities, mut viewshed, monster, mut position, mut wants_to_encounter, mut confused) = data;
+        let (mut map, player_pos, runstate, entities, mut viewshed, monster, mut position, mut wants_to_encounter, mut confused) = data;
 
         if *runstate != RunState::MonsterTurn { return; }
 

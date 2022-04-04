@@ -1,5 +1,5 @@
 use specs::prelude::*;
-use super::{CombatStats, WantsToMelee, WantsToEncounter, Name, SufferDamage, gamelog::{GameLog, BattleLog}, MeleePowerBonus, DefenseBonus, Equipped, RunState};
+use super::{CombatStats, WantsToMelee, WantsToEncounter, Name, gamelog::{GameLog, BattleLog}, MeleePowerBonus, DefenseBonus, Equipped, RunState, BattleEntity};
 
 pub struct MeleeCombatSystem {}
 
@@ -7,6 +7,15 @@ pub struct MeleeCombatSystem {}
 // コマンドを入力するたびに実行して敵とプレイヤーの双方の攻撃を行う
 // 回すたびにwants_to_meleeを一つ消してenter待ちstateにすれば一つずつ攻撃ができそう
 
+// 戦闘用実装のメモ
+// 1. 接触したときwants_to_encounterを生成してstateを切り替え
+// 2. wants_to_encounterを削除
+// 3. battle_entityを生成(entityはwants_to_encounterからcopy)
+// 4. battle_entityそれぞれでプレイヤーコマンド or AIによってwants_to_meleeを生成＋処理でダメージを発生させる。これで1ターンとする
+// 5. 敵のbattle_entityが残っていれば再度コマンド選択に戻る
+// 6. 敵のbattle_entityが残っていなければbattle_resultに移動して戦闘を終了する
+
+// 未実装
 impl<'a> System<'a> for MeleeCombatSystem {
     #[allow(clippy::type_complexity)]
     type SystemData = ( Entities<'a>,
@@ -14,14 +23,13 @@ impl<'a> System<'a> for MeleeCombatSystem {
                         WriteStorage<'a, WantsToMelee>,
                         ReadStorage<'a, Name>,
                         ReadStorage<'a, CombatStats>,
-                        WriteStorage<'a, SufferDamage>,
                         ReadStorage<'a, MeleePowerBonus>,
                         ReadStorage<'a, DefenseBonus>,
                         ReadStorage<'a, Equipped>
                       );
 
     fn run(&mut self, data : Self::SystemData) {
-        let (entities, mut log, wants_melee, names, combat_stats, mut inflict_damage, melee_power_bonuses, defense_bonuses, equipped) = data;
+        let (entities, mut log, wants_melee, names, combat_stats, melee_power_bonuses, defense_bonuses, equipped) = data;
 
         for (entity, wants_melee, name, stats) in (&entities, &wants_melee, &names, &combat_stats).join() {
             if stats.hp > 0 {
@@ -59,25 +67,19 @@ impl<'a> System<'a> for MeleeCombatSystem {
     }
 }
 
+// TODO: 書いてる箇所が現状と合ってないので直す
 pub fn delete_combat_event(ecs : &mut World) {
     let mut wants_encounter = ecs.write_storage::<WantsToEncounter>();
     let mut battlelog = ecs.write_resource::<BattleLog>();
+    let mut battle_entity = ecs.write_storage::<BattleEntity>();
 
-    for _wants_encounter in (&wants_encounter).join() {
+    for wants_encounter in (&wants_encounter).join() {
         let mut runstate = ecs.write_resource::<RunState>();
         *runstate = RunState::BattleCommand;
-        // 現在は、戦闘に入ったentityを知ることができない
         battlelog.entries.push(format!("Enter Battle"));
-
-        // wants_to_encounterはエンカウントに使っている
-
-        // wants_to_meleeは戦闘内で使うことにする。
-        // 実際の攻撃を発生させるタイミングがない。
-        // 戦闘に参加しているエンティティからwant_to_meleeを追加させて、wants_to_meleeをまとめて処理して戦闘にする
+        // 戦闘用entityを生成
+        battle_entity.insert(wants_encounter.monster, BattleEntity{ monster: wants_encounter.monster }).expect("Unable to insert attack");
     }
-
+    // エンカウント用entityは削除
     wants_encounter.clear();
-    // すぐに消す方式だと1回だけstateを切り替えられるが、モンスターの情報を取ることができない
-    // TODO: エンカウント用と戦闘用のentityを分ける
-    // エンカウントを元に、戦闘用entityを生成して、戦闘用entityでforして、それぞれ攻撃させる。空っぽにすれば勝ち
 }

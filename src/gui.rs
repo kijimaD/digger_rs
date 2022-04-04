@@ -1,7 +1,7 @@
 use rltk::{ RGB, Rltk, Point, VirtualKeyCode };
 use specs::prelude::*;
 use super::{CombatStats, Player, gamelog::GameLog, gamelog::BattleLog, Map, Name, Position, State, InBackpack,
-    Viewshed, RunState, Equipped, Consumable, WantsToEncounter};
+    Viewshed, RunState, Equipped, Consumable, BattleEntity};
 
 pub fn draw_ui(ecs: &World, ctx : &mut Rltk) {
     ctx.draw_box(0, 43, 79, 6, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
@@ -394,23 +394,23 @@ pub fn main_menu(gs : &mut State, ctx : &mut Rltk) -> MainMenuResult {
 pub fn draw_battle_ui(ecs: &World, ctx : &mut Rltk) {
     ctx.draw_box(0, 43, 79, 6, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
 
-    // let log = ecs.fetch::<BattleLog>();
-    // let mut y = 44;
-    // for s in log.entries.iter().rev() {
-    //     if y < 49 { ctx.print(2, y, s); }
-    //     y += 1;
-    // }
+    let log = ecs.fetch::<BattleLog>();
+    let mut y = 44;
+    for s in log.entries.iter().rev() {
+        if y < 49 { ctx.print(2, y, s); }
+        y += 1;
+    }
 }
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum BattleCommandResult { NoResponse, Attack, ShowInventory, RunAway }
 
 pub fn battle_command(ecs: &World, ctx : &mut Rltk)  -> BattleCommandResult {
-    let mut wants_encounter = ecs.write_storage::<WantsToEncounter>();
+    let mut battle_entity = ecs.write_storage::<BattleEntity>();
     let name = ecs.read_storage::<Name>();
 
     let mut i = 0;
-    for (_wants_encounter, name) in (&wants_encounter, &name).join() {
+    for (_battle_entity, name) in (&battle_entity, &name).join() {
         ctx.print(2, 20+i, format!("encounter {}!", name.name));
         i += 1;
     }
@@ -427,7 +427,7 @@ pub fn battle_command(ecs: &World, ctx : &mut Rltk)  -> BattleCommandResult {
                 VirtualKeyCode::A => {BattleCommandResult::Attack}
                 VirtualKeyCode::I => {BattleCommandResult::ShowInventory}
                 VirtualKeyCode::R => {
-                    wants_encounter.clear();
+                    battle_entity.clear();
                     return BattleCommandResult::RunAway;
                 }
                 _ => { BattleCommandResult::NoResponse }
