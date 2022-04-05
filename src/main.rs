@@ -1,5 +1,5 @@
 extern crate serde;
-use rltk::{GameState, Rltk, Point, VirtualKeyCode};
+use rltk::{GameState, Rltk, Point, VirtualKeyCode, RGB};
 use specs::prelude::*;
 use specs::saveload::{SimpleMarker, SimpleMarkerAllocator};
 
@@ -193,19 +193,22 @@ impl GameState for State {
                 self.run_battle_systems();
                 self.ecs.maintain();
 
-                newrunstate = RunState::BattleCommand;
+                newrunstate = RunState::BattleAwaiting;
             }
             RunState::BattleAwaiting => {
-                // 1つmelee_combatを処理したあとにenter待ち状態にする
+                // 1ターン処理したあとにenter待ち状態にする
+
                 match ctx.key {
                     None => {},
                     Some(key) => {
                         match key {
-                            VirtualKeyCode::Return => {newrunstate = RunState::BattleTurn;}
+                            VirtualKeyCode::Return => {newrunstate = RunState::BattleCommand;}
                             _ => {}
                         }
                     }
                 }
+
+                ctx.print_color(70, 44, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), "[Enter]");
             }
             RunState::BattleResult => {
                 // 戦闘終了(勝利)

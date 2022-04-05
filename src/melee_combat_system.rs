@@ -78,7 +78,7 @@ pub fn delete_combat_event(ecs : &mut World) {
     for wants_encounter in (&wants_encounter).join() {
         let mut runstate = ecs.write_resource::<RunState>();
         *runstate = RunState::BattleCommand;
-        battlelog.entries.push(format!("Enter Battle"));
+        battlelog.entries.push(format!("Enter Battle!"));
         // 戦闘用entityを生成
         battle_entity.insert(wants_encounter.monster, BattleEntity{ monster: wants_encounter.monster }).expect("Unable to insert attack");
     }
