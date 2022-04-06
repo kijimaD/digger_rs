@@ -252,17 +252,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "chapter-11-loadsave"
-version = "0.1.0"
-dependencies = [
- "rltk",
- "serde",
- "serde_json",
- "specs",
- "specs-derive",
-]
-
-[[package]]
 name = "cocoa"
 version = "0.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -543,6 +532,17 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "digger_rs"
+version = "0.1.0"
+dependencies = [
+ "rltk",
+ "serde",
+ "serde_json",
+ "specs",
+ "specs-derive",
 ]
 
 [[package]]

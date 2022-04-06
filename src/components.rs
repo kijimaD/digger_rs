@@ -54,6 +54,17 @@ pub struct WantsToMelee {
 }
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]
+pub struct WantsToEncounter {
+    pub monster: Entity
+}
+
+// TODO: map上1entityで複数モンスターとの戦闘に対応する
+#[derive(Component, Debug, ConvertSaveload, Clone)]
+pub struct BattleEntity {
+    pub monster: Entity
+}
+
+#[derive(Component, Debug, ConvertSaveload, Clone)]
 pub struct SufferDamage {
     pub amount : Vec<i32>
 }

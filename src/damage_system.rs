@@ -36,7 +36,12 @@ pub fn delete_the_dead(ecs : &mut World) {
                         if let Some(victim_name) = victim_name {
                             log.entries.push(format!("{} is dead", &victim_name.name));
                         }
-                        dead.push(entity)
+                        dead.push(entity);
+
+                        // モンスターが2体だった場合、1体残ってても戦闘が終わる。
+                        // TODO: battle entityを使うべき
+                        let mut runstate = ecs.write_resource::<RunState>();
+                        *runstate = RunState::AwaitingInput;
                     }
                     Some(_) => {
                         let mut runstate = ecs.write_resource::<RunState>();

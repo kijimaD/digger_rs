@@ -1,5 +1,5 @@
 extern crate serde;
-use rltk::{GameState, Rltk, Point};
+use rltk::{GameState, Rltk, Point, VirtualKeyCode, RGB};
 use specs::prelude::*;
 use specs::saveload::{SimpleMarker, SimpleMarkerAllocator};
 
@@ -21,6 +21,8 @@ mod melee_combat_system;
 use melee_combat_system::MeleeCombatSystem;
 mod damage_system;
 use damage_system::DamageSystem;
+mod battle_action_system;
+use battle_action_system::BattleActionSystem;
 mod gui;
 mod gamelog;
 mod spawner;
@@ -30,20 +32,26 @@ pub mod saveload_system;
 pub mod random_table;
 
 
-
+// TODO: 戦闘用とフィールド用でenumを分ける
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState { AwaitingInput,
-    PreRun,
-    PlayerTurn,
-    MonsterTurn,
-    ShowInventory,
-    ShowDropItem,
-    ShowTargeting { range : i32, item : Entity},
-    MainMenu { menu_selection : gui::MainMenuSelection },
-    SaveGame,
-    NextLevel,
-    ShowRemoveItem,
-    GameOver
+                    PreRun,
+                    PlayerTurn,
+                    MonsterTurn,
+                    BattleCommand,
+                    BattleInventory,
+                    BattleTurn,
+                    BattleResult,
+                    BattleAwaiting,
+                    BattleTargeting,
+                    ShowInventory,
+                    ShowDropItem,
+                    ShowTargeting { range : i32, item : Entity},
+                    MainMenu { menu_selection : gui::MainMenuSelection },
+                    SaveGame,
+                    NextLevel,
+                    ShowRemoveItem,
+                    GameOver
 }
 
 pub struct State {
@@ -58,10 +66,6 @@ impl State {
         mob.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem{};
         mapindex.run_now(&self.ecs);
-        let mut melee = MeleeCombatSystem{};
-        melee.run_now(&self.ecs);
-        let mut damage = DamageSystem{};
-        damage.run_now(&self.ecs);
         let mut pickup = ItemCollectionSystem{};
         pickup.run_now(&self.ecs);
         let mut itemuse = ItemUseSystem{};
@@ -70,6 +74,17 @@ impl State {
         drop_items.run_now(&self.ecs);
         let mut item_remove = ItemRemoveSystem{};
         item_remove.run_now(&self.ecs);
+
+        self.ecs.maintain();
+    }
+
+    fn run_battle_systems(&mut self) {
+        let mut battle_action = BattleActionSystem{};
+        battle_action.run_now(&self.ecs);
+        let mut melee = MeleeCombatSystem{};
+        melee.run_now(&self.ecs);
+        let mut damage = DamageSystem{};
+        damage.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -85,9 +100,17 @@ impl GameState for State {
 
         ctx.cls();
 
+        // マップUI表示
         match newrunstate {
-            RunState::MainMenu{..} => {}
-            RunState::GameOver{..} => {}
+            // 除外
+            RunState::MainMenu{ .. } |
+            RunState::GameOver |
+            RunState::BattleCommand |
+            RunState::BattleInventory |
+            RunState::BattleTurn |
+            RunState::BattleAwaiting |
+            RunState::BattleTargeting |
+            RunState::BattleResult => {}
             _ => {
                 draw_map(&self.ecs, ctx);
 
@@ -108,6 +131,20 @@ impl GameState for State {
             }
         }
 
+        // 戦闘UI表示
+        match newrunstate {
+            RunState::BattleCommand |
+            RunState::BattleInventory |
+            RunState::BattleTurn |
+            RunState::BattleAwaiting |
+            RunState::BattleTargeting |
+            RunState::BattleResult => {
+                gui::draw_battle_ui(&self.ecs, ctx)
+            }
+            _ => {}
+        }
+
+        // 全体処理
         match newrunstate {
             RunState::PreRun => {
                 self.run_systems();
@@ -127,8 +164,74 @@ impl GameState for State {
                 self.ecs.maintain();
                 newrunstate = RunState::AwaitingInput;
             }
+            RunState::BattleCommand => {
+                // 戦闘コマンド
+                let result = gui::battle_command(&self.ecs, ctx);
+
+                // メインメニュー表示
+                match result {
+                    gui::BattleCommandResult::NoResponse => {}
+                    gui::BattleCommandResult::Attack => {newrunstate = RunState::BattleTargeting}
+                    gui::BattleCommandResult::ShowInventory => {newrunstate = RunState::BattleInventory}
+                    gui::BattleCommandResult::RunAway => {newrunstate = RunState::AwaitingInput}
+                }
+            }
+            RunState::BattleInventory => {
+                let result = gui::show_battle_inventory(self, ctx);
+                match result.0 {
+                    gui::ItemMenuResult::Cancel => {newrunstate = RunState::BattleCommand}
+                    gui::ItemMenuResult::NoResponse => {}
+                    gui::ItemMenuResult::Selected => {
+                        let item_entity = result.1.unwrap();
+                        let mut intent = self.ecs.write_storage::<WantsToUseItem>();
+                        intent.insert(*self.ecs.fetch::<Entity>(), WantsToUseItem{ item: item_entity, target: None }).expect("Unable to insert intent");
+                        newrunstate = RunState::BattleCommand;
+                    }
+                }
+            }
+            RunState::BattleTurn => {
+                // 選んだコマンドを実行 + AIのコマンドを実行
+                // 行動1つ1つでenter送りにできるのが望ましいが、現在はターン毎に結果を表示してenter待ちにする
+                self.run_battle_systems();
+                self.ecs.maintain();
+
+                newrunstate = RunState::BattleAwaiting;
+            }
+            RunState::BattleAwaiting => {
+                // 1ターン処理したあとにenter待ち状態にする
+                match ctx.key {
+                    None => {},
+                    Some(key) => {
+                        match key {
+                            VirtualKeyCode::Return => {newrunstate = RunState::BattleCommand;}
+                            _ => {}
+                        }
+                    }
+                }
+
+                ctx.print_color(70, 44, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), "[Enter]");
+            }
+            RunState::BattleTargeting => {
+                // 攻撃目標選択
+                let result = gui::battle_target(self, ctx);
+                let player_entity = self.ecs.fetch::<Entity>();
+                let mut wants_to_melee = self.ecs.write_storage::<WantsToMelee>();
+
+                match result.0 {
+                    gui::BattleTargetingResult::Cancel => newrunstate = RunState::BattleCommand,
+                    gui::BattleTargetingResult::NoResponse => {}
+                    gui::BattleTargetingResult::Selected => {
+                        let target_entity = result.1.unwrap();
+                        wants_to_melee.insert(*player_entity, WantsToMelee{ target: target_entity }).expect("Unable to insert WantsToMelee");
+                        newrunstate = RunState::BattleTurn
+                    }
+                }
+            }
+            RunState::BattleResult => {
+                // 戦闘終了(勝利)
+            }
             RunState::ShowInventory => {
-                let result = gui::show_inventory(self, ctx);
+                let result = gui::show_field_inventory(self, ctx);
                 match result.0 {
                     gui::ItemMenuResult::Cancel => newrunstate = RunState::AwaitingInput,
                     gui::ItemMenuResult::NoResponse => {}
@@ -226,6 +329,7 @@ impl GameState for State {
             *runwriter = newrunstate;
         }
         damage_system::delete_the_dead(&mut self.ecs);
+        melee_combat_system::delete_combat_event(&mut self.ecs);
     }
 }
 
@@ -370,7 +474,7 @@ impl State {
 fn main() -> rltk::BError {
     use rltk::RltkBuilder;
     let mut context = RltkBuilder::simple80x50()
-        .with_title("Roguelike Tutorial")
+        .with_title("Battle Digger Clone")
         .build()?;
     context.with_post_scanlines(true);
     let mut gs = State {
@@ -385,6 +489,8 @@ fn main() -> rltk::BError {
     gs.ecs.register::<BlocksTile>();
     gs.ecs.register::<CombatStats>();
     gs.ecs.register::<WantsToMelee>();
+    gs.ecs.register::<WantsToEncounter>();
+    gs.ecs.register::<BattleEntity>();
     gs.ecs.register::<SufferDamage>();
     gs.ecs.register::<Item>();
     gs.ecs.register::<ProvidesHealing>();
@@ -414,14 +520,15 @@ fn main() -> rltk::BError {
 
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
     for room in map.rooms.iter().skip(1) {
-        spawner::spawn_room(&mut gs.ecs, room, 1);
+        spawner::spawn_room(&mut gs.ecs, room, 10);
     }
 
     gs.ecs.insert(map);
     gs.ecs.insert(Point::new(player_x, player_y));
     gs.ecs.insert(player_entity);
     gs.ecs.insert(RunState::MainMenu{ menu_selection: gui::MainMenuSelection::NewGame });
-    gs.ecs.insert(gamelog::GameLog{ entries : vec!["Welcome to Rusty Roguelike".to_string()] });
+    gs.ecs.insert(gamelog::GameLog{ entries : vec!["Enter the cave...".to_string()] });
+    gs.ecs.insert(gamelog::BattleLog{ entries : vec!["".to_string()] });
 
     rltk::main_loop(context, gs)
 }
