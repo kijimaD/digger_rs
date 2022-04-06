@@ -392,6 +392,7 @@ pub fn main_menu(gs : &mut State, ctx : &mut Rltk) -> MainMenuResult {
 }
 
 pub fn draw_battle_ui(ecs: &World, ctx : &mut Rltk) {
+    // メッセージボックス
     ctx.draw_box(0, 43, 79, 6, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
 
     let log = ecs.fetch::<BattleLog>();
@@ -400,13 +401,9 @@ pub fn draw_battle_ui(ecs: &World, ctx : &mut Rltk) {
         if y < 49 { ctx.print(2, y, s); }
         y += 1;
     }
-}
 
-#[derive(PartialEq, Copy, Clone)]
-pub enum BattleCommandResult { NoResponse, Attack, ShowInventory, RunAway }
-
-pub fn battle_command(ecs: &World, ctx : &mut Rltk)  -> BattleCommandResult {
-    let mut battle_entity = ecs.write_storage::<BattleEntity>();
+    // 敵一覧
+    let battle_entity = ecs.read_storage::<BattleEntity>();
     let name = ecs.read_storage::<Name>();
 
     let mut i = 0;
@@ -414,6 +411,13 @@ pub fn battle_command(ecs: &World, ctx : &mut Rltk)  -> BattleCommandResult {
         ctx.print(2 + i * 10, 20, format!("[{}]", name.name));
         i += 1;
     }
+}
+
+#[derive(PartialEq, Copy, Clone)]
+pub enum BattleCommandResult { NoResponse, Attack, ShowInventory, RunAway }
+
+pub fn battle_command(ecs: &World, ctx : &mut Rltk)  -> BattleCommandResult {
+    let mut battle_entity = ecs.write_storage::<BattleEntity>();
 
     let y = 30;
     ctx.print(2, y, "[a] Attack");
@@ -431,6 +435,42 @@ pub fn battle_command(ecs: &World, ctx : &mut Rltk)  -> BattleCommandResult {
                     return BattleCommandResult::RunAway;
                 }
                 _ => { BattleCommandResult::NoResponse }
+            }
+        }
+    }
+}
+
+pub enum BattleTargetingResult { Cancel, NoResponse, Selected }
+
+pub fn battle_target(gs : &mut State, ctx : &mut Rltk) -> (BattleTargetingResult, Option<Entity>) {
+    let entities = gs.ecs.entities();
+    let battle_entities = gs.ecs.read_storage::<BattleEntity>();
+    let mut x = 0;
+    let mut j = 0;
+
+    let mut monsters : Vec<Entity> = Vec::new();
+    for (entity, _battle_entity) in (&entities, &battle_entities).join() {
+        ctx.set(2 + x * 10 + 0, 22, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437('('));
+        ctx.set(2 + x * 10 + 1, 22, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), 97+j as rltk::FontCharType);
+        ctx.set(2 + x * 10 + 2, 22, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437(')'));
+
+        monsters.push(entity);
+        x += 1;
+        j += 1;
+    }
+
+    match ctx.key {
+        None => (BattleTargetingResult::NoResponse, None),
+        Some(key) => {
+            match key {
+                VirtualKeyCode::Escape => { (BattleTargetingResult::Cancel, None) }
+                _ => {
+                    let selection = rltk::letter_to_option(key);
+                    if selection > -1 {
+                        return (BattleTargetingResult::Selected, Some(monsters[selection as usize]));
+                    }
+                    (BattleTargetingResult::NoResponse, None)
+                }
             }
         }
     }

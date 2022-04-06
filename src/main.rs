@@ -32,7 +32,7 @@ pub mod saveload_system;
 pub mod random_table;
 
 
-
+// TODO: 戦闘用とフィールド用でenumを分ける
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState { AwaitingInput,
                     PreRun,
@@ -43,6 +43,7 @@ pub enum RunState { AwaitingInput,
                     BattleTurn,
                     BattleResult,
                     BattleAwaiting,
+                    BattleTargeting,
                     ShowInventory,
                     ShowDropItem,
                     ShowTargeting { range : i32, item : Entity},
@@ -108,6 +109,7 @@ impl GameState for State {
             RunState::BattleInventory |
             RunState::BattleTurn |
             RunState::BattleAwaiting |
+            RunState::BattleTargeting |
             RunState::BattleResult => {}
             _ => {
                 draw_map(&self.ecs, ctx);
@@ -135,6 +137,7 @@ impl GameState for State {
             RunState::BattleInventory |
             RunState::BattleTurn |
             RunState::BattleAwaiting |
+            RunState::BattleTargeting |
             RunState::BattleResult => {
                 gui::draw_battle_ui(&self.ecs, ctx)
             }
@@ -168,7 +171,7 @@ impl GameState for State {
                 // メインメニュー表示
                 match result {
                     gui::BattleCommandResult::NoResponse => {}
-                    gui::BattleCommandResult::Attack => {newrunstate = RunState::BattleTurn}
+                    gui::BattleCommandResult::Attack => {newrunstate = RunState::BattleTargeting}
                     gui::BattleCommandResult::ShowInventory => {newrunstate = RunState::BattleInventory}
                     gui::BattleCommandResult::RunAway => {newrunstate = RunState::AwaitingInput}
                 }
@@ -188,8 +191,7 @@ impl GameState for State {
             }
             RunState::BattleTurn => {
                 // 選んだコマンドを実行 + AIのコマンドを実行
-                // 行動1つ1つでenter送りにできるのが望ましいが、よくわからんので一度に実行して結果を表示してcommandに戻る
-                // newrunstate = RunState::BattleCommand
+                // 行動1つ1つでenter送りにできるのが望ましいが、現在はターン毎に結果を表示してenter待ちにする
                 self.run_battle_systems();
                 self.ecs.maintain();
 
@@ -197,7 +199,6 @@ impl GameState for State {
             }
             RunState::BattleAwaiting => {
                 // 1ターン処理したあとにenter待ち状態にする
-
                 match ctx.key {
                     None => {},
                     Some(key) => {
@@ -209,6 +210,22 @@ impl GameState for State {
                 }
 
                 ctx.print_color(70, 44, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), "[Enter]");
+            }
+            RunState::BattleTargeting => {
+                // 攻撃目標選択
+                let result = gui::battle_target(self, ctx);
+                let player_entity = self.ecs.fetch::<Entity>();
+                let mut wants_to_melee = self.ecs.write_storage::<WantsToMelee>();
+
+                match result.0 {
+                    gui::BattleTargetingResult::Cancel => newrunstate = RunState::BattleCommand,
+                    gui::BattleTargetingResult::NoResponse => {}
+                    gui::BattleTargetingResult::Selected => {
+                        let target_entity = result.1.unwrap();
+                        wants_to_melee.insert(*player_entity, WantsToMelee{ target: target_entity });
+                        newrunstate = RunState::BattleTurn
+                    }
+                }
             }
             RunState::BattleResult => {
                 // 戦闘終了(勝利)
