@@ -66,8 +66,6 @@ impl State {
         mob.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem{};
         mapindex.run_now(&self.ecs);
-        let mut damage = DamageSystem{};
-        damage.run_now(&self.ecs);
         let mut pickup = ItemCollectionSystem{};
         pickup.run_now(&self.ecs);
         let mut itemuse = ItemUseSystem{};
@@ -85,6 +83,8 @@ impl State {
         battle_action.run_now(&self.ecs);
         let mut melee = MeleeCombatSystem{};
         melee.run_now(&self.ecs);
+        let mut damage = DamageSystem{};
+        damage.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -527,7 +527,7 @@ fn main() -> rltk::BError {
     gs.ecs.insert(Point::new(player_x, player_y));
     gs.ecs.insert(player_entity);
     gs.ecs.insert(RunState::MainMenu{ menu_selection: gui::MainMenuSelection::NewGame });
-    gs.ecs.insert(gamelog::GameLog{ entries : vec!["Welcome to Rusty Roguelike".to_string()] });
+    gs.ecs.insert(gamelog::GameLog{ entries : vec!["Enter the cave...".to_string()] });
     gs.ecs.insert(gamelog::BattleLog{ entries : vec!["".to_string()] });
 
     rltk::main_loop(context, gs)

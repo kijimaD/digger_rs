@@ -54,7 +54,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
         None => {},
         Some(target) => {
             match target {
-                _item => { gamelog.entries.push(format!("{} is there.", names.get(target).unwrap().name)) }
+                _item => { gamelog.entries.push(format!("{} is there.[G]", names.get(target).unwrap().name)) }
             }
         }
     }

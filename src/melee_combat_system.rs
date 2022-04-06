@@ -1,6 +1,6 @@
 use specs::prelude::*;
 use rltk::{RandomNumberGenerator};
-use super::{CombatStats, WantsToMelee, WantsToEncounter, Name, gamelog::{GameLog, BattleLog}, MeleePowerBonus, DefenseBonus, Equipped, RunState, BattleEntity};
+use super::{CombatStats, WantsToMelee, WantsToEncounter, Name, gamelog::{GameLog, BattleLog}, MeleePowerBonus, DefenseBonus, Equipped, RunState, BattleEntity, SufferDamage};
 pub struct MeleeCombatSystem {}
 
 // battle state用のsystem
@@ -28,11 +28,12 @@ impl<'a> System<'a> for MeleeCombatSystem {
                         ReadStorage<'a, CombatStats>,
                         ReadStorage<'a, MeleePowerBonus>,
                         ReadStorage<'a, DefenseBonus>,
-                        ReadStorage<'a, Equipped>
+                        ReadStorage<'a, Equipped>,
+                        WriteStorage<'a, SufferDamage>
                       );
 
     fn run(&mut self, data : Self::SystemData) {
-        let (entities, mut log, wants_melee, names, combat_stats, melee_power_bonuses, defense_bonuses, equipped) = data;
+        let (entities, mut log, wants_melee, names, combat_stats, melee_power_bonuses, defense_bonuses, equipped, mut inflict_damage) = data;
 
         for (entity, wants_melee, name, stats) in (&entities, &wants_melee, &names, &combat_stats).join() {
             if stats.hp > 0 {
@@ -60,8 +61,8 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     if damage == 0 {
                         log.entries.push(format!("{} is unable to hurt {}", &name.name, &target_name.name));
                     } else {
-                        log.entries.push(format!("{} hits {}, for {} hp.", &name.name, &target_name.name, damage));
-                        // SufferDamage::new_damage(&mut inflict_damage, wants_melee.target, damage);
+                        log.entries.push(format!("{} hits {}, for {} hp", &name.name, &target_name.name, damage));
+                        SufferDamage::new_damage(&mut inflict_damage, wants_melee.target, damage);
                     }
                 }
             }
@@ -78,7 +79,8 @@ pub fn delete_combat_event(ecs : &mut World) {
     for wants_encounter in (&wants_encounter).join() {
         let mut runstate = ecs.write_resource::<RunState>();
         *runstate = RunState::BattleCommand;
-        battlelog.entries.push(format!("Enter Battle!"));
+        battlelog.entries = vec![];
+        battlelog.entries.push(format!("Monster appearing"));
         // 戦闘用entityを生成
         battle_entity.insert(wants_encounter.monster, BattleEntity{ monster: wants_encounter.monster }).expect("Unable to insert attack");
     }
