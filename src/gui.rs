@@ -21,10 +21,10 @@ pub fn draw_ui(ecs: &World, ctx : &mut Rltk) {
 
 
     let log = ecs.fetch::<GameLog>();
-    let mut y = 44;
+    let mut y = 48;
     for s in log.entries.iter().rev() {
-        if y < 49 { ctx.print(2, y, s); }
-        y += 1;
+        if y > 43 { ctx.print(2, y, s); }
+        y -= 1;
     }
 
     // Draw mouse cursor
@@ -397,10 +397,10 @@ pub fn draw_battle_ui(ecs: &World, ctx : &mut Rltk) {
     ctx.draw_box(0, 43, 79, 6, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
 
     let log = ecs.fetch::<BattleLog>();
-    let mut y = 44;
+    let mut y = 48;
     for s in log.entries.iter().rev() {
-        if y < 49 { ctx.print(2, y, s); }
-        y += 1;
+        if y > 43 { ctx.print(2, y, s); }
+        y -= 1;
     }
 
     // 敵一覧
