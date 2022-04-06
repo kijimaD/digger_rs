@@ -466,7 +466,7 @@ pub fn battle_target(gs : &mut State, ctx : &mut Rltk) -> (BattleTargetingResult
                 VirtualKeyCode::Escape => { (BattleTargetingResult::Cancel, None) }
                 _ => {
                     let selection = rltk::letter_to_option(key);
-                    if selection > -1 {
+                    if selection > -1 && selection < monsters.len() as i32 {
                         return (BattleTargetingResult::Selected, Some(monsters[selection as usize]));
                     }
                     (BattleTargetingResult::NoResponse, None)
