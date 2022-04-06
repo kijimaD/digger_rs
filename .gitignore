@@ -1,2 +1,4 @@
 /target
 savegame.json
+wasm/digger_rs.js
+wasm/digger_rs_bg.wasm
