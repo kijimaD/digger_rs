@@ -222,7 +222,7 @@ impl GameState for State {
                     gui::BattleTargetingResult::NoResponse => {}
                     gui::BattleTargetingResult::Selected => {
                         let target_entity = result.1.unwrap();
-                        wants_to_melee.insert(*player_entity, WantsToMelee{ target: target_entity });
+                        wants_to_melee.insert(*player_entity, WantsToMelee{ target: target_entity }).expect("Unable to insert WantsToMelee");
                         newrunstate = RunState::BattleTurn
                     }
                 }
