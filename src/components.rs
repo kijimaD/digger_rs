@@ -87,23 +87,8 @@ pub struct Item {}
 pub struct Consumable {}
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]
-pub struct Ranged {
-    pub range : i32
-}
-
-#[derive(Component, Debug, ConvertSaveload, Clone)]
 pub struct InflictsDamage {
     pub damage : i32
-}
-
-#[derive(Component, Debug, ConvertSaveload, Clone)]
-pub struct AreaOfEffect {
-    pub radius : i32
-}
-
-#[derive(Component, Debug, ConvertSaveload, Clone)]
-pub struct Confusion {
-    pub turns : i32
 }
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]

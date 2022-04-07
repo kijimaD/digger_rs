@@ -1,5 +1,5 @@
 use specs::prelude::*;
-use super::{Viewshed, Monster, Map, Position, WantsToEncounter, RunState, Confusion};
+use super::{Viewshed, Monster, Map, Position, WantsToEncounter, RunState};
 use rltk::{Point};
 
 pub struct MonsterAI {}
@@ -13,25 +13,15 @@ impl<'a> System<'a> for MonsterAI {
                         WriteStorage<'a, Viewshed>,
                         ReadStorage<'a, Monster>,
                         WriteStorage<'a, Position>,
-                        WriteStorage<'a, WantsToEncounter>,
-                        WriteStorage<'a, Confusion>);
+                        WriteStorage<'a, WantsToEncounter>);
 
     fn run(&mut self, data : Self::SystemData) {
-        let (mut map, player_pos, runstate, entities, mut viewshed, monster, mut position, mut wants_to_encounter, mut confused) = data;
+        let (mut map, player_pos, runstate, entities, mut viewshed, monster, mut position, mut wants_to_encounter) = data;
 
         if *runstate != RunState::MonsterTurn { return; }
 
         for (entity, mut viewshed,_monster,mut pos) in (&entities, &mut viewshed, &monster, &mut position).join() {
-            let mut can_act = true;
-
-            let is_confused = confused.get_mut(entity);
-            if let Some(i_am_confused) = is_confused {
-                i_am_confused.turns -= 1;
-                if i_am_confused.turns < 1 {
-                    confused.remove(entity);
-                }
-                can_act = false;
-            }
+            let can_act = true;
 
             if can_act {
                 let distance = rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), *player_pos);

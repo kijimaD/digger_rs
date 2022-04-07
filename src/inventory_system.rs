@@ -1,7 +1,7 @@
 use specs::prelude::*;
 use super::{WantsToPickupItem, Name, InBackpack, Position, gamelog::GameLog, WantsToUseItem,
-    Consumable, ProvidesHealing, CombatStats, WantsToDropItem, InflictsDamage, Map, SufferDamage,
-    AreaOfEffect, Confusion, Equippable, Equipped, WantsToRemoveItem};
+            Consumable, ProvidesHealing, CombatStats, WantsToDropItem, InflictsDamage, Map, SufferDamage,
+            Equippable, Equipped, WantsToRemoveItem};
 
 pub struct ItemCollectionSystem {}
 
@@ -46,8 +46,6 @@ impl<'a> System<'a> for ItemUseSystem {
                         ReadStorage<'a, InflictsDamage>,
                         WriteStorage<'a, CombatStats>,
                         WriteStorage<'a, SufferDamage>,
-                        ReadStorage<'a, AreaOfEffect>,
-                        WriteStorage<'a, Confusion>,
                         ReadStorage<'a, Equippable>,
                         WriteStorage<'a, Equipped>,
                         WriteStorage<'a, InBackpack>
@@ -57,37 +55,24 @@ impl<'a> System<'a> for ItemUseSystem {
     fn run(&mut self, data : Self::SystemData) {
         let (player_entity, mut gamelog, map, entities, mut wants_use, names,
             consumables, healing, inflict_damage, mut combat_stats, mut suffer_damage,
-            aoe, mut confused, equippable, mut equipped, mut backpack) = data;
+            equippable, mut equipped, mut backpack) = data;
 
         for (entity, useitem) in (&entities, &wants_use).join() {
             let mut used_item = true;
 
             // Targeting
             let mut targets : Vec<Entity> = Vec::new();
+
             match useitem.target {
                 None => { targets.push( *player_entity ); }
                 Some(target) => {
-                    let area_effect = aoe.get(useitem.item);
-                    match area_effect {
-                        None => {
-                            // Single target in tile
-                            let idx = map.xy_idx(target.x, target.y);
-                            for mob in map.tile_content[idx].iter() {
-                                targets.push(*mob);
-                            }
-                        }
-                        Some(area_effect) => {
-                            // AoE
-                            let mut blast_tiles = rltk::field_of_view(target, area_effect.radius, &*map);
-                            blast_tiles.retain(|p| p.x > 0 && p.x < map.width-1 && p.y > 0 && p.y < map.height-1 );
-                            for tile_idx in blast_tiles.iter() {
-                                let idx = map.xy_idx(tile_idx.x, tile_idx.y);
-                                for mob in map.tile_content[idx].iter() {
-                                    targets.push(*mob);
-                                }
-                            }
-                        }
+                    // Single target in tile
+                    let idx = map.xy_idx(target.x, target.y);
+                    for mob in map.tile_content[idx].iter() {
+                        targets.push(*mob);
                     }
+
+
                 }
             }
 
@@ -159,29 +144,6 @@ impl<'a> System<'a> for ItemUseSystem {
                         used_item = true;
                     }
                 }
-            }
-
-            // Can it pass along confusion? Note the use of scopes to escape from the borrow checker!
-            let mut add_confusion = Vec::new();
-            {
-                let causes_confusion = confused.get(useitem.item);
-                match causes_confusion {
-                    None => {}
-                    Some(confusion) => {
-                        used_item = false;
-                        for mob in targets.iter() {
-                            add_confusion.push((*mob, confusion.turns ));
-                            if entity == *player_entity {
-                                let mob_name = names.get(*mob).unwrap();
-                                let item_name = names.get(useitem.item).unwrap();
-                                gamelog.entries.push(format!("You use {} on {}, confusing them.", item_name.name, mob_name.name));
-                            }
-                        }
-                    }
-                }
-            }
-            for mob in add_confusion.iter() {
-                confused.insert(mob.0, Confusion{ turns: mob.1 }).expect("Unable to insert status");
             }
 
             // If its a consumable, we delete it on use
