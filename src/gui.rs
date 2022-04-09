@@ -1,7 +1,7 @@
 use rltk::{ RGB, Rltk, Point, VirtualKeyCode };
 use specs::prelude::*;
 use super::{CombatStats, Player, gamelog::GameLog, gamelog::BattleLog, Map, Name, Position, State, InBackpack,
-    RunState, Equipped, Consumable, Monster};
+    RunState, Equipped, Consumable, Monster, Battle};
 
 pub fn draw_ui(ecs: &World, ctx : &mut Rltk) {
     ctx.draw_box(0, 43, 79, 6, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
@@ -399,6 +399,7 @@ pub fn battle_command(ecs: &mut World, ctx : &mut Rltk)  -> BattleCommandResult 
 }
 
 fn remove_battle_entity(ecs: &mut World) {
+    // 逃走用。戦闘用entityを削除する
     let mut dead : Vec<Entity> = Vec::new();
     {
         let entities = ecs.entities();
@@ -413,6 +414,24 @@ fn remove_battle_entity(ecs: &mut World) {
     for dead in dead {
         ecs.delete_entity(dead).expect("Unable to delete");
     }
+
+
+
+    // 勝利したときはmap用entityは削除する
+    // let mut map_entity : Vec<Entity> = Vec::new();
+    // {
+    //     let mut battle = ecs.write_storage::<Battle>();
+
+    //     for battle in (&battle).join() {
+    //         map_entity.push(battle.monster)
+    //     }
+
+    //     battle.clear();
+    // }
+
+    // for map_entity in map_entity {
+    //     ecs.delete_entity(map_entity).expect("Unable to delete");
+    // }
 }
 
 pub enum BattleTargetingResult { Cancel, NoResponse, Selected }

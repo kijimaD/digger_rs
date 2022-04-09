@@ -1,6 +1,6 @@
 use specs::prelude::*;
 use rltk::{RandomNumberGenerator};
-use super::{CombatStats, WantsToMelee, WantsToEncounter, Name, gamelog::BattleLog, MeleePowerBonus, DefenseBonus, Equipped, RunState, SufferDamage, spawner};
+use super::{CombatStats, WantsToMelee, WantsToEncounter, Name, gamelog::BattleLog, MeleePowerBonus, DefenseBonus, Equipped, RunState, SufferDamage, spawner, Battle};
 pub struct MeleeCombatSystem {}
 
 // battle state用のsystem
@@ -75,13 +75,21 @@ pub fn invoke_battle (ecs : &mut World) {
     {
         let mut wants_encounter = ecs.write_storage::<WantsToEncounter>();
         let mut battlelog = ecs.write_resource::<BattleLog>();
+        let mut battle = ecs.write_storage::<Battle>();
+        let mut i = 0;
 
-        for _wants_encounter in (&wants_encounter).join() {
-            let mut runstate = ecs.write_resource::<RunState>();
-            *runstate = RunState::BattleCommand;
-            battlelog.entries = vec![];
-            battlelog.entries.push(format!("Monster appearing"));
-            encounter.push(true);
+        for wants_encounter in (&wants_encounter).join() {
+            // 最初のwants_encounterだけ処理する
+            if i == 0 {
+                let mut runstate = ecs.write_resource::<RunState>();
+                *runstate = RunState::BattleCommand;
+                encounter.push(true);
+                battle.insert(wants_encounter.monster, Battle{ monster: wants_encounter.monster }).expect("Unable to insert encounter");
+
+                battlelog.entries = vec![];
+                battlelog.entries.push(format!("Monster appearing"));
+            }
+            i += 1;
         }
         wants_encounter.clear();
     }

@@ -1,5 +1,5 @@
 use specs::prelude::*;
-use super::{CombatStats, SufferDamage, Player, Name, gamelog::GameLog, RunState};
+use super::{CombatStats, SufferDamage, Player, Name, gamelog::GameLog, RunState, Battle, Monster};
 
 pub struct DamageSystem {}
 
@@ -37,10 +37,6 @@ pub fn delete_the_dead(ecs : &mut World) {
                             log.entries.push(format!("{} is dead", &victim_name.name));
                         }
                         dead.push(entity);
-
-                        // TODO: モンスターが2体だった場合、1体残ってても戦闘が終わらないようにする
-                        let mut runstate = ecs.write_resource::<RunState>();
-                        *runstate = RunState::AwaitingInput;
                     }
                     Some(_) => {
                         let mut runstate = ecs.write_resource::<RunState>();
@@ -51,8 +47,44 @@ pub fn delete_the_dead(ecs : &mut World) {
         }
     }
 
-    // TODO: map上entityの削除をする。現在は戦闘用しか削除できてない
+    // TODO: map上entityの削除もする。現在は戦闘用しか削除してない
     for victim in dead {
         ecs.delete_entity(victim).expect("Unable to delete");
+    }
+
+    // 戦闘に勝利したらmap entityを削除する
+    // TODO: 逃げたときもmap entityが消えている
+    let mut want_remove_battle = false;
+    let mut dead_map_entity : Vec<Entity> = Vec::new();
+    {
+        let entities = ecs.entities();
+        let combat_stats = ecs.read_storage::<CombatStats>();
+        let monster = ecs.read_storage::<Monster>();
+
+        if (&entities, &combat_stats, &monster).join().count() == 0 {
+            let battle_ecs = ecs.read_storage::<Battle>();
+
+            for battle in (&battle_ecs).join() {
+                // 残ってないときは戦闘終了
+                let mut runstate = ecs.write_resource::<RunState>();
+                *runstate = RunState::AwaitingInput;
+                dead_map_entity.push(battle.monster);
+                want_remove_battle = true;
+
+            }
+        }
+    }
+
+    {
+        let mut battle = ecs.write_storage::<Battle>();
+        if want_remove_battle {
+            battle.clear();
+        }
+    }
+
+    {
+        for map_entity in dead_map_entity {
+            ecs.delete_entity(map_entity).expect("Unable to delete");
+        }
     }
 }
