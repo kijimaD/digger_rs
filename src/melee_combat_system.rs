@@ -1,6 +1,6 @@
 use specs::prelude::*;
 use rltk::{RandomNumberGenerator};
-use super::{CombatStats, WantsToMelee, WantsToEncounter, Name, gamelog::BattleLog, MeleePowerBonus, DefenseBonus, Equipped, RunState, BattleEntity, SufferDamage};
+use super::{CombatStats, WantsToMelee, WantsToEncounter, Name, gamelog::BattleLog, MeleePowerBonus, DefenseBonus, Equipped, RunState, BattleEntity, SufferDamage, spawner};
 pub struct MeleeCombatSystem {}
 
 // battle state用のsystem
@@ -70,20 +70,28 @@ impl<'a> System<'a> for MeleeCombatSystem {
     }
 }
 
-// TODO: 書いてる箇所が現状と合ってないので直す
-pub fn delete_combat_event(ecs : &mut World) {
-    let mut wants_encounter = ecs.write_storage::<WantsToEncounter>();
-    let mut battlelog = ecs.write_resource::<BattleLog>();
-    let mut battle_entity = ecs.write_storage::<BattleEntity>();
+pub fn invoke_battle (ecs : &mut World) {
+    let mut encounter : Vec<bool> = Vec::new();
+    {
+        let mut wants_encounter = ecs.write_storage::<WantsToEncounter>();
+        let mut battlelog = ecs.write_resource::<BattleLog>();
+        let mut battle_entity = ecs.write_storage::<BattleEntity>();
 
-    for wants_encounter in (&wants_encounter).join() {
-        let mut runstate = ecs.write_resource::<RunState>();
-        *runstate = RunState::BattleCommand;
-        battlelog.entries = vec![];
-        battlelog.entries.push(format!("Monster appearing"));
-        // 戦闘用entityを生成
-        battle_entity.insert(wants_encounter.monster, BattleEntity{ monster: wants_encounter.monster }).expect("Unable to insert attack");
+        for wants_encounter in (&wants_encounter).join() {
+            let mut runstate = ecs.write_resource::<RunState>();
+            *runstate = RunState::BattleCommand;
+            battlelog.entries = vec![];
+            battlelog.entries.push(format!("Monster appearing"));
+            encounter.push(true);
+            // 戦闘用entityを生成
+            // TODO: シンボル用entityによってカテゴリは決定するが、その他の情報は戦闘entityが持つようにする
+            battle_entity.insert(wants_encounter.monster, BattleEntity{ monster: wants_encounter.monster }).expect("Unable to insert attack");
+        }
+
+        wants_encounter.clear();
     }
-    // エンカウント用entityは削除
-    wants_encounter.clear();
+
+    if !encounter.is_empty() {
+        spawner::b_orc(ecs);
+    }
 }

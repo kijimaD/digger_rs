@@ -105,6 +105,15 @@ fn monster<S : ToString>(ecs: &mut World, x: i32, y: i32, glyph : rltk::FontChar
         .build();
 }
 
+pub fn b_orc(ecs: &mut World) { battle_monster(ecs, "Orc"); }
+
+fn battle_monster<S : ToString>(ecs: &mut World, name : S) {
+    ecs.create_entity()
+        .with(Name{ name : name.to_string() })
+        .with(CombatStats{ max_hp: 16, hp: 16, defense: 1, power: 4 })
+        .build();
+}
+
 fn health_potion(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
         .with(Position{ x, y })

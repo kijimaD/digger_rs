@@ -32,7 +32,6 @@ pub mod saveload_system;
 pub mod random_table;
 
 
-// TODO: 戦闘用とフィールド用でenumを分ける
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState { AwaitingInput,
                     PreRun,
@@ -310,7 +309,7 @@ impl GameState for State {
             *runwriter = newrunstate;
         }
         damage_system::delete_the_dead(&mut self.ecs);
-        melee_combat_system::delete_combat_event(&mut self.ecs);
+        melee_combat_system::invoke_battle(&mut self.ecs);
     }
 }
 
