@@ -18,7 +18,6 @@ pub struct MeleeCombatSystem {}
 // TODO: entityが複数の攻撃手段を持つようにする。player entityの場合はコマンドで選択肢、モンスターの場合はAI選択。
 // <wants_to_melee method, from, to>
 
-// 未実装
 impl<'a> System<'a> for MeleeCombatSystem {
     #[allow(clippy::type_complexity)]
     type SystemData = ( Entities<'a>,
@@ -70,8 +69,9 @@ impl<'a> System<'a> for MeleeCombatSystem {
     }
 }
 
+// TODO: systemにしたい
 pub fn invoke_battle (ecs : &mut World) {
-    let mut encounter : Vec<bool> = Vec::new();
+    let mut encounter = false;
     {
         let mut wants_encounter = ecs.write_storage::<WantsToEncounter>();
         let mut battlelog = ecs.write_resource::<BattleLog>();
@@ -83,7 +83,7 @@ pub fn invoke_battle (ecs : &mut World) {
             if i == 0 {
                 let mut runstate = ecs.write_resource::<RunState>();
                 *runstate = RunState::BattleCommand;
-                encounter.push(true);
+                encounter = true;
                 battle.insert(wants_encounter.monster, Battle{ monster: wants_encounter.monster }).expect("Unable to insert encounter");
 
                 battlelog.entries = vec![];
@@ -94,7 +94,7 @@ pub fn invoke_battle (ecs : &mut World) {
         wants_encounter.clear();
     }
 
-    if !encounter.is_empty() {
+    if encounter {
         spawner::b_orc(ecs);
     }
 }

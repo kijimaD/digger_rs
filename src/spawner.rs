@@ -105,6 +105,7 @@ fn monster<S : ToString>(ecs: &mut World, x: i32, y: i32, glyph : rltk::FontChar
 }
 
 pub fn b_orc(ecs: &mut World) { battle_monster(ecs, "Orc"); }
+pub fn b_goblin(ecs: &mut World) { battle_monster(ecs, "Goblin"); }
 
 fn battle_monster<S : ToString>(ecs: &mut World, name : S) {
     ecs.create_entity()
