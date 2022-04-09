@@ -1,6 +1,6 @@
 use specs::prelude::*;
 use rltk::{RandomNumberGenerator};
-use super::{CombatStats, WantsToMelee, WantsToEncounter, Name, gamelog::BattleLog, MeleePowerBonus, DefenseBonus, Equipped, RunState, BattleEntity, SufferDamage};
+use super::{CombatStats, WantsToMelee, WantsToEncounter, Name, gamelog::BattleLog, MeleePowerBonus, DefenseBonus, Equipped, RunState, SufferDamage, spawner, Battle};
 pub struct MeleeCombatSystem {}
 
 // battle state用のsystem
@@ -10,7 +10,7 @@ pub struct MeleeCombatSystem {}
 // 戦闘用実装のメモ
 // 1. 接触したときwants_to_encounterを生成してstateを切り替え
 // 2. wants_to_encounterを削除
-// 3. battle_entityを生成(entityはwants_to_encounterからcopy)
+// 3. battle_entityを生成
 // 4. battle_entityそれぞれでプレイヤーコマンド or AIによってwants_to_meleeを生成＋処理でダメージを発生させる。これで1ターンとする。プレイヤーのwantsはコマンドで生成し、AIのwantsはbattle_entityから生成するか。
 // 5. 敵のbattle_entityが残っていれば再度コマンド選択に戻る
 // 6. 敵のbattle_entityが残っていなければbattle_resultに移動して戦闘を終了する
@@ -18,7 +18,6 @@ pub struct MeleeCombatSystem {}
 // TODO: entityが複数の攻撃手段を持つようにする。player entityの場合はコマンドで選択肢、モンスターの場合はAI選択。
 // <wants_to_melee method, from, to>
 
-// 未実装
 impl<'a> System<'a> for MeleeCombatSystem {
     #[allow(clippy::type_complexity)]
     type SystemData = ( Entities<'a>,
@@ -70,20 +69,32 @@ impl<'a> System<'a> for MeleeCombatSystem {
     }
 }
 
-// TODO: 書いてる箇所が現状と合ってないので直す
-pub fn delete_combat_event(ecs : &mut World) {
-    let mut wants_encounter = ecs.write_storage::<WantsToEncounter>();
-    let mut battlelog = ecs.write_resource::<BattleLog>();
-    let mut battle_entity = ecs.write_storage::<BattleEntity>();
+// TODO: systemにしたい
+pub fn invoke_battle (ecs : &mut World) {
+    let mut encounter = false;
+    {
+        let mut wants_encounter = ecs.write_storage::<WantsToEncounter>();
+        let mut battlelog = ecs.write_resource::<BattleLog>();
+        let mut battle = ecs.write_storage::<Battle>();
+        let mut i = 0;
 
-    for wants_encounter in (&wants_encounter).join() {
-        let mut runstate = ecs.write_resource::<RunState>();
-        *runstate = RunState::BattleCommand;
-        battlelog.entries = vec![];
-        battlelog.entries.push(format!("Monster appearing"));
-        // 戦闘用entityを生成
-        battle_entity.insert(wants_encounter.monster, BattleEntity{ monster: wants_encounter.monster }).expect("Unable to insert attack");
+        for wants_encounter in (&wants_encounter).join() {
+            // 最初のwants_encounterだけ処理する
+            if i == 0 {
+                let mut runstate = ecs.write_resource::<RunState>();
+                *runstate = RunState::BattleCommand;
+                encounter = true;
+                battle.insert(wants_encounter.monster, Battle{ monster: wants_encounter.monster }).expect("Unable to insert encounter");
+
+                battlelog.entries = vec![];
+                battlelog.entries.push(format!("Monster appearing"));
+            }
+            i += 1;
+        }
+        wants_encounter.clear();
     }
-    // エンカウント用entityは削除
-    wants_encounter.clear();
+
+    if encounter {
+        spawner::b_orc(ecs);
+    }
 }

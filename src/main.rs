@@ -32,7 +32,6 @@ pub mod saveload_system;
 pub mod random_table;
 
 
-// TODO: 戦闘用とフィールド用でenumを分ける
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState { AwaitingInput,
                     PreRun,
@@ -165,7 +164,7 @@ impl GameState for State {
             }
             RunState::BattleCommand => {
                 // 戦闘コマンド
-                let result = gui::battle_command(&self.ecs, ctx);
+                let result = gui::battle_command(&mut self.ecs, ctx);
 
                 // メインメニュー表示
                 match result {
@@ -310,7 +309,7 @@ impl GameState for State {
             *runwriter = newrunstate;
         }
         damage_system::delete_the_dead(&mut self.ecs);
-        melee_combat_system::delete_combat_event(&mut self.ecs);
+        melee_combat_system::invoke_battle(&mut self.ecs);
     }
 }
 
@@ -471,7 +470,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<CombatStats>();
     gs.ecs.register::<WantsToMelee>();
     gs.ecs.register::<WantsToEncounter>();
-    gs.ecs.register::<BattleEntity>();
+    gs.ecs.register::<Battle>();
     gs.ecs.register::<SufferDamage>();
     gs.ecs.register::<Item>();
     gs.ecs.register::<ProvidesHealing>();

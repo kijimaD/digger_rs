@@ -71,8 +71,6 @@ impl<'a> System<'a> for ItemUseSystem {
                     for mob in map.tile_content[idx].iter() {
                         targets.push(*mob);
                     }
-
-
                 }
             }
 

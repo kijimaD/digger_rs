@@ -100,8 +100,18 @@ fn monster<S : ToString>(ecs: &mut World, x: i32, y: i32, glyph : rltk::FontChar
         .with(Monster{})
         .with(Name{ name : name.to_string() })
         .with(BlocksTile{})
-        .with(CombatStats{ max_hp: 16, hp: 16, defense: 1, power: 4 })
         .marked::<SimpleMarker<SerializeMe>>()
+        .build();
+}
+
+pub fn b_orc(ecs: &mut World) { battle_monster(ecs, "Orc"); }
+pub fn b_goblin(ecs: &mut World) { battle_monster(ecs, "Goblin"); }
+
+fn battle_monster<S : ToString>(ecs: &mut World, name : S) {
+    ecs.create_entity()
+        .with(Monster{})
+        .with(Name{ name : name.to_string() })
+        .with(CombatStats{ max_hp: 16, hp: 16, defense: 1, power: 4 })
         .build();
 }
 
