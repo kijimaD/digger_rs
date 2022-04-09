@@ -1,6 +1,6 @@
 use specs::prelude::*;
 use rltk::{RandomNumberGenerator};
-use super::{CombatStats, WantsToMelee, WantsToEncounter, Name, gamelog::BattleLog, MeleePowerBonus, DefenseBonus, Equipped, RunState, BattleEntity, SufferDamage, spawner};
+use super::{CombatStats, WantsToMelee, WantsToEncounter, Name, gamelog::BattleLog, MeleePowerBonus, DefenseBonus, Equipped, RunState, SufferDamage, spawner};
 pub struct MeleeCombatSystem {}
 
 // battle state用のsystem
@@ -10,7 +10,7 @@ pub struct MeleeCombatSystem {}
 // 戦闘用実装のメモ
 // 1. 接触したときwants_to_encounterを生成してstateを切り替え
 // 2. wants_to_encounterを削除
-// 3. battle_entityを生成(entityはwants_to_encounterからcopy)
+// 3. battle_entityを生成
 // 4. battle_entityそれぞれでプレイヤーコマンド or AIによってwants_to_meleeを生成＋処理でダメージを発生させる。これで1ターンとする。プレイヤーのwantsはコマンドで生成し、AIのwantsはbattle_entityから生成するか。
 // 5. 敵のbattle_entityが残っていれば再度コマンド選択に戻る
 // 6. 敵のbattle_entityが残っていなければbattle_resultに移動して戦闘を終了する
@@ -75,19 +75,14 @@ pub fn invoke_battle (ecs : &mut World) {
     {
         let mut wants_encounter = ecs.write_storage::<WantsToEncounter>();
         let mut battlelog = ecs.write_resource::<BattleLog>();
-        let mut battle_entity = ecs.write_storage::<BattleEntity>();
 
-        for wants_encounter in (&wants_encounter).join() {
+        for _wants_encounter in (&wants_encounter).join() {
             let mut runstate = ecs.write_resource::<RunState>();
             *runstate = RunState::BattleCommand;
             battlelog.entries = vec![];
             battlelog.entries.push(format!("Monster appearing"));
             encounter.push(true);
-            // 戦闘用entityを生成
-            // TODO: シンボル用entityによってカテゴリは決定するが、その他の情報は戦闘entityが持つようにする
-            battle_entity.insert(wants_encounter.monster, BattleEntity{ monster: wants_encounter.monster }).expect("Unable to insert attack");
         }
-
         wants_encounter.clear();
     }
 

@@ -38,8 +38,7 @@ pub fn delete_the_dead(ecs : &mut World) {
                         }
                         dead.push(entity);
 
-                        // モンスターが2体だった場合、1体残ってても戦闘が終わる。
-                        // TODO: battle entityを使うべき
+                        // TODO: モンスターが2体だった場合、1体残ってても戦闘が終わらないようにする
                         let mut runstate = ecs.write_resource::<RunState>();
                         *runstate = RunState::AwaitingInput;
                     }
@@ -52,6 +51,7 @@ pub fn delete_the_dead(ecs : &mut World) {
         }
     }
 
+    // TODO: map上entityの削除をする。現在は戦闘用しか削除できてない
     for victim in dead {
         ecs.delete_entity(victim).expect("Unable to delete");
     }

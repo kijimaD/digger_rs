@@ -1,7 +1,7 @@
 use rltk::{ RGB, Rltk, Point, VirtualKeyCode };
 use specs::prelude::*;
 use super::{CombatStats, Player, gamelog::GameLog, gamelog::BattleLog, Map, Name, Position, State, InBackpack,
-    RunState, Equipped, Consumable, BattleEntity};
+    RunState, Equipped, Consumable, Monster};
 
 pub fn draw_ui(ecs: &World, ctx : &mut Rltk) {
     ctx.draw_box(0, 43, 79, 6, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
@@ -362,12 +362,13 @@ pub fn draw_battle_ui(ecs: &World, ctx : &mut Rltk) {
     }
 
     // 敵一覧
-    let battle_entity = ecs.read_storage::<BattleEntity>();
     let name = ecs.read_storage::<Name>();
+    let stats = ecs.read_storage::<CombatStats>();
+    let monster = ecs.read_storage::<Monster>();
 
     let mut i = 0;
-    for (_battle_entity, name) in (&battle_entity, &name).join() {
-        ctx.print(2 + i * 10, 20, format!("[{}]", name.name));
+    for (name, stats, _monster) in (&name, &stats, &monster).join() {
+        ctx.print(2 + i * 10, 20, format!("[{}]({})", name.name, stats.hp));
         i += 1;
     }
 }
@@ -375,9 +376,7 @@ pub fn draw_battle_ui(ecs: &World, ctx : &mut Rltk) {
 #[derive(PartialEq, Copy, Clone)]
 pub enum BattleCommandResult { NoResponse, Attack, ShowInventory, RunAway }
 
-pub fn battle_command(ecs: &World, ctx : &mut Rltk)  -> BattleCommandResult {
-    let mut battle_entity = ecs.write_storage::<BattleEntity>();
-
+pub fn battle_command(ecs: &mut World, ctx : &mut Rltk)  -> BattleCommandResult {
     let y = 30;
     ctx.print(2, y, "[a] Attack");
     ctx.print(2, y+1, "[i] Inventory");
@@ -390,7 +389,7 @@ pub fn battle_command(ecs: &World, ctx : &mut Rltk)  -> BattleCommandResult {
                 VirtualKeyCode::A => {BattleCommandResult::Attack}
                 VirtualKeyCode::I => {BattleCommandResult::ShowInventory}
                 VirtualKeyCode::R => {
-                    battle_entity.clear();
+                    remove_battle_entity(ecs);
                     return BattleCommandResult::RunAway;
                 }
                 _ => { BattleCommandResult::NoResponse }
@@ -399,16 +398,35 @@ pub fn battle_command(ecs: &World, ctx : &mut Rltk)  -> BattleCommandResult {
     }
 }
 
+fn remove_battle_entity(ecs: &mut World) {
+    let mut dead : Vec<Entity> = Vec::new();
+    {
+        let entities = ecs.entities();
+        let stats = ecs.write_storage::<CombatStats>();
+        let monster = ecs.read_storage::<Monster>();
+
+        for (entity, _stats, _monster) in (&entities, &stats, &monster).join() {
+            dead.push(entity)
+        }
+    }
+
+    for dead in dead {
+        ecs.delete_entity(dead).expect("Unable to delete");
+    }
+}
+
 pub enum BattleTargetingResult { Cancel, NoResponse, Selected }
 
 pub fn battle_target(gs : &mut State, ctx : &mut Rltk) -> (BattleTargetingResult, Option<Entity>) {
     let entities = gs.ecs.entities();
-    let battle_entities = gs.ecs.read_storage::<BattleEntity>();
+    let stats = gs.ecs.write_storage::<CombatStats>();
+    let monster = gs.ecs.read_storage::<Monster>();
+
     let mut x = 0;
     let mut j = 0;
 
     let mut monsters : Vec<Entity> = Vec::new();
-    for (entity, _battle_entity) in (&entities, &battle_entities).join() {
+    for (entity, _stats, _monster) in (&entities, &stats, &monster).join() {
         ctx.set(2 + x * 10 + 0, 22, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437('('));
         ctx.set(2 + x * 10 + 1, 22, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), 97+j as rltk::FontCharType);
         ctx.set(2 + x * 10 + 2, 22, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437(')'));

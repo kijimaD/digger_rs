@@ -164,7 +164,7 @@ impl GameState for State {
             }
             RunState::BattleCommand => {
                 // 戦闘コマンド
-                let result = gui::battle_command(&self.ecs, ctx);
+                let result = gui::battle_command(&mut self.ecs, ctx);
 
                 // メインメニュー表示
                 match result {
@@ -470,7 +470,6 @@ fn main() -> rltk::BError {
     gs.ecs.register::<CombatStats>();
     gs.ecs.register::<WantsToMelee>();
     gs.ecs.register::<WantsToEncounter>();
-    gs.ecs.register::<BattleEntity>();
     gs.ecs.register::<SufferDamage>();
     gs.ecs.register::<Item>();
     gs.ecs.register::<ProvidesHealing>();
