@@ -13,4 +13,8 @@ release:
 	wasm-bindgen target/wasm32-unknown-unknown/release/digger_rs.wasm --out-dir wasm --no-modules --no-typescript
 
 fmt:
-	cargo fmt
+	cargo fmt && \
+	cargo clippy
+
+fix:
+	cargo fix

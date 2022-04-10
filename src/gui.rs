@@ -1,8 +1,8 @@
 use super::{
-    gamelog::BattleLog, gamelog::GameLog, CombatStats, Consumable, Equipped, InBackpack, Map,
-    Monster, Name, Player, Position, RunState, State,
+    gamelog::BattleLog, gamelog::GameLog, Battle, CombatStats, Consumable, Equipped, InBackpack,
+    Map, Monster, Name, Player, Position, RunState, State,
 };
-use rltk::{Point, Rltk, VirtualKeyCode, RGB};
+use rltk::{Point, RandomNumberGenerator, Rltk, VirtualKeyCode, RGB};
 use specs::prelude::*;
 
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
@@ -662,9 +662,13 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
     let stats = ecs.read_storage::<CombatStats>();
     let monster = ecs.read_storage::<Monster>();
 
-    let mut i = 0;
-    for (name, stats, _monster) in (&name, &stats, &monster).join() {
-        ctx.print(2 + i * 10, 20, format!("[{}]({})", name.name, stats.hp));
+    let mut i = 1;
+    for (name, stat, _monster) in (&name, &stats, &monster).join() {
+        ctx.print(
+            (80 * i) / (1 + stats.count()),
+            20,
+            format!("[{}]({})", name.name, stat.hp),
+        );
         i += 1;
     }
 }
@@ -675,8 +679,10 @@ pub enum BattleCommandResult {
     Attack,
     ShowInventory,
     RunAway,
+    RunAwayFailed,
 }
 
+// TODO: 逃走を分割する
 pub fn battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResult {
     let y = 30;
     ctx.print(2, y, "[a] Attack");
@@ -689,14 +695,26 @@ pub fn battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResult {
             VirtualKeyCode::A => BattleCommandResult::Attack,
             VirtualKeyCode::I => BattleCommandResult::ShowInventory,
             VirtualKeyCode::R => {
-                remove_battle_entity(ecs);
-                return BattleCommandResult::RunAway;
+                let mut rng = RandomNumberGenerator::new();
+                let num = rng.range(0, 2);
+                if num == 0 {
+                    // 逃走成功
+                    remove_battle_entity(ecs);
+                    return BattleCommandResult::RunAway;
+                } else {
+                    // 逃走失敗
+                    let mut log = ecs.write_resource::<BattleLog>();
+                    log.entries.push(format!("Failed run away!"));
+                    return BattleCommandResult::RunAwayFailed;
+                }
             }
             _ => BattleCommandResult::NoResponse,
         },
     }
 }
 
+// TODO: 戦闘終了、ターン終了後の処理がカオスなので要リファクタリング
+// 処理漏れがあると強制終了する...
 fn remove_battle_entity(ecs: &mut World) {
     // 逃走用。戦闘用entityを削除する
     let mut dead: Vec<Entity> = Vec::new();
@@ -713,6 +731,16 @@ fn remove_battle_entity(ecs: &mut World) {
     for dead in dead {
         ecs.delete_entity(dead).expect("Unable to delete");
     }
+
+    {
+        let mut log = ecs.write_resource::<BattleLog>();
+        log.entries.push(format!("Run away!"));
+    }
+
+    {
+        let mut battle = ecs.write_storage::<Battle>();
+        battle.clear();
+    }
 }
 
 pub enum BattleTargetingResult {
@@ -726,27 +754,28 @@ pub fn battle_target(gs: &mut State, ctx: &mut Rltk) -> (BattleTargetingResult, 
     let stats = gs.ecs.write_storage::<CombatStats>();
     let monster = gs.ecs.read_storage::<Monster>();
 
-    let mut x = 0;
+    let mut x = 1;
     let mut j = 0;
 
     let mut monsters: Vec<Entity> = Vec::new();
     for (entity, _stats, _monster) in (&entities, &stats, &monster).join() {
+        let base = 2 + (80 * x) / (1 + stats.count());
         ctx.set(
-            2 + x * 10 + 0,
+            base + 0,
             22,
             RGB::named(rltk::WHITE),
             RGB::named(rltk::BLACK),
             rltk::to_cp437('('),
         );
         ctx.set(
-            2 + x * 10 + 1,
+            base + 1,
             22,
             RGB::named(rltk::YELLOW),
             RGB::named(rltk::BLACK),
             97 + j as rltk::FontCharType,
         );
         ctx.set(
-            2 + x * 10 + 2,
+            base + 2,
             22,
             RGB::named(rltk::WHITE),
             RGB::named(rltk::BLACK),
@@ -772,6 +801,30 @@ pub fn battle_target(gs: &mut State, ctx: &mut Rltk) -> (BattleTargetingResult, 
                 }
                 (BattleTargetingResult::NoResponse, None)
             }
+        },
+    }
+}
+
+#[derive(PartialEq, Copy, Clone)]
+pub enum BattleResult {
+    NoResponse,
+    Enter,
+}
+
+pub fn show_battle_win_result(gs: &mut State, ctx: &mut Rltk) -> BattleResult {
+    ctx.print_color(
+        70,
+        44,
+        RGB::named(rltk::WHITE),
+        RGB::named(rltk::BLACK),
+        "[Enter]",
+    );
+
+    match ctx.key {
+        None => (BattleResult::NoResponse),
+        Some(key) => match key {
+            VirtualKeyCode::Return => (BattleResult::Enter),
+            _ => BattleResult::NoResponse,
         },
     }
 }

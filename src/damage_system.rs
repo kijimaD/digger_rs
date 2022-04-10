@@ -66,6 +66,7 @@ pub fn delete_the_dead(ecs: &mut World) {
         let entities = ecs.entities();
         let combat_stats = ecs.read_storage::<CombatStats>();
         let monster = ecs.read_storage::<Monster>();
+        let mut log = ecs.write_resource::<BattleLog>();
 
         // 攻撃の結果敵が残ってないときは*勝利*
         // 攻撃してなくて敵が残ってないときは*逃走*
@@ -74,9 +75,10 @@ pub fn delete_the_dead(ecs: &mut World) {
 
             for battle in (&battle_ecs).join() {
                 let mut runstate = ecs.write_resource::<RunState>();
-                *runstate = RunState::AwaitingInput;
+                *runstate = RunState::BattleResult;
                 dead_map_entity.push(battle.monster);
                 want_remove_battle = true;
+                log.entries.push(format!("You win!"));
             }
         }
     }
