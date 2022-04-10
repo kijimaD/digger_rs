@@ -172,9 +172,11 @@ impl GameState for State {
                 match result {
                     gui::BattleCommandResult::NoResponse => {}
                     gui::BattleCommandResult::Attack => newrunstate = RunState::BattleTargeting,
-                    gui::BattleCommandResult::ShowInventory => newrunstate = RunState::BattleInventory,
+                    gui::BattleCommandResult::ShowInventory => {
+                        newrunstate = RunState::BattleInventory
+                    }
                     gui::BattleCommandResult::RunAway => newrunstate = RunState::BattleResult,
-                    gui::BattleCommandResult::RunAwayFailed => newrunstate = RunState::BattleTurn
+                    gui::BattleCommandResult::RunAwayFailed => newrunstate = RunState::BattleTurn,
                 }
             }
             RunState::BattleInventory => {
@@ -254,7 +256,7 @@ impl GameState for State {
                 let result = gui::show_battle_win_result(self, ctx);
                 match result {
                     gui::BattleResult::NoResponse => {}
-                    gui::BattleResult::Enter => { newrunstate = RunState::AwaitingInput }
+                    gui::BattleResult::Enter => newrunstate = RunState::AwaitingInput,
                 }
             }
             RunState::ShowInventory => {

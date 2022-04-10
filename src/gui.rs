@@ -2,7 +2,7 @@ use super::{
     gamelog::BattleLog, gamelog::GameLog, CombatStats, Consumable, Equipped, InBackpack, Map,
     Monster, Name, Player, Position, RunState, State,
 };
-use rltk::{Point, Rltk, VirtualKeyCode, RGB, RandomNumberGenerator};
+use rltk::{Point, RandomNumberGenerator, Rltk, VirtualKeyCode, RGB};
 use specs::prelude::*;
 
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
@@ -664,7 +664,11 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
 
     let mut i = 1;
     for (name, stat, _monster) in (&name, &stats, &monster).join() {
-        ctx.print((80 * i) / (1 + stats.count()), 20, format!("[{}]({})", name.name, stat.hp));
+        ctx.print(
+            (80 * i) / (1 + stats.count()),
+            20,
+            format!("[{}]({})", name.name, stat.hp),
+        );
         i += 1;
     }
 }
@@ -675,7 +679,7 @@ pub enum BattleCommandResult {
     Attack,
     ShowInventory,
     RunAway,
-    RunAwayFailed
+    RunAwayFailed,
 }
 
 // TODO: 逃走を分割する
@@ -813,8 +817,8 @@ pub fn show_battle_win_result(gs: &mut State, ctx: &mut Rltk) -> BattleResult {
         None => (BattleResult::NoResponse),
         Some(key) => match key {
             VirtualKeyCode::Return => (BattleResult::Enter),
-            _ => {BattleResult::NoResponse}
-        }
+            _ => BattleResult::NoResponse,
+        },
     }
 }
 
