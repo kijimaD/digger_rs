@@ -1,13 +1,17 @@
+use super::{
+    gamelog::BattleLog, Battle, CombatStats, Monster, Name, Player, RunState, SufferDamage,
+};
 use specs::prelude::*;
-use super::{CombatStats, SufferDamage, Player, Name, gamelog::BattleLog, RunState, Battle, Monster};
 
 pub struct DamageSystem {}
 
 impl<'a> System<'a> for DamageSystem {
-    type SystemData = ( WriteStorage<'a, CombatStats>,
-                        WriteStorage<'a, SufferDamage> );
+    type SystemData = (
+        WriteStorage<'a, CombatStats>,
+        WriteStorage<'a, SufferDamage>,
+    );
 
-    fn run(&mut self, data : Self::SystemData) {
+    fn run(&mut self, data: Self::SystemData) {
         let (mut stats, mut damage) = data;
 
         for (mut stats, damage) in (&mut stats, &damage).join() {
@@ -19,8 +23,8 @@ impl<'a> System<'a> for DamageSystem {
 }
 
 // TODO: 色々混ざってるので分割する
-pub fn delete_the_dead(ecs : &mut World) {
-    let mut dead : Vec<Entity> = Vec::new();
+pub fn delete_the_dead(ecs: &mut World) {
+    let mut dead: Vec<Entity> = Vec::new();
     let mut win = false;
     // Using a scope to make the borrow checker happy
     {
@@ -57,7 +61,7 @@ pub fn delete_the_dead(ecs : &mut World) {
 
     // 戦闘に勝利したらmap entityを削除する。逃げたときはmap entityを削除しない
     let mut want_remove_battle = false;
-    let mut dead_map_entity : Vec<Entity> = Vec::new();
+    let mut dead_map_entity: Vec<Entity> = Vec::new();
     {
         let entities = ecs.entities();
         let combat_stats = ecs.read_storage::<CombatStats>();
@@ -65,7 +69,7 @@ pub fn delete_the_dead(ecs : &mut World) {
 
         // 攻撃の結果敵が残ってないときは*勝利*
         // 攻撃してなくて敵が残ってないときは*逃走*
-        if (&entities, &combat_stats, &monster).join().count() == 0 && win{
+        if (&entities, &combat_stats, &monster).join().count() == 0 && win {
             let battle_ecs = ecs.read_storage::<Battle>();
 
             for battle in (&battle_ecs).join() {
@@ -73,7 +77,6 @@ pub fn delete_the_dead(ecs : &mut World) {
                 *runstate = RunState::AwaitingInput;
                 dead_map_entity.push(battle.monster);
                 want_remove_battle = true;
-
             }
         }
     }

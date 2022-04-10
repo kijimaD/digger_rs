@@ -1,41 +1,58 @@
+use super::{Map, Monster, Position, RunState, Viewshed, WantsToEncounter};
+use rltk::Point;
 use specs::prelude::*;
-use super::{Viewshed, Monster, Map, Position, WantsToEncounter, RunState};
-use rltk::{Point};
 
 pub struct MonsterAI {}
 
 impl<'a> System<'a> for MonsterAI {
     #[allow(clippy::type_complexity)]
-    type SystemData = ( WriteExpect<'a, Map>,
-                        ReadExpect<'a, Point>,
-                        ReadExpect<'a, RunState>,
-                        Entities<'a>,
-                        WriteStorage<'a, Viewshed>,
-                        ReadStorage<'a, Monster>,
-                        WriteStorage<'a, Position>,
-                        WriteStorage<'a, WantsToEncounter>);
+    type SystemData = (
+        WriteExpect<'a, Map>,
+        ReadExpect<'a, Point>,
+        ReadExpect<'a, RunState>,
+        Entities<'a>,
+        WriteStorage<'a, Viewshed>,
+        ReadStorage<'a, Monster>,
+        WriteStorage<'a, Position>,
+        WriteStorage<'a, WantsToEncounter>,
+    );
 
-    fn run(&mut self, data : Self::SystemData) {
-        let (mut map, player_pos, runstate, entities, mut viewshed, monster, mut position, mut wants_to_encounter) = data;
+    fn run(&mut self, data: Self::SystemData) {
+        let (
+            mut map,
+            player_pos,
+            runstate,
+            entities,
+            mut viewshed,
+            monster,
+            mut position,
+            mut wants_to_encounter,
+        ) = data;
 
-        if *runstate != RunState::MonsterTurn { return; }
+        if *runstate != RunState::MonsterTurn {
+            return;
+        }
 
-        for (entity, mut viewshed,_monster,mut pos) in (&entities, &mut viewshed, &monster, &mut position).join() {
+        for (entity, mut viewshed, _monster, mut pos) in
+            (&entities, &mut viewshed, &monster, &mut position).join()
+        {
             let can_act = true;
 
             if can_act {
-                let distance = rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), *player_pos);
+                let distance =
+                    rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), *player_pos);
                 if distance < 1.5 {
-                    wants_to_encounter.insert(entity, WantsToEncounter{ monster: entity }).expect("Unable to insert encounter");
-                }
-                else if viewshed.visible_tiles.contains(&*player_pos) {
+                    wants_to_encounter
+                        .insert(entity, WantsToEncounter { monster: entity })
+                        .expect("Unable to insert encounter");
+                } else if viewshed.visible_tiles.contains(&*player_pos) {
                     // Path to the player
                     let path = rltk::a_star_search(
                         map.xy_idx(pos.x, pos.y),
                         map.xy_idx(player_pos.x, player_pos.y),
-                        &*map
+                        &*map,
                     );
-                    if path.success && path.steps.len()>1 {
+                    if path.success && path.steps.len() > 1 {
                         let mut idx = map.xy_idx(pos.x, pos.y);
                         map.blocked[idx] = false;
                         pos.x = path.steps[1] as i32 % map.width;

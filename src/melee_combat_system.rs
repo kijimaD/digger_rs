@@ -1,6 +1,9 @@
+use super::{
+    gamelog::BattleLog, spawner, Battle, CombatStats, DefenseBonus, Equipped, MeleePowerBonus,
+    Name, RunState, SufferDamage, WantsToEncounter, WantsToMelee,
+};
+use rltk::RandomNumberGenerator;
 use specs::prelude::*;
-use rltk::{RandomNumberGenerator};
-use super::{CombatStats, WantsToMelee, WantsToEncounter, Name, gamelog::BattleLog, MeleePowerBonus, DefenseBonus, Equipped, RunState, SufferDamage, spawner, Battle};
 pub struct MeleeCombatSystem {}
 
 // battle state用のsystem
@@ -20,24 +23,39 @@ pub struct MeleeCombatSystem {}
 
 impl<'a> System<'a> for MeleeCombatSystem {
     #[allow(clippy::type_complexity)]
-    type SystemData = ( Entities<'a>,
-                        WriteExpect<'a, BattleLog>,
-                        WriteStorage<'a, WantsToMelee>,
-                        ReadStorage<'a, Name>,
-                        ReadStorage<'a, CombatStats>,
-                        ReadStorage<'a, MeleePowerBonus>,
-                        ReadStorage<'a, DefenseBonus>,
-                        ReadStorage<'a, Equipped>,
-                        WriteStorage<'a, SufferDamage>
-                      );
+    type SystemData = (
+        Entities<'a>,
+        WriteExpect<'a, BattleLog>,
+        WriteStorage<'a, WantsToMelee>,
+        ReadStorage<'a, Name>,
+        ReadStorage<'a, CombatStats>,
+        ReadStorage<'a, MeleePowerBonus>,
+        ReadStorage<'a, DefenseBonus>,
+        ReadStorage<'a, Equipped>,
+        WriteStorage<'a, SufferDamage>,
+    );
 
-    fn run(&mut self, data : Self::SystemData) {
-        let (entities, mut log, wants_melee, names, combat_stats, melee_power_bonuses, defense_bonuses, equipped, mut inflict_damage) = data;
+    fn run(&mut self, data: Self::SystemData) {
+        let (
+            entities,
+            mut log,
+            wants_melee,
+            names,
+            combat_stats,
+            melee_power_bonuses,
+            defense_bonuses,
+            equipped,
+            mut inflict_damage,
+        ) = data;
 
-        for (entity, wants_melee, name, stats) in (&entities, &wants_melee, &names, &combat_stats).join() {
+        for (entity, wants_melee, name, stats) in
+            (&entities, &wants_melee, &names, &combat_stats).join()
+        {
             if stats.hp > 0 {
                 let mut offensive_bonus = 0;
-                for (_item_entity, power_bonus, equipped_by) in (&entities, &melee_power_bonuses, &equipped).join() {
+                for (_item_entity, power_bonus, equipped_by) in
+                    (&entities, &melee_power_bonuses, &equipped).join()
+                {
                     if equipped_by.owner == entity {
                         offensive_bonus += power_bonus.power;
                     }
@@ -48,19 +66,30 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     let target_name = names.get(wants_melee.target).unwrap();
 
                     let mut defensive_bonus = 0;
-                    for (_item_entity, defense_bonus, equipped_by) in (&entities, &defense_bonuses, &equipped).join() {
+                    for (_item_entity, defense_bonus, equipped_by) in
+                        (&entities, &defense_bonuses, &equipped).join()
+                    {
                         if equipped_by.owner == wants_melee.target {
                             defensive_bonus += defense_bonus.defense;
                         }
                     }
 
                     let mut rng = RandomNumberGenerator::new();
-                    let damage = i32::max(0, (stats.power + offensive_bonus) - (target_stats.defense + defensive_bonus)) + rng.range(1, 5);
+                    let damage = i32::max(
+                        0,
+                        (stats.power + offensive_bonus) - (target_stats.defense + defensive_bonus),
+                    ) + rng.range(1, 5);
 
                     if damage == 0 {
-                        log.entries.push(format!("{} is unable to hurt {}", &name.name, &target_name.name));
+                        log.entries.push(format!(
+                            "{} is unable to hurt {}",
+                            &name.name, &target_name.name
+                        ));
                     } else {
-                        log.entries.push(format!("{} hits {}, for {} hp", &name.name, &target_name.name, damage));
+                        log.entries.push(format!(
+                            "{} hits {}, for {} hp",
+                            &name.name, &target_name.name, damage
+                        ));
                         SufferDamage::new_damage(&mut inflict_damage, wants_melee.target, damage);
                     }
                 }
@@ -70,7 +99,7 @@ impl<'a> System<'a> for MeleeCombatSystem {
 }
 
 // TODO: systemにしたい
-pub fn invoke_battle (ecs : &mut World) {
+pub fn invoke_battle(ecs: &mut World) {
     let mut encounter = false;
     {
         let mut wants_encounter = ecs.write_storage::<WantsToEncounter>();
@@ -84,7 +113,14 @@ pub fn invoke_battle (ecs : &mut World) {
                 let mut runstate = ecs.write_resource::<RunState>();
                 *runstate = RunState::BattleCommand;
                 encounter = true;
-                battle.insert(wants_encounter.monster, Battle{ monster: wants_encounter.monster }).expect("Unable to insert encounter");
+                battle
+                    .insert(
+                        wants_encounter.monster,
+                        Battle {
+                            monster: wants_encounter.monster,
+                        },
+                    )
+                    .expect("Unable to insert encounter");
 
                 battlelog.entries = vec![];
                 battlelog.entries.push(format!("Monster appearing"));
