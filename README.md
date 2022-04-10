@@ -4,7 +4,8 @@ Modified based on the code in Chapter 14 https://bfnightly.bracketproductions.co
 
 ## Feature
 
-- Keyboard oriented
+- Roguelike
+- Keyboard Focused
 - Symol encounter & Front view battle
 
 ## operation
@@ -15,24 +16,14 @@ Modified based on the code in Chapter 14 https://bfnightly.bracketproductions.co
 - T: Drop item
 - R: Remove equipment
 
-## Docker
+## Development
 
-development build
-
-```shell
-$ cargo run
-```
-
-release build
 
 ```shell
-$ docker run --rm -it -v $(pwd):/rust rust
-```
+$ make build # development build
 
-```shell
-rustup target add wasm32-unknown-unknown
-cargo install wasm-bindgen-cli
-cd rust
-cargo build --release --target wasm32-unknown-unknown
-wasm-bindgen target/wasm32-unknown-unknown/release/digger_rs.wasm --out-dir wasm --no-modules --no-typescript
+$ make docker
+$ make release # release build
+
+$ make fmt # format
 ```
