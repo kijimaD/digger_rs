@@ -662,9 +662,9 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
     let stats = ecs.read_storage::<CombatStats>();
     let monster = ecs.read_storage::<Monster>();
 
-    let mut i = 0;
-    for (name, stats, _monster) in (&name, &stats, &monster).join() {
-        ctx.print(2 + i * 10, 20, format!("[{}]({})", name.name, stats.hp));
+    let mut i = 1;
+    for (name, stat, _monster) in (&name, &stats, &monster).join() {
+        ctx.print((80 * i) / (1 + stats.count()), 20, format!("[{}]({})", name.name, stat.hp));
         i += 1;
     }
 }
@@ -743,27 +743,28 @@ pub fn battle_target(gs: &mut State, ctx: &mut Rltk) -> (BattleTargetingResult, 
     let stats = gs.ecs.write_storage::<CombatStats>();
     let monster = gs.ecs.read_storage::<Monster>();
 
-    let mut x = 0;
+    let mut x = 1;
     let mut j = 0;
 
     let mut monsters: Vec<Entity> = Vec::new();
     for (entity, _stats, _monster) in (&entities, &stats, &monster).join() {
+        let base = 2 + (80 * x) / (1 + stats.count());
         ctx.set(
-            2 + x * 10 + 0,
+            base + 0,
             22,
             RGB::named(rltk::WHITE),
             RGB::named(rltk::BLACK),
             rltk::to_cp437('('),
         );
         ctx.set(
-            2 + x * 10 + 1,
+            base + 1,
             22,
             RGB::named(rltk::YELLOW),
             RGB::named(rltk::BLACK),
             97 + j as rltk::FontCharType,
         );
         ctx.set(
-            2 + x * 10 + 2,
+            base + 2,
             22,
             RGB::named(rltk::WHITE),
             RGB::named(rltk::BLACK),

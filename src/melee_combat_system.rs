@@ -132,5 +132,6 @@ pub fn invoke_battle(ecs: &mut World) {
 
     if encounter {
         spawner::b_orc(ecs);
+        spawner::b_orc(ecs);
     }
 }
