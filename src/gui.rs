@@ -713,6 +713,11 @@ fn remove_battle_entity(ecs: &mut World) {
     for dead in dead {
         ecs.delete_entity(dead).expect("Unable to delete");
     }
+
+    {
+        let mut log = ecs.write_resource::<BattleLog>();
+        log.entries.push(format!("Run away!"));
+    }
 }
 
 pub enum BattleTargetingResult {
@@ -773,6 +778,30 @@ pub fn battle_target(gs: &mut State, ctx: &mut Rltk) -> (BattleTargetingResult, 
                 (BattleTargetingResult::NoResponse, None)
             }
         },
+    }
+}
+
+#[derive(PartialEq, Copy, Clone)]
+pub enum BattleResult {
+    NoResponse,
+    Enter,
+}
+
+pub fn show_battle_win_result(gs: &mut State, ctx: &mut Rltk) -> BattleResult {
+    ctx.print_color(
+        70,
+        44,
+        RGB::named(rltk::WHITE),
+        RGB::named(rltk::BLACK),
+        "[Enter]",
+    );
+
+    match ctx.key {
+        None => (BattleResult::NoResponse),
+        Some(key) => match key {
+            VirtualKeyCode::Return => (BattleResult::Enter),
+            _ => {BattleResult::NoResponse}
+        }
     }
 }
 
