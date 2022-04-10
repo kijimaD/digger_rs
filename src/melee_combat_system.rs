@@ -39,7 +39,7 @@ impl<'a> System<'a> for MeleeCombatSystem {
         let (
             entities,
             mut log,
-            wants_melee,
+            mut wants_melee,
             names,
             combat_stats,
             melee_power_bonuses,
@@ -95,6 +95,8 @@ impl<'a> System<'a> for MeleeCombatSystem {
                 }
             }
         }
+
+        wants_melee.clear();
     }
 }
 

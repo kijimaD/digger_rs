@@ -1,6 +1,6 @@
 use super::{
-    gamelog::BattleLog, gamelog::GameLog, CombatStats, Consumable, Equipped, InBackpack, Map,
-    Monster, Name, Player, Position, RunState, State,
+    gamelog::BattleLog, gamelog::GameLog, Battle, CombatStats, Consumable, Equipped, InBackpack,
+    Map, Monster, Name, Player, Position, RunState, State,
 };
 use rltk::{Point, RandomNumberGenerator, Rltk, VirtualKeyCode, RGB};
 use specs::prelude::*;
@@ -713,6 +713,8 @@ pub fn battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResult {
     }
 }
 
+// TODO: 戦闘終了、ターン終了後の処理がカオスなので要リファクタリング
+// 処理漏れがあると強制終了する...
 fn remove_battle_entity(ecs: &mut World) {
     // 逃走用。戦闘用entityを削除する
     let mut dead: Vec<Entity> = Vec::new();
@@ -733,6 +735,11 @@ fn remove_battle_entity(ecs: &mut World) {
     {
         let mut log = ecs.write_resource::<BattleLog>();
         log.entries.push(format!("Run away!"));
+    }
+
+    {
+        let mut battle = ecs.write_storage::<Battle>();
+        battle.clear();
     }
 }
 
