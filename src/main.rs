@@ -174,6 +174,7 @@ impl GameState for State {
                     gui::BattleCommandResult::Attack => newrunstate = RunState::BattleTargeting,
                     gui::BattleCommandResult::ShowInventory => newrunstate = RunState::BattleInventory,
                     gui::BattleCommandResult::RunAway => newrunstate = RunState::BattleResult,
+                    gui::BattleCommandResult::RunAwayFailed => newrunstate = RunState::BattleTurn
                 }
             }
             RunState::BattleInventory => {
@@ -199,7 +200,7 @@ impl GameState for State {
             }
             RunState::BattleTurn => {
                 // 選んだコマンドを実行 + AIのコマンドを実行
-                // 行動1つ1つでenter送りにできるのが望ましいが、現在はターン毎に結果を表示してenter待ちにする
+                // 行動1つ1つでenter送りにできるのが望ましいが、現在はターン毎に結果を表示してenter待ちにしている
                 self.run_battle_systems();
                 self.ecs.maintain();
 
@@ -249,7 +250,7 @@ impl GameState for State {
                 }
             }
             RunState::BattleResult => {
-                // 戦闘終了(勝利)
+                // 戦闘終了(勝利 or 逃走)
                 let result = gui::show_battle_win_result(self, ctx);
                 match result {
                     gui::BattleResult::NoResponse => {}

@@ -2,7 +2,7 @@ use super::{
     gamelog::BattleLog, gamelog::GameLog, CombatStats, Consumable, Equipped, InBackpack, Map,
     Monster, Name, Player, Position, RunState, State,
 };
-use rltk::{Point, Rltk, VirtualKeyCode, RGB};
+use rltk::{Point, Rltk, VirtualKeyCode, RGB, RandomNumberGenerator};
 use specs::prelude::*;
 
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
@@ -675,8 +675,10 @@ pub enum BattleCommandResult {
     Attack,
     ShowInventory,
     RunAway,
+    RunAwayFailed
 }
 
+// TODO: 逃走を分割する
 pub fn battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResult {
     let y = 30;
     ctx.print(2, y, "[a] Attack");
@@ -689,8 +691,18 @@ pub fn battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResult {
             VirtualKeyCode::A => BattleCommandResult::Attack,
             VirtualKeyCode::I => BattleCommandResult::ShowInventory,
             VirtualKeyCode::R => {
-                remove_battle_entity(ecs);
-                return BattleCommandResult::RunAway;
+                let mut rng = RandomNumberGenerator::new();
+                let num = rng.range(0, 2);
+                if num == 0 {
+                    // 逃走成功
+                    remove_battle_entity(ecs);
+                    return BattleCommandResult::RunAway;
+                } else {
+                    // 逃走失敗
+                    let mut log = ecs.write_resource::<BattleLog>();
+                    log.entries.push(format!("Failed run away!"));
+                    return BattleCommandResult::RunAwayFailed;
+                }
             }
             _ => BattleCommandResult::NoResponse,
         },
