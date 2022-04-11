@@ -4,7 +4,6 @@ use super::{
 };
 use rltk::RandomNumberGenerator;
 use specs::prelude::*;
-pub struct MeleeCombatSystem {}
 
 // battle state用のsystem
 // コマンドを入力するたびに実行して敵とプレイヤーの双方の攻撃を行う
@@ -20,6 +19,8 @@ pub struct MeleeCombatSystem {}
 
 // TODO: entityが複数の攻撃手段を持つようにする。player entityの場合はコマンドで選択肢、モンスターの場合はAI選択。
 // <wants_to_melee method, from, to>
+
+pub struct MeleeCombatSystem {}
 
 impl<'a> System<'a> for MeleeCombatSystem {
     #[allow(clippy::type_complexity)]
@@ -107,27 +108,23 @@ pub fn invoke_battle(ecs: &mut World) {
         let mut wants_encounter = ecs.write_storage::<WantsToEncounter>();
         let mut battlelog = ecs.write_resource::<BattleLog>();
         let mut battle = ecs.write_storage::<Battle>();
-        let mut i = 0;
 
-        for wants_encounter in (&wants_encounter).join() {
+        for wants_encounter in (&wants_encounter).join().take(1) {
             // 最初のwants_encounterだけ処理する
-            if i == 0 {
-                let mut runstate = ecs.write_resource::<RunState>();
-                *runstate = RunState::BattleCommand;
-                encounter = true;
-                battle
-                    .insert(
-                        wants_encounter.monster,
-                        Battle {
-                            monster: wants_encounter.monster,
-                        },
-                    )
-                    .expect("Unable to insert encounter");
+            let mut runstate = ecs.write_resource::<RunState>();
+            *runstate = RunState::BattleCommand;
+            encounter = true;
+            battle
+                .insert(
+                    wants_encounter.monster,
+                    Battle {
+                        monster: wants_encounter.monster,
+                    },
+                )
+                .expect("Unable to insert encounter");
 
-                battlelog.entries = vec![];
-                battlelog.entries.push(format!("Monster appearing"));
-            }
-            i += 1;
+            battlelog.entries = vec![];
+            battlelog.entries.push(format!("Monster appearing"));
         }
         wants_encounter.clear();
     }
