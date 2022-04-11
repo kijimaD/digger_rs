@@ -25,7 +25,7 @@ impl<'a> System<'a> for DamageSystem {
 // TODO: 色々混ざってるので分割する
 pub fn delete_the_dead(ecs: &mut World) {
     let mut dead: Vec<Entity> = Vec::new();
-    let mut win = false;
+    let mut maybe_win = false;
     // Using a scope to make the borrow checker happy
     {
         let combat_stats = ecs.read_storage::<CombatStats>();
@@ -43,7 +43,7 @@ pub fn delete_the_dead(ecs: &mut World) {
                             log.entries.push(format!("{} is dead", &victim_name.name));
                         }
                         dead.push(entity);
-                        win = true;
+                        maybe_win = true;
                     }
                     Some(_) => {
                         let mut runstate = ecs.write_resource::<RunState>();
@@ -70,7 +70,7 @@ pub fn delete_the_dead(ecs: &mut World) {
 
         // 攻撃の結果敵が残ってないときは*勝利*
         // 攻撃してなくて敵が残ってないときは*逃走*
-        if (&entities, &combat_stats, &monster).join().count() == 0 && win {
+        if (&entities, &combat_stats, &monster).join().count() == 0 && maybe_win {
             let battle_ecs = ecs.read_storage::<Battle>();
 
             for battle in (&battle_ecs).join() {
