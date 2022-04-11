@@ -103,7 +103,6 @@ impl<'a> System<'a> for MeleeCombatSystem {
 
 // TODO: systemにしたい
 pub fn invoke_battle(ecs: &mut World) {
-    let mut encounter = false;
     {
         let mut wants_encounter = ecs.write_storage::<WantsToEncounter>();
         let mut battlelog = ecs.write_resource::<BattleLog>();
@@ -112,8 +111,7 @@ pub fn invoke_battle(ecs: &mut World) {
         for wants_encounter in (&wants_encounter).join().take(1) {
             // 最初のwants_encounterだけ処理する
             let mut runstate = ecs.write_resource::<RunState>();
-            *runstate = RunState::BattleCommand;
-            encounter = true;
+            *runstate = RunState::BattleEncounter;
             battle
                 .insert(
                     wants_encounter.monster,
@@ -127,10 +125,5 @@ pub fn invoke_battle(ecs: &mut World) {
             battlelog.entries.push(format!("Monster appearing"));
         }
         wants_encounter.clear();
-    }
-
-    if encounter {
-        spawner::b_orc(ecs);
-        spawner::b_orc(ecs);
     }
 }
