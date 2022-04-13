@@ -60,11 +60,11 @@ pub fn delete_the_dead(ecs: &mut World) {
     }
 
     if maybe_win {
-        check_battle(ecs);
+        check_battle_win(ecs);
     }
 }
 
-fn check_battle(ecs: &mut World) {
+fn check_battle_win(ecs: &mut World) {
     // 戦闘に勝利したらmap entityを削除する。逃げたときはmap entityを削除しない
     let mut want_remove_battle = false;
     let mut dead_map_entity: Vec<Entity> = Vec::new();
@@ -90,19 +90,15 @@ fn check_battle(ecs: &mut World) {
     }
 
     // 勝ったらbattleを削除する
-    {
+    if want_remove_battle {
         let mut battle = ecs.write_storage::<Battle>();
-        if want_remove_battle {
-            battle.clear();
-        }
+        battle.clear();
     }
 
     // 勝ったらmap_entityを削除する
-    {
-        if want_remove_battle {
-            for map_entity in dead_map_entity {
-                ecs.delete_entity(map_entity).expect("Unable to delete");
-            }
+    if want_remove_battle {
+        for map_entity in dead_map_entity {
+            ecs.delete_entity(map_entity).expect("Unable to delete");
         }
     }
 }
