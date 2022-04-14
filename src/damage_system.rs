@@ -22,7 +22,6 @@ impl<'a> System<'a> for DamageSystem {
     }
 }
 
-// TODO: 色々混ざってるので分割する
 pub fn delete_the_dead(ecs: &mut World) {
     let mut dead: Vec<Entity> = Vec::new();
     let mut maybe_win = false;
@@ -59,13 +58,14 @@ pub fn delete_the_dead(ecs: &mut World) {
         ecs.delete_entity(victim).expect("Unable to delete");
     }
 
+    // 勝利判定
     if maybe_win {
         check_battle_win(ecs);
     }
 }
 
+// 戦闘に勝利していたら、stateを切り替えmap entityを削除する
 fn check_battle_win(ecs: &mut World) {
-    // 戦闘に勝利したらmap entityを削除する。逃げたときはmap entityを削除しない
     let mut want_remove_battle = false;
     let mut dead_map_entity: Vec<Entity> = Vec::new();
     {
@@ -89,16 +89,16 @@ fn check_battle_win(ecs: &mut World) {
         }
     }
 
-    // 勝ったらbattleを削除する
-    if want_remove_battle {
-        let mut battle = ecs.write_storage::<Battle>();
-        battle.clear();
-    }
-
     // 勝ったらmap_entityを削除する
     if want_remove_battle {
         for map_entity in dead_map_entity {
             ecs.delete_entity(map_entity).expect("Unable to delete");
         }
+    }
+
+    // 勝ったらbattleを削除する
+    if want_remove_battle {
+        let mut battle = ecs.write_storage::<Battle>();
+        battle.clear();
     }
 }
