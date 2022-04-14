@@ -22,10 +22,9 @@ impl<'a> System<'a> for DamageSystem {
     }
 }
 
-// TODO: 色々混ざってるので分割する
 pub fn delete_the_dead(ecs: &mut World) {
     let mut dead: Vec<Entity> = Vec::new();
-    let mut win = false;
+    let mut maybe_win = false;
     // Using a scope to make the borrow checker happy
     {
         let combat_stats = ecs.read_storage::<CombatStats>();
@@ -43,7 +42,7 @@ pub fn delete_the_dead(ecs: &mut World) {
                             log.entries.push(format!("{} is dead", &victim_name.name));
                         }
                         dead.push(entity);
-                        win = true;
+                        maybe_win = true;
                     }
                     Some(_) => {
                         let mut runstate = ecs.write_resource::<RunState>();
@@ -59,7 +58,14 @@ pub fn delete_the_dead(ecs: &mut World) {
         ecs.delete_entity(victim).expect("Unable to delete");
     }
 
-    // 戦闘に勝利したらmap entityを削除する。逃げたときはmap entityを削除しない
+    // 勝利判定
+    if maybe_win {
+        check_battle_win(ecs);
+    }
+}
+
+// 戦闘に勝利していたら、stateを切り替えmap entityを削除する
+fn check_battle_win(ecs: &mut World) {
     let mut want_remove_battle = false;
     let mut dead_map_entity: Vec<Entity> = Vec::new();
     {
@@ -70,7 +76,7 @@ pub fn delete_the_dead(ecs: &mut World) {
 
         // 攻撃の結果敵が残ってないときは*勝利*
         // 攻撃してなくて敵が残ってないときは*逃走*
-        if (&entities, &combat_stats, &monster).join().count() == 0 && win {
+        if (&entities, &combat_stats, &monster).join().count() == 0 {
             let battle_ecs = ecs.read_storage::<Battle>();
 
             for battle in (&battle_ecs).join() {
@@ -83,18 +89,16 @@ pub fn delete_the_dead(ecs: &mut World) {
         }
     }
 
-    {
-        let mut battle = ecs.write_storage::<Battle>();
-        if want_remove_battle {
-            battle.clear();
+    // 勝ったらmap_entityを削除する
+    if want_remove_battle {
+        for map_entity in dead_map_entity {
+            ecs.delete_entity(map_entity).expect("Unable to delete");
         }
     }
 
-    {
-        if want_remove_battle {
-            for map_entity in dead_map_entity {
-                ecs.delete_entity(map_entity).expect("Unable to delete");
-            }
-        }
+    // 勝ったらbattleを削除する
+    if want_remove_battle {
+        let mut battle = ecs.write_storage::<Battle>();
+        battle.clear();
     }
 }

@@ -37,6 +37,7 @@ pub enum RunState {
     PreRun,
     PlayerTurn,
     MonsterTurn,
+    BattleEncounter,
     BattleCommand,
     BattleInventory,
     BattleTurn,
@@ -105,6 +106,7 @@ impl GameState for State {
             // 除外
             RunState::MainMenu { .. }
             | RunState::GameOver
+            | RunState::BattleEncounter
             | RunState::BattleCommand
             | RunState::BattleInventory
             | RunState::BattleTurn
@@ -135,7 +137,8 @@ impl GameState for State {
 
         // 戦闘UI表示
         match newrunstate {
-            RunState::BattleCommand
+            RunState::BattleEncounter
+            | RunState::BattleCommand
             | RunState::BattleInventory
             | RunState::BattleTurn
             | RunState::BattleAwaiting
@@ -163,6 +166,11 @@ impl GameState for State {
                 self.run_systems();
                 self.ecs.maintain();
                 newrunstate = RunState::AwaitingInput;
+            }
+            RunState::BattleEncounter => {
+                spawner::b_orc(&mut self.ecs);
+                spawner::b_orc(&mut self.ecs);
+                newrunstate = RunState::BattleAwaiting;
             }
             RunState::BattleCommand => {
                 // 戦闘コマンド
@@ -209,7 +217,7 @@ impl GameState for State {
                 newrunstate = RunState::BattleAwaiting;
             }
             RunState::BattleAwaiting => {
-                // 1ターン処理したあとにenter待ち状態にする
+                // enter待ち状態にする。enter後はcommand選択画面へ遷移
                 match ctx.key {
                     None => {}
                     Some(key) => match key {

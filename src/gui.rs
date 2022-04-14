@@ -17,6 +17,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
 
     let combat_stats = ecs.read_storage::<CombatStats>();
     let players = ecs.read_storage::<Player>();
+    // プレイヤーのHP
     for (_player, stats) in (&players, &combat_stats).join() {
         let health = format!(" HP: {} / {} ", stats.hp, stats.max_hp);
         ctx.print_color(
@@ -682,7 +683,6 @@ pub enum BattleCommandResult {
     RunAwayFailed,
 }
 
-// TODO: 逃走を分割する
 pub fn battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResult {
     let y = 30;
     ctx.print(2, y, "[a] Attack");
@@ -699,7 +699,7 @@ pub fn battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResult {
                 let num = rng.range(0, 2);
                 if num == 0 {
                     // 逃走成功
-                    remove_battle_entity(ecs);
+                    remove_battle(ecs);
                     return BattleCommandResult::RunAway;
                 } else {
                     // 逃走失敗
@@ -713,10 +713,8 @@ pub fn battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResult {
     }
 }
 
-// TODO: 戦闘終了、ターン終了後の処理がカオスなので要リファクタリング
-// 処理漏れがあると強制終了する...
-fn remove_battle_entity(ecs: &mut World) {
-    // 逃走用。戦闘用entityを削除する
+// 逃走後の処理。戦闘用entityを削除する
+fn remove_battle(ecs: &mut World) {
     let mut dead: Vec<Entity> = Vec::new();
     {
         let entities = ecs.entities();
