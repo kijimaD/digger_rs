@@ -32,6 +32,7 @@ mod hunger_system;
 mod particle_system;
 use hunger_system::HungerSystem;
 pub mod random_table;
+pub mod rex_assets;
 pub mod saveload_system;
 
 #[derive(PartialEq, Copy, Clone)]
@@ -592,6 +593,7 @@ fn main() -> rltk::BError {
         entries: vec!["".to_string()],
     });
     gs.ecs.insert(particle_system::ParticleBuilder::new());
+    gs.ecs.insert(rex_assets::RexAssets::new());
 
     rltk::main_loop(context, gs)
 }
