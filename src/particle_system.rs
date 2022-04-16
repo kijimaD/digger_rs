@@ -1,4 +1,4 @@
-use super::{ParticleLifetime, Rltk, RGB, Renderable, Position};
+use super::{ParticleLifetime, Position, Renderable, Rltk, RGB};
 use specs::prelude::*;
 
 // map field用。
@@ -71,16 +71,41 @@ impl<'a> System<'a> for ParticleSpawnSystem {
         WriteStorage<'a, Position>,
         WriteStorage<'a, Renderable>,
         WriteStorage<'a, ParticleLifetime>,
-        WriteExpect<'a, ParticleBuilder>
+        WriteExpect<'a, ParticleBuilder>,
     );
 
-    fn run(&mut self, data : Self::SystemData) {
+    fn run(&mut self, data: Self::SystemData) {
         let (entities, mut positions, mut renderables, mut particles, mut particle_builder) = data;
         for new_particle in particle_builder.requests.iter() {
             let p = entities.create();
-            positions.insert(p, Position{ x: new_particle.x, y: new_particle.y }).expect("Unable to insert position");
-            renderables.insert(p, Renderable{ fg: new_particle.fg, bg: new_particle.bg, glyph: new_particle.glyph, render_order: 0 }).expect("Unable to insert renderable");
-            particles.insert(p, ParticleLifetime{ lifetime_ms: new_particle.lifetime }).expect("Unable to insert lifetime");
+            positions
+                .insert(
+                    p,
+                    Position {
+                        x: new_particle.x,
+                        y: new_particle.y,
+                    },
+                )
+                .expect("Unable to insert position");
+            renderables
+                .insert(
+                    p,
+                    Renderable {
+                        fg: new_particle.fg,
+                        bg: new_particle.bg,
+                        glyph: new_particle.glyph,
+                        render_order: 0,
+                    },
+                )
+                .expect("Unable to insert renderable");
+            particles
+                .insert(
+                    p,
+                    ParticleLifetime {
+                        lifetime_ms: new_particle.lifetime,
+                    },
+                )
+                .expect("Unable to insert lifetime");
         }
 
         particle_builder.requests.clear();
