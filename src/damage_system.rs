@@ -1,5 +1,6 @@
 use super::{
-    gamelog::BattleLog, Battle, CombatStats, Monster, Name, Player, RunState, SufferDamage,
+    gamelog::BattleLog, Battle, CombatStats, Map, Monster, Name, Player, Position, RunState,
+    SufferDamage,
 };
 use specs::prelude::*;
 
@@ -73,6 +74,8 @@ fn check_battle_win(ecs: &mut World) {
         let combat_stats = ecs.read_storage::<CombatStats>();
         let monster = ecs.read_storage::<Monster>();
         let mut log = ecs.write_resource::<BattleLog>();
+        let positions = ecs.read_storage::<Position>();
+        let mut map = ecs.write_resource::<Map>();
 
         // 攻撃の結果敵が残ってないときは*勝利*
         // 攻撃してなくて敵が残ってないときは*逃走*
@@ -83,6 +86,13 @@ fn check_battle_win(ecs: &mut World) {
                 let mut runstate = ecs.write_resource::<RunState>();
                 *runstate = RunState::BattleResult;
                 dead_map_entity.push(battle.monster);
+
+                let pos = positions.get(battle.monster);
+                if let Some(pos) = pos {
+                    let idx = map.xy_idx(pos.x, pos.y);
+                    map.bloodstains.insert(idx);
+                }
+
                 want_remove_battle = true;
                 log.entries.push(format!("You win!"));
             }

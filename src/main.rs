@@ -76,7 +76,7 @@ impl State {
         drop_items.run_now(&self.ecs);
         let mut item_remove = ItemRemoveSystem {};
         item_remove.run_now(&self.ecs);
-        let mut particles = particle_system::ParticleSpawnSystem{};
+        let mut particles = particle_system::ParticleSpawnSystem {};
         particles.run_now(&self.ecs);
 
         self.ecs.maintain();
@@ -172,7 +172,6 @@ impl GameState for State {
                 newrunstate = RunState::AwaitingInput;
             }
             RunState::BattleEncounter => {
-                spawner::b_orc(&mut self.ecs);
                 spawner::b_orc(&mut self.ecs);
                 newrunstate = RunState::BattleAwaiting;
             }

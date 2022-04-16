@@ -1,6 +1,7 @@
 use super::{
-    gamelog::BattleLog, spawner, Battle, CombatStats, DefenseBonus, Equipped, MeleePowerBonus,
-    Name, RunState, SufferDamage, WantsToEncounter, WantsToMelee, particle_system::ParticleBuilder, Position
+    gamelog::BattleLog, particle_system::ParticleBuilder, spawner, Battle, CombatStats,
+    DefenseBonus, Equipped, MeleePowerBonus, Name, Position, RunState, SufferDamage,
+    WantsToEncounter, WantsToMelee,
 };
 use rltk::RandomNumberGenerator;
 use specs::prelude::*;
@@ -50,7 +51,7 @@ impl<'a> System<'a> for MeleeCombatSystem {
             equipped,
             mut inflict_damage,
             mut particle_builder,
-            positions
+            positions,
         ) = data;
 
         for (entity, wants_melee, name, stats) in
@@ -82,7 +83,14 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     // TODO: 戦闘モードに対応させる
                     let pos = positions.get(wants_melee.target);
                     if let Some(pos) = pos {
-                        particle_builder.request(pos.x, pos.y, rltk::RGB::named(rltk::ORANGE), rltk::RGB::named(rltk::BLACK), rltk::to_cp437('‼'), 200.0);
+                        particle_builder.request(
+                            pos.x,
+                            pos.y,
+                            rltk::RGB::named(rltk::ORANGE),
+                            rltk::RGB::named(rltk::BLACK),
+                            rltk::to_cp437('‼'),
+                            200.0,
+                        );
                     }
 
                     let mut rng = RandomNumberGenerator::new();
@@ -131,7 +139,7 @@ pub fn invoke_battle(ecs: &mut World) {
             .expect("Unable to insert encounter");
 
         battlelog.entries = vec![];
-        battlelog.entries.push(format!("Monster appearing"));
+        battlelog.entries.push(format!("Monster appearing!"));
     }
     wants_encounter.clear();
 }
