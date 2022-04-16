@@ -1,7 +1,7 @@
 use super::{
     map::MAPWIDTH, random_table::RandomTable, BlocksTile, CombatStats, Consumable, DefenseBonus,
     EquipmentSlot, Equippable, Item, MeleePowerBonus, Monster, Name, Player, Position,
-    ProvidesHealing, Rect, Renderable, SerializeMe, Viewshed,
+    ProvidesHealing, Rect, Renderable, SerializeMe, Viewshed, HungerClock, HungerState
 };
 use rltk::{RandomNumberGenerator, RGB};
 use specs::prelude::*;
@@ -31,11 +31,12 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             name: "Player".to_string(),
         })
         .with(CombatStats {
-            max_hp: 300,
-            hp: 300,
+            max_hp: 100,
+            hp: 100,
             defense: 2,
             power: 5,
         })
+        .with(HungerClock{ state: HungerState::WellFed, duration: 20 })
         .marked::<SimpleMarker<SerializeMe>>()
         .build()
 }

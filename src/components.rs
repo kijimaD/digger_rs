@@ -22,6 +22,15 @@ pub struct Renderable {
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Player {}
 
+#[derive(Serialize, Deserialize, Copy, Clone, PartialEq)]
+pub enum HungerState { WellFed, Normal, Hungry, Starving }
+
+#[derive(Component, Serialize, Deserialize, Clone)]
+pub struct HungerClock {
+    pub state : HungerState,
+    pub duration : i32
+}
+
 #[derive(Component, ConvertSaveload, Clone)]
 pub struct Viewshed {
     pub visible_tiles: Vec<rltk::Point>,
