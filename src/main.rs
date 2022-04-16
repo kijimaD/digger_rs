@@ -28,7 +28,11 @@ mod gui;
 mod inventory_system;
 mod spawner;
 use inventory_system::{ItemCollectionSystem, ItemDropSystem, ItemRemoveSystem, ItemUseSystem};
+mod hunger_system;
+mod particle_system;
+use hunger_system::HungerSystem;
 pub mod random_table;
+pub mod rex_assets;
 pub mod saveload_system;
 
 #[derive(PartialEq, Copy, Clone)]
@@ -75,6 +79,12 @@ impl State {
         drop_items.run_now(&self.ecs);
         let mut item_remove = ItemRemoveSystem {};
         item_remove.run_now(&self.ecs);
+        let mut hunger = hunger_system::HungerSystem {};
+        hunger.run_now(&self.ecs);
+        let mut particles = particle_system::ParticleSpawnSystem {};
+        particles.run_now(&self.ecs);
+        let mut damage = DamageSystem {};
+        damage.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -100,6 +110,7 @@ impl GameState for State {
         }
 
         ctx.cls();
+        particle_system::cull_dead_particles(&mut self.ecs, ctx);
 
         // マップUI表示
         match newrunstate {
@@ -168,7 +179,6 @@ impl GameState for State {
                 newrunstate = RunState::AwaitingInput;
             }
             RunState::BattleEncounter => {
-                spawner::b_orc(&mut self.ecs);
                 spawner::b_orc(&mut self.ecs);
                 newrunstate = RunState::BattleAwaiting;
             }
@@ -553,7 +563,10 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Equipped>();
     gs.ecs.register::<MeleePowerBonus>();
     gs.ecs.register::<DefenseBonus>();
+    gs.ecs.register::<HungerClock>();
+    gs.ecs.register::<ProvidesFood>();
     gs.ecs.register::<WantsToRemoveItem>();
+    gs.ecs.register::<ParticleLifetime>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
@@ -579,6 +592,8 @@ fn main() -> rltk::BError {
     gs.ecs.insert(gamelog::BattleLog {
         entries: vec!["".to_string()],
     });
+    gs.ecs.insert(particle_system::ParticleBuilder::new());
+    gs.ecs.insert(rex_assets::RexAssets::new());
 
     rltk::main_loop(context, gs)
 }

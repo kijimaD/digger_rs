@@ -1,6 +1,7 @@
 use super::{
-    gamelog::BattleLog, spawner, Battle, CombatStats, DefenseBonus, Equipped, MeleePowerBonus,
-    Name, RunState, SufferDamage, WantsToEncounter, WantsToMelee,
+    gamelog::BattleLog, particle_system::ParticleBuilder, spawner, Battle, CombatStats,
+    DefenseBonus, Equipped, HungerClock, HungerState, MeleePowerBonus, Name, Position, RunState,
+    SufferDamage, WantsToEncounter, WantsToMelee,
 };
 use rltk::RandomNumberGenerator;
 use specs::prelude::*;
@@ -34,6 +35,9 @@ impl<'a> System<'a> for MeleeCombatSystem {
         ReadStorage<'a, DefenseBonus>,
         ReadStorage<'a, Equipped>,
         WriteStorage<'a, SufferDamage>,
+        WriteExpect<'a, ParticleBuilder>,
+        ReadStorage<'a, Position>,
+        ReadStorage<'a, HungerClock>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -47,6 +51,9 @@ impl<'a> System<'a> for MeleeCombatSystem {
             defense_bonuses,
             equipped,
             mut inflict_damage,
+            mut particle_builder,
+            positions,
+            hunger_clock,
         ) = data;
 
         for (entity, wants_melee, name, stats) in
@@ -62,6 +69,13 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     }
                 }
 
+                let hc = hunger_clock.get(entity);
+                if let Some(hc) = hc {
+                    if hc.state == HungerState::WellFed {
+                        offensive_bonus += 1;
+                    }
+                }
+
                 let target_stats = combat_stats.get(wants_melee.target).unwrap();
                 if target_stats.hp > 0 {
                     let target_name = names.get(wants_melee.target).unwrap();
@@ -73,6 +87,19 @@ impl<'a> System<'a> for MeleeCombatSystem {
                         if equipped_by.owner == wants_melee.target {
                             defensive_bonus += defense_bonus.defense;
                         }
+                    }
+
+                    // TODO: 戦闘モードに対応させる
+                    let pos = positions.get(wants_melee.target);
+                    if let Some(pos) = pos {
+                        particle_builder.request(
+                            pos.x,
+                            pos.y,
+                            rltk::RGB::named(rltk::ORANGE),
+                            rltk::RGB::named(rltk::BLACK),
+                            rltk::to_cp437('‼'),
+                            200.0,
+                        );
                     }
 
                     let mut rng = RandomNumberGenerator::new();
@@ -121,7 +148,7 @@ pub fn invoke_battle(ecs: &mut World) {
             .expect("Unable to insert encounter");
 
         battlelog.entries = vec![];
-        battlelog.entries.push(format!("Monster appearing"));
+        battlelog.entries.push(format!("Monster appearing!"));
     }
     wants_encounter.clear();
 }
