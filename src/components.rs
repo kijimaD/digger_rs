@@ -23,13 +23,21 @@ pub struct Renderable {
 pub struct Player {}
 
 #[derive(Serialize, Deserialize, Copy, Clone, PartialEq)]
-pub enum HungerState { WellFed, Normal, Hungry, Starving }
+pub enum HungerState {
+    WellFed,
+    Normal,
+    Hungry,
+    Starving,
+}
 
 #[derive(Component, Serialize, Deserialize, Clone)]
 pub struct HungerClock {
-    pub state : HungerState,
-    pub duration : i32
+    pub state: HungerState,
+    pub duration: i32,
 }
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct ProvidesFood {}
 
 #[derive(Component, ConvertSaveload, Clone)]
 pub struct Viewshed {

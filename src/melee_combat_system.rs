@@ -1,7 +1,7 @@
 use super::{
     gamelog::BattleLog, particle_system::ParticleBuilder, spawner, Battle, CombatStats,
-    DefenseBonus, Equipped, MeleePowerBonus, Name, Position, RunState, SufferDamage,
-    WantsToEncounter, WantsToMelee,
+    DefenseBonus, Equipped, HungerClock, HungerState, MeleePowerBonus, Name, Position, RunState,
+    SufferDamage, WantsToEncounter, WantsToMelee,
 };
 use rltk::RandomNumberGenerator;
 use specs::prelude::*;
@@ -37,6 +37,7 @@ impl<'a> System<'a> for MeleeCombatSystem {
         WriteStorage<'a, SufferDamage>,
         WriteExpect<'a, ParticleBuilder>,
         ReadStorage<'a, Position>,
+        ReadStorage<'a, HungerClock>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -52,6 +53,7 @@ impl<'a> System<'a> for MeleeCombatSystem {
             mut inflict_damage,
             mut particle_builder,
             positions,
+            hunger_clock,
         ) = data;
 
         for (entity, wants_melee, name, stats) in
@@ -64,6 +66,13 @@ impl<'a> System<'a> for MeleeCombatSystem {
                 {
                     if equipped_by.owner == entity {
                         offensive_bonus += power_bonus.power;
+                    }
+                }
+
+                let hc = hunger_clock.get(entity);
+                if let Some(hc) = hc {
+                    if hc.state == HungerState::WellFed {
+                        offensive_bonus += 1;
                     }
                 }
 

@@ -1,7 +1,7 @@
 use super::{
-    gamelog::GameLog, CombatStats, Consumable, Equippable, Equipped, InBackpack, InflictsDamage,
-    Map, Name, Position, ProvidesHealing, SufferDamage, WantsToDropItem, WantsToPickupItem,
-    WantsToRemoveItem, WantsToUseItem,
+    gamelog::GameLog, CombatStats, Consumable, Equippable, Equipped, HungerClock, HungerState,
+    InBackpack, InflictsDamage, Map, Name, Position, ProvidesFood, ProvidesHealing, SufferDamage,
+    WantsToDropItem, WantsToPickupItem, WantsToRemoveItem, WantsToUseItem,
 };
 use specs::prelude::*;
 
@@ -62,6 +62,8 @@ impl<'a> System<'a> for ItemUseSystem {
         WriteStorage<'a, CombatStats>,
         WriteStorage<'a, SufferDamage>,
         ReadStorage<'a, Equippable>,
+        ReadStorage<'a, ProvidesFood>,
+        WriteStorage<'a, HungerClock>,
         WriteStorage<'a, Equipped>,
         WriteStorage<'a, InBackpack>,
     );
@@ -81,6 +83,8 @@ impl<'a> System<'a> for ItemUseSystem {
             mut combat_stats,
             mut suffer_damage,
             equippable,
+            provides_food,
+            mut hunger_clocks,
             mut equipped,
             mut backpack,
         ) = data;
@@ -193,6 +197,24 @@ impl<'a> System<'a> for ItemUseSystem {
                         }
 
                         used_item = true;
+                    }
+                }
+            }
+
+            let item_edible = provides_food.get(useitem.item);
+            match item_edible {
+                None => {}
+                Some(_) => {
+                    used_item = true;
+                    let target = targets[0];
+                    let hc = hunger_clocks.get_mut(target);
+                    if let Some(hc) = hc {
+                        hc.state = HungerState::WellFed;
+                        hc.duration = 20;
+                        gamelog.entries.push(format!(
+                            "You eat the {}.",
+                            names.get(useitem.item).unwrap().name
+                        ));
                     }
                 }
             }

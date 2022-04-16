@@ -1,6 +1,6 @@
 use super::{
-    gamelog::BattleLog, gamelog::GameLog, Battle, CombatStats, Consumable, Equipped, InBackpack,
-    Map, Monster, Name, Player, Position, RunState, State, HungerClock, HungerState
+    gamelog::BattleLog, gamelog::GameLog, Battle, CombatStats, Consumable, Equipped, HungerClock,
+    HungerState, InBackpack, Map, Monster, Name, Player, Position, RunState, State,
 };
 use rltk::{Point, RandomNumberGenerator, Rltk, VirtualKeyCode, RGB};
 use specs::prelude::*;
@@ -40,10 +40,28 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         );
 
         match hc.state {
-            HungerState::WellFed => ctx.print_color(71, 42, RGB::named(rltk::GREEN), RGB::named(rltk::BLACK), "Well Fed"),
+            HungerState::WellFed => ctx.print_color(
+                71,
+                42,
+                RGB::named(rltk::GREEN),
+                RGB::named(rltk::BLACK),
+                "Well Fed",
+            ),
             HungerState::Normal => {}
-            HungerState::Hungry => ctx.print_color(71, 42, RGB::named(rltk::ORANGE), RGB::named(rltk::BLACK), "Hungry"),
-            HungerState::Starving => ctx.print_color(71, 42, RGB::named(rltk::RED), RGB::named(rltk::BLACK), "Starving"),
+            HungerState::Hungry => ctx.print_color(
+                71,
+                42,
+                RGB::named(rltk::ORANGE),
+                RGB::named(rltk::BLACK),
+                "Hungry",
+            ),
+            HungerState::Starving => ctx.print_color(
+                71,
+                42,
+                RGB::named(rltk::RED),
+                RGB::named(rltk::BLACK),
+                "Starving",
+            ),
         }
     }
 
