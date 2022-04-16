@@ -1,6 +1,6 @@
 use super::{
     gamelog::BattleLog, spawner, Battle, CombatStats, DefenseBonus, Equipped, MeleePowerBonus,
-    Name, RunState, SufferDamage, WantsToEncounter, WantsToMelee,
+    Name, RunState, SufferDamage, WantsToEncounter, WantsToMelee, particle_system::ParticleBuilder, Position
 };
 use rltk::RandomNumberGenerator;
 use specs::prelude::*;
@@ -34,6 +34,8 @@ impl<'a> System<'a> for MeleeCombatSystem {
         ReadStorage<'a, DefenseBonus>,
         ReadStorage<'a, Equipped>,
         WriteStorage<'a, SufferDamage>,
+        WriteExpect<'a, ParticleBuilder>,
+        ReadStorage<'a, Position>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -47,6 +49,8 @@ impl<'a> System<'a> for MeleeCombatSystem {
             defense_bonuses,
             equipped,
             mut inflict_damage,
+            mut particle_builder,
+            positions
         ) = data;
 
         for (entity, wants_melee, name, stats) in
@@ -73,6 +77,12 @@ impl<'a> System<'a> for MeleeCombatSystem {
                         if equipped_by.owner == wants_melee.target {
                             defensive_bonus += defense_bonus.defense;
                         }
+                    }
+
+                    // TODO: 戦闘モードに対応させる
+                    let pos = positions.get(wants_melee.target);
+                    if let Some(pos) = pos {
+                        particle_builder.request(pos.x, pos.y, rltk::RGB::named(rltk::ORANGE), rltk::RGB::named(rltk::BLACK), rltk::to_cp437('‼'), 200.0);
                     }
 
                     let mut rng = RandomNumberGenerator::new();

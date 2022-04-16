@@ -135,6 +135,11 @@ pub struct Equippable {
     pub slot: EquipmentSlot,
 }
 
+#[derive(Component, Serialize, Deserialize, Clone)]
+pub struct ParticleLifetime {
+    pub lifetime_ms: f32,
+}
+
 #[derive(Component, ConvertSaveload, Clone)]
 pub struct Equipped {
     pub owner: Entity,
