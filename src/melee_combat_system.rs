@@ -1,7 +1,7 @@
 use super::{
-    gamelog::BattleLog, particle_system::ParticleBuilder, spawner, Battle, CombatStats,
-    DefenseBonus, Equipped, HungerClock, HungerState, MeleePowerBonus, Name, Position, RunState,
-    SufferDamage, WantsToEncounter, WantsToMelee,
+    gamelog::BattleLog, particle_system::ParticleBuilder, Battle, CombatStats, DefenseBonus,
+    Equipped, HungerClock, HungerState, MeleePowerBonus, Name, Position, RunState, SufferDamage,
+    WantsToEncounter, WantsToMelee,
 };
 use rltk::RandomNumberGenerator;
 use specs::prelude::*;

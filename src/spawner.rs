@@ -45,7 +45,7 @@ pub fn battle_player(ecs: &mut World) {
             max_hp: 100,
             hp: 100,
             defense: 2,
-            power: 5,
+            power: 50,
         })
         .with(Name {
             name: "Player".to_string(),
@@ -115,13 +115,13 @@ pub fn spawn_room(ecs: &mut World, room: &Rect, map_depth: i32) {
 }
 
 fn orc(ecs: &mut World, x: i32, y: i32) {
-    monster(ecs, x, y, rltk::to_cp437('o'), "Orc");
+    monster(ecs, x, y, rltk::to_cp437('o'));
 }
 fn goblin(ecs: &mut World, x: i32, y: i32) {
-    monster(ecs, x, y, rltk::to_cp437('g'), "Goblin");
+    monster(ecs, x, y, rltk::to_cp437('g'));
 }
 
-fn monster<S: ToString>(ecs: &mut World, x: i32, y: i32, glyph: rltk::FontCharType, name: S) {
+fn monster (ecs: &mut World, x: i32, y: i32, glyph: rltk::FontCharType) {
     ecs.create_entity()
         .with(Position { x, y })
         .with(Renderable {

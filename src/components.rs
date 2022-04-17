@@ -128,7 +128,7 @@ pub struct WantsToPickupItem {
 #[derive(Component, Debug, ConvertSaveload, Clone)]
 pub struct WantsToUseItem {
     pub item: Entity,
-    pub target: Option<rltk::Point>,
+    pub target: Entity,
 }
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]

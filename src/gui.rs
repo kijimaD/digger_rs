@@ -1,7 +1,6 @@
 use super::{
-    gamelog::BattleLog, gamelog::GameLog, rex_assets::RexAssets, Battle, CombatStats, Consumable,
-    Equipped, HungerClock, HungerState, InBackpack, Map, Monster, Name, Player, Position, RunState,
-    State,
+    gamelog::BattleLog, gamelog::GameLog, Battle, CombatStats, Consumable, Equipped, HungerClock,
+    HungerState, InBackpack, Map, Monster, Name, Player, Position, RunState, State,
 };
 use rltk::{Point, RandomNumberGenerator, Rltk, VirtualKeyCode, RGB};
 use specs::prelude::*;
@@ -51,7 +50,13 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
                 RGB::named(rltk::BLACK),
                 "Well Fed",
             ),
-            HungerState::Normal => {}
+            HungerState::Normal => ctx.print_color(
+                71,
+                42,
+                RGB::named(rltk::WHITE),
+                RGB::named(rltk::BLACK),
+                "Comfortable",
+            ),
             HungerState::Hungry => ctx.print_color(
                 71,
                 42,
@@ -294,6 +299,79 @@ pub fn show_field_inventory(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, 
     }
 }
 
+#[derive(PartialEq, Copy, Clone)]
+pub enum ItemTargetingResult {
+    Cancel,
+    NoResponse,
+    Selected,
+}
+
+pub fn show_item_targeting(
+    gs: &mut State,
+    ctx: &mut Rltk,
+) -> (ItemTargetingResult, Option<Entity>) {
+    // とりあえず味方だけ
+    // TODO: targetが必要ないもの…食料とか…では表示しないようにしたい
+    show_inventory(gs, ctx);
+
+    let entities = gs.ecs.entities();
+    let combat_stats = gs.ecs.read_storage::<CombatStats>();
+    let name = gs.ecs.read_storage::<Name>();
+    let player = gs.ecs.read_storage::<Player>();
+
+    let count = (&combat_stats, &player).join().count();
+    let mut y = (25 - (count / 2)) as i32;
+    let mut j = 0;
+    let mut targets: Vec<Entity> = Vec::new();
+
+    for (entity, _stats, name) in (&entities, &combat_stats, &name).join() {
+        ctx.set(
+            17,
+            y,
+            RGB::named(rltk::WHITE),
+            RGB::named(rltk::BLACK),
+            rltk::to_cp437('('),
+        );
+        ctx.set(
+            18,
+            y,
+            RGB::named(rltk::YELLOW),
+            RGB::named(rltk::BLACK),
+            97 + j as rltk::FontCharType,
+        );
+        ctx.set(
+            19,
+            y,
+            RGB::named(rltk::WHITE),
+            RGB::named(rltk::BLACK),
+            rltk::to_cp437(')'),
+        );
+        ctx.print(21, y, &name.name.to_string());
+
+        targets.push(entity);
+
+        y += 1;
+        j += 1;
+    }
+
+    match ctx.key {
+        None => (ItemTargetingResult::NoResponse, None),
+        Some(key) => match key {
+            VirtualKeyCode::Escape => (ItemTargetingResult::Cancel, None),
+            _ => {
+                let selection = rltk::letter_to_option(key);
+                if selection > -1 && selection < count as i32 {
+                    return (
+                        ItemTargetingResult::Selected,
+                        Some(targets[selection as usize]),
+                    );
+                }
+                (ItemTargetingResult::NoResponse, None)
+            }
+        },
+    }
+}
+
 pub fn show_battle_inventory(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Option<Entity>) {
     show_inventory(gs, ctx);
 
@@ -444,14 +522,11 @@ pub fn drop_item_menu(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Option
 }
 
 pub fn remove_item_menu(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Option<Entity>) {
-    let player_entity = gs.ecs.fetch::<Entity>();
     let names = gs.ecs.read_storage::<Name>();
     let backpack = gs.ecs.read_storage::<Equipped>();
     let entities = gs.ecs.entities();
 
-    let inventory = (&backpack, &names)
-        .join()
-        .filter(|item| item.0.owner == *player_entity);
+    let inventory = (&backpack, &names).join();
     let count = inventory.count();
 
     let mut y = (25 - (count / 2)) as i32;
@@ -480,10 +555,7 @@ pub fn remove_item_menu(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Opti
 
     let mut equippable: Vec<Entity> = Vec::new();
     let mut j = 0;
-    for (entity, _pack, name) in (&entities, &backpack, &names)
-        .join()
-        .filter(|item| item.1.owner == *player_entity)
-    {
+    for (entity, _pack, name) in (&entities, &backpack, &names).join() {
         ctx.set(
             17,
             y,
@@ -858,7 +930,7 @@ pub enum BattleResult {
     Enter,
 }
 
-pub fn show_battle_win_result(gs: &mut State, ctx: &mut Rltk) -> BattleResult {
+pub fn show_battle_win_result(_gs: &mut State, ctx: &mut Rltk) -> BattleResult {
     ctx.print_color(
         70,
         44,

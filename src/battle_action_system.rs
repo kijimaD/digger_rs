@@ -1,5 +1,5 @@
 // 戦闘用entityごとに、wants_to_meleeを生成する
-use super::{CombatStats, Monster, WantsToMelee, Player};
+use super::{CombatStats, Monster, Player, WantsToMelee};
 use specs::prelude::*;
 
 pub struct BattleActionSystem {}
@@ -21,7 +21,9 @@ impl<'a> System<'a> for BattleActionSystem {
 
         // monster -> player
         for (m_entity, _stats, _monster) in (&entities, &combat_stats, &monster).join() {
-            for (p_entity, _combat_stats, _player) in (&entities, &combat_stats, &player).join().take(1) {
+            for (p_entity, _combat_stats, _player) in
+                (&entities, &combat_stats, &player).join().take(1)
+            {
                 wants_to_melee
                     .insert(
                         m_entity,
