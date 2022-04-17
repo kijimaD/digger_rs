@@ -156,6 +156,7 @@ impl<'a> System<'a> for ItemUseSystem {
                 }
             }
 
+            // TODO: stats分離で機能しなくなってるので直す
             // If it heals, apply the healing
             let item_heals = healing.get(useitem.item);
             match item_heals {

@@ -164,10 +164,14 @@ fn skip_turn(ecs: &mut World) -> RunState {
         }
     }
 
+    let entities = ecs.entities();
+    let player = ecs.read_storage::<Player>();
+    let mut stats = ecs.write_storage::<CombatStats>();
+
     if can_heal {
-        let mut health_components = ecs.write_storage::<CombatStats>();
-        let player_hp = health_components.get_mut(*player_entity).unwrap();
-        player_hp.hp = i32::min(player_hp.hp + 1, player_hp.max_hp);
+        for (_entity, _player, stats) in (&entities, &player, &mut stats).join() {
+            stats.hp = i32::min(stats.hp + 1, stats.max_hp);
+        }
     }
 
     RunState::PlayerTurn

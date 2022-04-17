@@ -249,23 +249,29 @@ impl GameState for State {
             RunState::BattleTargeting => {
                 // 攻撃目標選択
                 let result = gui::battle_target(self, ctx);
-                let player_entity = self.ecs.fetch::<Entity>();
+                let entities = self.ecs.entities();
+                let player = self.ecs.read_storage::<Player>();
+                let stats = self.ecs.write_storage::<CombatStats>();
                 let mut wants_to_melee = self.ecs.write_storage::<WantsToMelee>();
 
-                match result.0 {
-                    gui::BattleTargetingResult::Cancel => newrunstate = RunState::BattleCommand,
-                    gui::BattleTargetingResult::NoResponse => {}
-                    gui::BattleTargetingResult::Selected => {
-                        let target_entity = result.1.unwrap();
-                        wants_to_melee
-                            .insert(
-                                *player_entity,
-                                WantsToMelee {
-                                    target: target_entity,
-                                },
-                            )
-                            .expect("Unable to insert WantsToMelee");
-                        newrunstate = RunState::BattleTurn
+                // TODO: 複数キャラのコマンドに対応してない
+                for (entity, _player, _stats) in (&entities, &player, &stats).join() {
+                    match result.0 {
+                        gui::BattleTargetingResult::Cancel => newrunstate = RunState::BattleCommand,
+                        gui::BattleTargetingResult::NoResponse => {}
+                        gui::BattleTargetingResult::Selected => {
+                            let target_entity = result.1.unwrap();
+                            wants_to_melee
+                                .insert(
+                                    entity,
+                                    WantsToMelee {
+                                        target: target_entity,
+                                    },
+                                )
+                                .expect("Unable to insert WantsToMelee");
+
+                            newrunstate = RunState::BattleTurn
+                        }
                     }
                 }
             }
@@ -574,6 +580,7 @@ fn main() -> rltk::BError {
     let (player_x, player_y) = map.rooms[0].center();
 
     let player_entity = spawner::player(&mut gs.ecs, player_x, player_y);
+    let battle_player_entity = spawner::battle_player(&mut gs.ecs);
 
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
     for room in map.rooms.iter().skip(1) {
@@ -583,6 +590,7 @@ fn main() -> rltk::BError {
     gs.ecs.insert(map);
     gs.ecs.insert(Point::new(player_x, player_y));
     gs.ecs.insert(player_entity);
+    gs.ecs.insert(battle_player_entity);
     gs.ecs.insert(RunState::MainMenu {
         menu_selection: gui::MainMenuSelection::NewGame,
     });

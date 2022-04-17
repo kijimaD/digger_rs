@@ -1,5 +1,5 @@
 // 戦闘用entityごとに、wants_to_meleeを生成する
-use super::{CombatStats, Monster, WantsToMelee};
+use super::{CombatStats, Monster, WantsToMelee, Player};
 use specs::prelude::*;
 
 pub struct BattleActionSystem {}
@@ -12,22 +12,25 @@ impl<'a> System<'a> for BattleActionSystem {
         ReadExpect<'a, Entity>,
         WriteStorage<'a, WantsToMelee>,
         ReadStorage<'a, CombatStats>,
+        ReadStorage<'a, Player>,
         ReadStorage<'a, Monster>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, player_entity, mut wants_to_melee, combat_stats, monster) = data;
+        let (entities, _player_entity, mut wants_to_melee, combat_stats, player, monster) = data;
 
         // monster -> player
-        for (entity, _stats, _monster) in (&entities, &combat_stats, &monster).join() {
-            wants_to_melee
-                .insert(
-                    entity,
-                    WantsToMelee {
-                        target: *player_entity,
-                    },
-                )
-                .expect("Unable to insert WantsToMelee");
+        for (m_entity, _stats, _monster) in (&entities, &combat_stats, &monster).join() {
+            for (p_entity, _combat_stats, _player) in (&entities, &combat_stats, &player).join().take(1) {
+                wants_to_melee
+                    .insert(
+                        m_entity,
+                        WantsToMelee {
+                            target: p_entity, // player
+                        },
+                    )
+                    .expect("Unable to insert WantsToMelee");
+            }
         }
     }
 }
