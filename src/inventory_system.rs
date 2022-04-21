@@ -1,6 +1,6 @@
 use super::{
     gamelog::GameLog, CombatStats, Consumable, Equippable, Equipped, HungerClock, HungerState,
-    InBackpack, InflictsDamage, Map, Name, Position, ProvidesFood, ProvidesHealing, SufferDamage,
+    InBackpack, InflictsDamage, Name, Position, ProvidesFood, ProvidesHealing, SufferDamage,
     WantsToDropItem, WantsToPickupItem, WantsToRemoveItem, WantsToUseItem,
 };
 use specs::prelude::*;
@@ -52,7 +52,6 @@ impl<'a> System<'a> for ItemUseSystem {
     type SystemData = (
         ReadExpect<'a, Entity>,
         WriteExpect<'a, GameLog>,
-        ReadExpect<'a, Map>,
         Entities<'a>,
         WriteStorage<'a, WantsToUseItem>,
         ReadStorage<'a, Name>,
@@ -73,15 +72,14 @@ impl<'a> System<'a> for ItemUseSystem {
         let (
             player_entity,
             mut gamelog,
-            map,
             entities,
             mut wants_use,
             names,
             consumables,
             healing,
-            inflict_damage,
+            _inflict_damage,
             mut combat_stats,
-            mut suffer_damage,
+            _suffer_damage,
             equippable,
             provides_food,
             mut hunger_clocks,
@@ -89,24 +87,12 @@ impl<'a> System<'a> for ItemUseSystem {
             mut backpack,
         ) = data;
 
-        for (entity, useitem) in (&entities, &wants_use).join() {
+        for (_entity, useitem) in (&entities, &wants_use).join() {
             let mut used_item = true;
 
             // Targeting
-            let mut targets: Vec<Entity> = Vec::new();
-
-            match useitem.target {
-                None => {
-                    targets.push(*player_entity);
-                }
-                Some(target) => {
-                    // Single target in tile
-                    let idx = map.xy_idx(target.x, target.y);
-                    for mob in map.tile_content[idx].iter() {
-                        targets.push(*mob);
-                    }
-                }
-            }
+            let mut party_targets: Vec<Entity> = Vec::new();
+            party_targets.push(*player_entity);
 
             // If it is equippable, then we want to equip it - and unequip whatever else was in that slot
             let item_equippable = equippable.get(useitem.item);
@@ -114,7 +100,7 @@ impl<'a> System<'a> for ItemUseSystem {
                 None => {}
                 Some(can_equip) => {
                     let target_slot = can_equip.slot;
-                    let target = targets[0];
+                    let target = useitem.target;
 
                     // Remove any items the target has in the item's slot
                     let mut to_unequip: Vec<Entity> = Vec::new();
@@ -124,15 +110,15 @@ impl<'a> System<'a> for ItemUseSystem {
                         if already_equipped.owner == target && already_equipped.slot == target_slot
                         {
                             to_unequip.push(item_entity);
-                            if target == *player_entity {
-                                gamelog.entries.push(format!("You unequip {}.", name.name));
-                            }
+                            gamelog.entries.push(format!("You unequip {}.", name.name));
                         }
                     }
+                    // FIXME: スロットが占有されているときに装備すると、前の装備が消える
+                    // 装備を外す -> バックパックにしまう
                     for item in to_unequip.iter() {
                         equipped.remove(*item);
                         backpack
-                            .insert(*item, InBackpack { owner: target })
+                            .insert(*item, InBackpack { owner: *player_entity })
                             .expect("Unable to insert backpack entry");
                     }
 
@@ -147,12 +133,10 @@ impl<'a> System<'a> for ItemUseSystem {
                         )
                         .expect("Unable to insert equipped component");
                     backpack.remove(useitem.item);
-                    if target == *player_entity {
-                        gamelog.entries.push(format!(
-                            "You equip {}.",
-                            names.get(useitem.item).unwrap().name
-                        ));
-                    }
+                    gamelog.entries.push(format!(
+                        "You equip {}.",
+                        names.get(useitem.item).unwrap().name
+                    ));
                 }
             }
 
@@ -162,51 +146,28 @@ impl<'a> System<'a> for ItemUseSystem {
                 None => {}
                 Some(healer) => {
                     used_item = false;
-                    for target in targets.iter() {
-                        let stats = combat_stats.get_mut(*target);
+                    for _target in party_targets.iter() {
+                        let stats = combat_stats.get_mut(useitem.target);
                         if let Some(stats) = stats {
                             stats.hp = i32::min(stats.max_hp, stats.hp + healer.heal_amount);
-                            if entity == *player_entity {
-                                gamelog.entries.push(format!(
-                                    "You use the {}, healing {} hp.",
-                                    names.get(useitem.item).unwrap().name,
-                                    healer.heal_amount
-                                ));
-                            }
+                            gamelog.entries.push(format!(
+                                "You use the {}, healing {} hp.",
+                                names.get(useitem.item).unwrap().name,
+                                healer.heal_amount
+                            ));
                             used_item = true;
                         }
                     }
                 }
             }
 
-            // If it inflicts damage, apply it to the target cell
-            let item_damages = inflict_damage.get(useitem.item);
-            match item_damages {
-                None => {}
-                Some(damage) => {
-                    used_item = false;
-                    for mob in targets.iter() {
-                        SufferDamage::new_damage(&mut suffer_damage, *mob, damage.damage);
-                        if entity == *player_entity {
-                            let mob_name = names.get(*mob).unwrap();
-                            let item_name = names.get(useitem.item).unwrap();
-                            gamelog.entries.push(format!(
-                                "You use {} on {}, inflicting {} hp.",
-                                item_name.name, mob_name.name, damage.damage
-                            ));
-                        }
-
-                        used_item = true;
-                    }
-                }
-            }
-
+            // 食料品
             let item_edible = provides_food.get(useitem.item);
             match item_edible {
                 None => {}
                 Some(_) => {
                     used_item = true;
-                    let target = targets[0];
+                    let target = party_targets[0];
                     let hc = hunger_clocks.get_mut(target);
                     if let Some(hc) = hc {
                         hc.state = HungerState::WellFed;
@@ -299,16 +260,19 @@ impl<'a> System<'a> for ItemRemoveSystem {
         WriteStorage<'a, WantsToRemoveItem>,
         WriteStorage<'a, Equipped>,
         WriteStorage<'a, InBackpack>,
+        WriteExpect<'a, GameLog>,
+        ReadStorage<'a, Name>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, mut wants_remove, mut equipped, mut backpack) = data;
+        let (entities, mut wants_remove, mut equipped, mut backpack, mut gamelog, names) = data;
 
         for (entity, to_remove) in (&entities, &wants_remove).join() {
             equipped.remove(to_remove.item);
             backpack
                 .insert(to_remove.item, InBackpack { owner: entity })
                 .expect("Unable to insert backpack");
+            gamelog.entries.push(format!("You unequip {}.", names.get(to_remove.item).unwrap().name));
         }
 
         wants_remove.clear();

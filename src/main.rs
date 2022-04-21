@@ -30,7 +30,6 @@ mod spawner;
 use inventory_system::{ItemCollectionSystem, ItemDropSystem, ItemRemoveSystem, ItemUseSystem};
 mod hunger_system;
 mod particle_system;
-use hunger_system::HungerSystem;
 pub mod random_table;
 pub mod rex_assets;
 pub mod saveload_system;
@@ -44,11 +43,17 @@ pub enum RunState {
     BattleEncounter,
     BattleCommand,
     BattleInventory,
+    BattleItemTargeting {
+        item: Entity,
+    },
     BattleTurn,
     BattleResult,
     BattleAwaiting,
     BattleTargeting,
     ShowInventory,
+    ItemTargeting {
+        item: Entity,
+    },
     ShowDropItem,
     MainMenu {
         menu_selection: gui::MainMenuSelection,
@@ -96,6 +101,8 @@ impl State {
         melee.run_now(&self.ecs);
         let mut damage = DamageSystem {};
         damage.run_now(&self.ecs);
+        let mut itemuse = ItemUseSystem {};
+        itemuse.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -120,6 +127,7 @@ impl GameState for State {
             | RunState::BattleEncounter
             | RunState::BattleCommand
             | RunState::BattleInventory
+            | RunState::BattleItemTargeting { .. }
             | RunState::BattleTurn
             | RunState::BattleAwaiting
             | RunState::BattleTargeting
@@ -151,6 +159,7 @@ impl GameState for State {
             RunState::BattleEncounter
             | RunState::BattleCommand
             | RunState::BattleInventory
+            | RunState::BattleItemTargeting { .. }
             | RunState::BattleTurn
             | RunState::BattleAwaiting
             | RunState::BattleTargeting
@@ -204,17 +213,22 @@ impl GameState for State {
                     gui::ItemMenuResult::NoResponse => {}
                     gui::ItemMenuResult::Selected => {
                         let item_entity = result.1.unwrap();
+                        newrunstate = RunState::BattleItemTargeting { item: item_entity };
+                    }
+                }
+            }
+            RunState::BattleItemTargeting { item } => {
+                let result = gui::show_item_targeting(self, ctx);
+                match result.0 {
+                    gui::ItemTargetingResult::Cancel => newrunstate = RunState::BattleInventory,
+                    gui::ItemTargetingResult::NoResponse => {}
+                    gui::ItemTargetingResult::Selected => {
+                        let target = result.1.unwrap();
                         let mut intent = self.ecs.write_storage::<WantsToUseItem>();
                         intent
-                            .insert(
-                                *self.ecs.fetch::<Entity>(),
-                                WantsToUseItem {
-                                    item: item_entity,
-                                    target: None,
-                                },
-                            )
+                            .insert(*self.ecs.fetch::<Entity>(), WantsToUseItem { item, target })
                             .expect("Unable to insert intent");
-                        newrunstate = RunState::BattleCommand;
+                        newrunstate = RunState::BattleTurn;
                     }
                 }
             }
@@ -249,23 +263,29 @@ impl GameState for State {
             RunState::BattleTargeting => {
                 // 攻撃目標選択
                 let result = gui::battle_target(self, ctx);
-                let player_entity = self.ecs.fetch::<Entity>();
+                let entities = self.ecs.entities();
+                let player = self.ecs.read_storage::<Player>();
+                let stats = self.ecs.write_storage::<CombatStats>();
                 let mut wants_to_melee = self.ecs.write_storage::<WantsToMelee>();
 
-                match result.0 {
-                    gui::BattleTargetingResult::Cancel => newrunstate = RunState::BattleCommand,
-                    gui::BattleTargetingResult::NoResponse => {}
-                    gui::BattleTargetingResult::Selected => {
-                        let target_entity = result.1.unwrap();
-                        wants_to_melee
-                            .insert(
-                                *player_entity,
-                                WantsToMelee {
-                                    target: target_entity,
-                                },
-                            )
-                            .expect("Unable to insert WantsToMelee");
-                        newrunstate = RunState::BattleTurn
+                // TODO: 複数キャラのコマンドに対応してない
+                for (entity, _player, _stats) in (&entities, &player, &stats).join() {
+                    match result.0 {
+                        gui::BattleTargetingResult::Cancel => newrunstate = RunState::BattleCommand,
+                        gui::BattleTargetingResult::NoResponse => {}
+                        gui::BattleTargetingResult::Selected => {
+                            let target_entity = result.1.unwrap();
+                            wants_to_melee
+                                .insert(
+                                    entity,
+                                    WantsToMelee {
+                                        target: target_entity,
+                                    },
+                                )
+                                .expect("Unable to insert WantsToMelee");
+
+                            newrunstate = RunState::BattleTurn
+                        }
                     }
                 }
             }
@@ -284,15 +304,20 @@ impl GameState for State {
                     gui::ItemMenuResult::NoResponse => {}
                     gui::ItemMenuResult::Selected => {
                         let item_entity = result.1.unwrap();
+                        newrunstate = RunState::ItemTargeting { item: item_entity };
+                    }
+                }
+            }
+            RunState::ItemTargeting { item } => {
+                let result = gui::show_item_targeting(self, ctx);
+                match result.0 {
+                    gui::ItemTargetingResult::Cancel => newrunstate = RunState::ShowInventory,
+                    gui::ItemTargetingResult::NoResponse => {}
+                    gui::ItemTargetingResult::Selected => {
+                        let target = result.1.unwrap();
                         let mut intent = self.ecs.write_storage::<WantsToUseItem>();
                         intent
-                            .insert(
-                                *self.ecs.fetch::<Entity>(),
-                                WantsToUseItem {
-                                    item: item_entity,
-                                    target: None,
-                                },
-                            )
+                            .insert(*self.ecs.fetch::<Entity>(), WantsToUseItem { item, target })
                             .expect("Unable to insert intent");
                         newrunstate = RunState::PlayerTurn;
                     }
@@ -574,6 +599,7 @@ fn main() -> rltk::BError {
     let (player_x, player_y) = map.rooms[0].center();
 
     let player_entity = spawner::player(&mut gs.ecs, player_x, player_y);
+    let battle_player_entity = spawner::battle_player(&mut gs.ecs);
 
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
     for room in map.rooms.iter().skip(1) {
@@ -583,6 +609,7 @@ fn main() -> rltk::BError {
     gs.ecs.insert(map);
     gs.ecs.insert(Point::new(player_x, player_y));
     gs.ecs.insert(player_entity);
+    gs.ecs.insert(battle_player_entity);
     gs.ecs.insert(RunState::MainMenu {
         menu_selection: gui::MainMenuSelection::NewGame,
     });
