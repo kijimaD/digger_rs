@@ -11,8 +11,6 @@ impl RexAssets {
     pub fn new() -> RexAssets {
         rltk::link_resource!(SMALL_DUNGEON, "../resources/SmallDungeon_80x50.xp");
 
-        RexAssets {
-            menu: XpFile::from_resource("../resources/SmallDungeon_80x50.xp").unwrap(),
-        }
+        RexAssets { menu: XpFile::from_resource("../resources/SmallDungeon_80x50.xp").unwrap() }
     }
 }

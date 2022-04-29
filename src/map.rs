@@ -57,17 +57,17 @@ impl Map {
         }
     }
 
-    pub fn new(new_depth : i32) -> Map {
+    pub fn new(new_depth: i32) -> Map {
         Map {
-            tiles : vec![TileType::Wall; MAPCOUNT],
-            width : MAPWIDTH as i32,
-            height : MAPHEIGHT as i32,
-            revealed_tiles : vec![false; MAPCOUNT],
-            visible_tiles : vec![false; MAPCOUNT],
-            blocked : vec![false; MAPCOUNT],
-            tile_content : vec![Vec::new(); MAPCOUNT],
+            tiles: vec![TileType::Wall; MAPCOUNT],
+            width: MAPWIDTH as i32,
+            height: MAPHEIGHT as i32,
+            revealed_tiles: vec![false; MAPCOUNT],
+            visible_tiles: vec![false; MAPCOUNT],
+            blocked: vec![false; MAPCOUNT],
+            tile_content: vec![Vec::new(); MAPCOUNT],
             depth: new_depth,
-            bloodstains: HashSet::new()
+            bloodstains: HashSet::new(),
         }
     }
 }

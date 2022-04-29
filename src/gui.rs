@@ -6,14 +6,7 @@ use rltk::{Point, RandomNumberGenerator, Rltk, VirtualKeyCode, RGB};
 use specs::prelude::*;
 
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
-    ctx.draw_box(
-        0,
-        43,
-        79,
-        6,
-        RGB::named(rltk::WHITE),
-        RGB::named(rltk::BLACK),
-    );
+    ctx.draw_box(0, 43, 79, 6, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
 
     let combat_stats = ecs.read_storage::<CombatStats>();
     let players = ecs.read_storage::<Player>();
@@ -22,13 +15,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     // プレイヤーのHP
     for (_player, stats) in (&players, &combat_stats).join() {
         let health = format!(" HP: {} / {} ", stats.hp, stats.max_hp);
-        ctx.print_color(
-            12,
-            43,
-            RGB::named(rltk::YELLOW),
-            RGB::named(rltk::BLACK),
-            &health,
-        );
+        ctx.print_color(12, 43, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), &health);
 
         ctx.draw_bar_horizontal(
             28,
@@ -57,32 +44,18 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
                 RGB::named(rltk::BLACK),
                 "Comfortable",
             ),
-            HungerState::Hungry => ctx.print_color(
-                71,
-                42,
-                RGB::named(rltk::ORANGE),
-                RGB::named(rltk::BLACK),
-                "Hungry",
-            ),
-            HungerState::Starving => ctx.print_color(
-                71,
-                42,
-                RGB::named(rltk::RED),
-                RGB::named(rltk::BLACK),
-                "Starving",
-            ),
+            HungerState::Hungry => {
+                ctx.print_color(71, 42, RGB::named(rltk::ORANGE), RGB::named(rltk::BLACK), "Hungry")
+            }
+            HungerState::Starving => {
+                ctx.print_color(71, 42, RGB::named(rltk::RED), RGB::named(rltk::BLACK), "Starving")
+            }
         }
     }
 
     let map = ecs.fetch::<Map>();
     let depth = format!("Depth: {}", map.depth);
-    ctx.print_color(
-        2,
-        43,
-        RGB::named(rltk::YELLOW),
-        RGB::named(rltk::BLACK),
-        &depth,
-    );
+    ctx.print_color(2, 43, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), &depth);
 
     let log = ecs.fetch::<GameLog>();
     let mut y = 48;
@@ -130,13 +103,7 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
             let left_x = mouse_pos.0 - width;
             let mut y = mouse_pos.1;
             for s in tooltip.iter() {
-                ctx.print_color(
-                    left_x,
-                    y,
-                    RGB::named(rltk::WHITE),
-                    RGB::named(rltk::GREY),
-                    s,
-                );
+                ctx.print_color(left_x, y, RGB::named(rltk::WHITE), RGB::named(rltk::GREY), s);
                 let padding = (width - s.len() as i32) - 1;
                 for i in 0..padding {
                     ctx.print_color(
@@ -161,13 +128,7 @@ fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
             let left_x = mouse_pos.0 + 3;
             let mut y = mouse_pos.1;
             for s in tooltip.iter() {
-                ctx.print_color(
-                    left_x + 1,
-                    y,
-                    RGB::named(rltk::WHITE),
-                    RGB::named(rltk::GREY),
-                    s,
-                );
+                ctx.print_color(left_x + 1, y, RGB::named(rltk::WHITE), RGB::named(rltk::GREY), s);
                 let padding = (width - s.len() as i32) - 1;
                 for i in 0..padding {
                     ctx.print_color(
@@ -203,9 +164,7 @@ pub fn show_inventory(gs: &mut State, ctx: &mut Rltk) {
     let names = gs.ecs.read_storage::<Name>();
     let backpack = gs.ecs.read_storage::<InBackpack>();
 
-    let inventory = (&backpack, &names)
-        .join()
-        .filter(|item| item.0.owner == *player_entity);
+    let inventory = (&backpack, &names).join().filter(|item| item.0.owner == *player_entity);
     let count = inventory.count();
 
     let y = (25 - (count / 2)) as i32;
@@ -217,13 +176,7 @@ pub fn show_inventory(gs: &mut State, ctx: &mut Rltk) {
         RGB::named(rltk::WHITE),
         RGB::named(rltk::BLACK),
     );
-    ctx.print_color(
-        18,
-        y - 2,
-        RGB::named(rltk::YELLOW),
-        RGB::named(rltk::BLACK),
-        "Inventory",
-    );
+    ctx.print_color(18, y - 2, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), "Inventory");
     ctx.print_color(
         18,
         y + count as i32 + 1,
@@ -241,25 +194,16 @@ pub fn show_field_inventory(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, 
     let backpack = gs.ecs.read_storage::<InBackpack>();
     let entities = gs.ecs.entities();
 
-    let inventory = (&backpack, &names)
-        .join()
-        .filter(|item| item.0.owner == *player_entity);
+    let inventory = (&backpack, &names).join().filter(|item| item.0.owner == *player_entity);
     let count = inventory.count();
     let mut y = (25 - (count / 2)) as i32;
 
     let mut equippable: Vec<Entity> = Vec::new();
     let mut j = 0;
-    for (entity, _pack, name) in (&entities, &backpack, &names)
-        .join()
-        .filter(|item| item.1.owner == *player_entity)
+    for (entity, _pack, name) in
+        (&entities, &backpack, &names).join().filter(|item| item.1.owner == *player_entity)
     {
-        ctx.set(
-            17,
-            y,
-            RGB::named(rltk::WHITE),
-            RGB::named(rltk::BLACK),
-            rltk::to_cp437('('),
-        );
+        ctx.set(17, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437('('));
         ctx.set(
             18,
             y,
@@ -267,13 +211,7 @@ pub fn show_field_inventory(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, 
             RGB::named(rltk::BLACK),
             97 + j as rltk::FontCharType,
         );
-        ctx.set(
-            19,
-            y,
-            RGB::named(rltk::WHITE),
-            RGB::named(rltk::BLACK),
-            rltk::to_cp437(')'),
-        );
+        ctx.set(19, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437(')'));
 
         ctx.print(21, y, &name.name.to_string());
         equippable.push(entity);
@@ -288,10 +226,7 @@ pub fn show_field_inventory(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, 
             _ => {
                 let selection = rltk::letter_to_option(key);
                 if selection > -1 && selection < count as i32 {
-                    return (
-                        ItemMenuResult::Selected,
-                        Some(equippable[selection as usize]),
-                    );
+                    return (ItemMenuResult::Selected, Some(equippable[selection as usize]));
                 }
                 (ItemMenuResult::NoResponse, None)
             }
@@ -325,13 +260,7 @@ pub fn show_item_targeting(
     let mut targets: Vec<Entity> = Vec::new();
 
     for (entity, _stats, name) in (&entities, &combat_stats, &name).join() {
-        ctx.set(
-            17,
-            y,
-            RGB::named(rltk::WHITE),
-            RGB::named(rltk::BLACK),
-            rltk::to_cp437('('),
-        );
+        ctx.set(17, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437('('));
         ctx.set(
             18,
             y,
@@ -339,13 +268,7 @@ pub fn show_item_targeting(
             RGB::named(rltk::BLACK),
             97 + j as rltk::FontCharType,
         );
-        ctx.set(
-            19,
-            y,
-            RGB::named(rltk::WHITE),
-            RGB::named(rltk::BLACK),
-            rltk::to_cp437(')'),
-        );
+        ctx.set(19, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437(')'));
         ctx.print(21, y, &name.name.to_string());
 
         targets.push(entity);
@@ -361,10 +284,7 @@ pub fn show_item_targeting(
             _ => {
                 let selection = rltk::letter_to_option(key);
                 if selection > -1 && selection < count as i32 {
-                    return (
-                        ItemTargetingResult::Selected,
-                        Some(targets[selection as usize]),
-                    );
+                    return (ItemTargetingResult::Selected, Some(targets[selection as usize]));
                 }
                 (ItemTargetingResult::NoResponse, None)
             }
@@ -381,9 +301,7 @@ pub fn show_battle_inventory(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult,
     let consumable = gs.ecs.read_storage::<Consumable>();
     let entities = gs.ecs.entities();
 
-    let inventory = (&backpack, &names)
-        .join()
-        .filter(|item| item.0.owner == *player_entity);
+    let inventory = (&backpack, &names).join().filter(|item| item.0.owner == *player_entity);
     let count = inventory.count();
     let mut y = (25 - (count / 2)) as i32;
 
@@ -394,13 +312,7 @@ pub fn show_battle_inventory(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult,
         .join()
         .filter(|item| item.1.owner == *player_entity)
     {
-        ctx.set(
-            17,
-            y,
-            RGB::named(rltk::WHITE),
-            RGB::named(rltk::BLACK),
-            rltk::to_cp437('('),
-        );
+        ctx.set(17, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437('('));
         ctx.set(
             18,
             y,
@@ -408,13 +320,7 @@ pub fn show_battle_inventory(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult,
             RGB::named(rltk::BLACK),
             97 + j as rltk::FontCharType,
         );
-        ctx.set(
-            19,
-            y,
-            RGB::named(rltk::WHITE),
-            RGB::named(rltk::BLACK),
-            rltk::to_cp437(')'),
-        );
+        ctx.set(19, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437(')'));
 
         ctx.print(21, y, &name.name.to_string());
         useable.push(entity);
@@ -443,9 +349,7 @@ pub fn drop_item_menu(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Option
     let backpack = gs.ecs.read_storage::<InBackpack>();
     let entities = gs.ecs.entities();
 
-    let inventory = (&backpack, &names)
-        .join()
-        .filter(|item| item.0.owner == *player_entity);
+    let inventory = (&backpack, &names).join().filter(|item| item.0.owner == *player_entity);
     let count = inventory.count();
 
     let mut y = (25 - (count / 2)) as i32;
@@ -474,17 +378,10 @@ pub fn drop_item_menu(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Option
 
     let mut useable: Vec<Entity> = Vec::new();
     let mut j = 0;
-    for (entity, _pack, name) in (&entities, &backpack, &names)
-        .join()
-        .filter(|item| item.1.owner == *player_entity)
+    for (entity, _pack, name) in
+        (&entities, &backpack, &names).join().filter(|item| item.1.owner == *player_entity)
     {
-        ctx.set(
-            17,
-            y,
-            RGB::named(rltk::WHITE),
-            RGB::named(rltk::BLACK),
-            rltk::to_cp437('('),
-        );
+        ctx.set(17, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437('('));
         ctx.set(
             18,
             y,
@@ -492,13 +389,7 @@ pub fn drop_item_menu(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Option
             RGB::named(rltk::BLACK),
             97 + j as rltk::FontCharType,
         );
-        ctx.set(
-            19,
-            y,
-            RGB::named(rltk::WHITE),
-            RGB::named(rltk::BLACK),
-            rltk::to_cp437(')'),
-        );
+        ctx.set(19, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437(')'));
 
         ctx.print(21, y, &name.name.to_string());
         useable.push(entity);
@@ -556,13 +447,7 @@ pub fn remove_item_menu(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Opti
     let mut equippable: Vec<Entity> = Vec::new();
     let mut j = 0;
     for (entity, _pack, name) in (&entities, &backpack, &names).join() {
-        ctx.set(
-            17,
-            y,
-            RGB::named(rltk::WHITE),
-            RGB::named(rltk::BLACK),
-            rltk::to_cp437('('),
-        );
+        ctx.set(17, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437('('));
         ctx.set(
             18,
             y,
@@ -570,13 +455,7 @@ pub fn remove_item_menu(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Opti
             RGB::named(rltk::BLACK),
             97 + j as rltk::FontCharType,
         );
-        ctx.set(
-            19,
-            y,
-            RGB::named(rltk::WHITE),
-            RGB::named(rltk::BLACK),
-            rltk::to_cp437(')'),
-        );
+        ctx.set(19, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437(')'));
 
         ctx.print(21, y, &name.name.to_string());
         equippable.push(entity);
@@ -591,10 +470,7 @@ pub fn remove_item_menu(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Opti
             _ => {
                 let selection = rltk::letter_to_option(key);
                 if selection > -1 && selection < count as i32 {
-                    return (
-                        ItemMenuResult::Selected,
-                        Some(equippable[selection as usize]),
-                    );
+                    return (ItemMenuResult::Selected, Some(equippable[selection as usize]));
                 }
                 (ItemMenuResult::NoResponse, None)
             }
@@ -621,26 +497,14 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
     // let assets = gs.ecs.fetch::<RexAssets>();
     // ctx.render_xp_sprite(&assets.menu, 0, 0);
 
-    ctx.draw_box_double(
-        24,
-        18,
-        31,
-        10,
-        RGB::named(rltk::WHITE),
-        RGB::named(rltk::BLACK),
-    );
+    ctx.draw_box_double(24, 18, 31, 10, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
     ctx.print_color_centered(
         20,
         RGB::named(rltk::YELLOW),
         RGB::named(rltk::BLACK),
         "Battle Digger Clone",
     );
-    ctx.print_color_centered(
-        21,
-        RGB::named(rltk::CYAN),
-        RGB::named(rltk::BLACK),
-        "by Kijimad",
-    );
+    ctx.print_color_centered(21, RGB::named(rltk::CYAN), RGB::named(rltk::BLACK), "by Kijimad");
     ctx.print_color_centered(
         22,
         RGB::named(rltk::GRAY),
@@ -649,10 +513,7 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
     );
 
     let mut y = 24;
-    if let RunState::MainMenu {
-        menu_selection: selection,
-    } = *runstate
-    {
+    if let RunState::MainMenu { menu_selection: selection } = *runstate {
         if selection == MainMenuSelection::NewGame {
             ctx.print_color_centered(
                 y,
@@ -690,27 +551,16 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
         }
 
         if selection == MainMenuSelection::Quit {
-            ctx.print_color_centered(
-                y,
-                RGB::named(rltk::MAGENTA),
-                RGB::named(rltk::BLACK),
-                "Quit",
-            );
+            ctx.print_color_centered(y, RGB::named(rltk::MAGENTA), RGB::named(rltk::BLACK), "Quit");
         } else {
             ctx.print_color_centered(y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), "Quit");
         }
 
         match ctx.key {
-            None => {
-                return MainMenuResult::NoSelection {
-                    selected: selection,
-                }
-            }
+            None => return MainMenuResult::NoSelection { selected: selection },
             Some(key) => match key {
                 VirtualKeyCode::Escape => {
-                    return MainMenuResult::NoSelection {
-                        selected: MainMenuSelection::Quit,
-                    }
+                    return MainMenuResult::NoSelection { selected: MainMenuSelection::Quit }
                 }
                 VirtualKeyCode::Up => {
                     let mut newselection;
@@ -722,9 +572,7 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
                     if newselection == MainMenuSelection::LoadGame && !save_exists {
                         newselection = MainMenuSelection::NewGame;
                     }
-                    return MainMenuResult::NoSelection {
-                        selected: newselection,
-                    };
+                    return MainMenuResult::NoSelection { selected: newselection };
                 }
                 VirtualKeyCode::Down => {
                     let mut newselection;
@@ -736,39 +584,20 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
                     if newselection == MainMenuSelection::LoadGame && !save_exists {
                         newselection = MainMenuSelection::Quit;
                     }
-                    return MainMenuResult::NoSelection {
-                        selected: newselection,
-                    };
+                    return MainMenuResult::NoSelection { selected: newselection };
                 }
-                VirtualKeyCode::Return => {
-                    return MainMenuResult::Selected {
-                        selected: selection,
-                    }
-                }
-                _ => {
-                    return MainMenuResult::NoSelection {
-                        selected: selection,
-                    }
-                }
+                VirtualKeyCode::Return => return MainMenuResult::Selected { selected: selection },
+                _ => return MainMenuResult::NoSelection { selected: selection },
             },
         }
     }
 
-    MainMenuResult::NoSelection {
-        selected: MainMenuSelection::NewGame,
-    }
+    MainMenuResult::NoSelection { selected: MainMenuSelection::NewGame }
 }
 
 pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
     // メッセージボックス
-    ctx.draw_box(
-        0,
-        43,
-        79,
-        6,
-        RGB::named(rltk::WHITE),
-        RGB::named(rltk::BLACK),
-    );
+    ctx.draw_box(0, 43, 79, 6, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
 
     let log = ecs.fetch::<BattleLog>();
     let mut y = 48;
@@ -786,11 +615,7 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
 
     let mut i = 1;
     for (name, stat, _monster) in (&name, &stats, &monster).join() {
-        ctx.print(
-            (80 * i) / (1 + stats.count()),
-            20,
-            format!("[{}]({})", name.name, stat.hp),
-        );
+        ctx.print((80 * i) / (1 + stats.count()), 20, format!("[{}]({})", name.name, stat.hp));
         i += 1;
     }
 }
@@ -913,10 +738,7 @@ pub fn battle_target(gs: &mut State, ctx: &mut Rltk) -> (BattleTargetingResult, 
             _ => {
                 let selection = rltk::letter_to_option(key);
                 if selection > -1 && selection < monsters.len() as i32 {
-                    return (
-                        BattleTargetingResult::Selected,
-                        Some(monsters[selection as usize]),
-                    );
+                    return (BattleTargetingResult::Selected, Some(monsters[selection as usize]));
                 }
                 (BattleTargetingResult::NoResponse, None)
             }
@@ -931,13 +753,7 @@ pub enum BattleResult {
 }
 
 pub fn show_battle_win_result(_gs: &mut State, ctx: &mut Rltk) -> BattleResult {
-    ctx.print_color(
-        70,
-        44,
-        RGB::named(rltk::WHITE),
-        RGB::named(rltk::BLACK),
-        "[Enter]",
-    );
+    ctx.print_color(70, 44, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), "[Enter]");
 
     match ctx.key {
         None => (BattleResult::NoResponse),

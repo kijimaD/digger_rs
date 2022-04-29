@@ -31,12 +31,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
             let target = combat_stats.get(*potential_target);
             if let Some(_target) = target {
                 wants_to_encounter
-                    .insert(
-                        entity,
-                        WantsToEncounter {
-                            monster: *potential_target,
-                        },
-                    )
+                    .insert(entity, WantsToEncounter { monster: *potential_target })
                     .expect("Unable to insert encounter");
                 return;
             }
@@ -70,9 +65,9 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     match target {
         None => {}
         Some(target) => match target {
-            _item => gamelog
-                .entries
-                .push(format!("{} is there.[G]", names.get(target).unwrap().name)),
+            _item => {
+                gamelog.entries.push(format!("{} is there.[G]", names.get(target).unwrap().name))
+            }
         },
     }
 
@@ -91,9 +86,7 @@ pub fn try_next_level(ecs: &mut World) -> bool {
         true
     } else {
         let mut gamelog = ecs.fetch_mut::<GameLog>();
-        gamelog
-            .entries
-            .push("There is no way down from here.".to_string());
+        gamelog.entries.push("There is no way down from here.".to_string());
         false
     }
 }
@@ -114,19 +107,11 @@ fn get_item(ecs: &mut World) {
     }
 
     match target_item {
-        None => gamelog
-            .entries
-            .push("There is nothing here to pick up.".to_string()),
+        None => gamelog.entries.push("There is nothing here to pick up.".to_string()),
         Some(item) => {
             let mut pickup = ecs.write_storage::<WantsToPickupItem>();
             pickup
-                .insert(
-                    *player_entity,
-                    WantsToPickupItem {
-                        collected_by: *player_entity,
-                        item,
-                    },
-                )
+                .insert(*player_entity, WantsToPickupItem { collected_by: *player_entity, item })
                 .expect("Unable to insert want to pickup");
         }
     }

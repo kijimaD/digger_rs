@@ -37,10 +37,7 @@ pub fn save_game(ecs: &mut World) {
 
     // Actually serialize
     {
-        let data = (
-            ecs.entities(),
-            ecs.read_storage::<SimpleMarker<SerializeMe>>(),
-        );
+        let data = (ecs.entities(), ecs.read_storage::<SimpleMarker<SerializeMe>>());
 
         let writer = File::create("./savegame.json").unwrap();
         let mut serializer = serde_json::Serializer::new(writer);
@@ -174,8 +171,7 @@ pub fn load_game(ecs: &mut World) {
             *player_resource = e;
         }
     }
-    ecs.delete_entity(deleteme.unwrap())
-        .expect("Unable to delete helper");
+    ecs.delete_entity(deleteme.unwrap()).expect("Unable to delete helper");
 }
 
 pub fn delete_save() {

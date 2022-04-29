@@ -11,10 +11,7 @@ use std::collections::HashMap;
 /// Spawns the player and returns his/her entity object.
 pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
     ecs.create_entity()
-        .with(Position {
-            x: player_x,
-            y: player_y,
-        })
+        .with(Position { x: player_x, y: player_y })
         .with(Renderable {
             glyph: rltk::to_cp437('@'),
             fg: RGB::named(rltk::YELLOW),
@@ -22,18 +19,9 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             render_order: 0,
         })
         .with(Player {})
-        .with(Viewshed {
-            visible_tiles: Vec::new(),
-            range: 8,
-            dirty: true,
-        })
-        .with(Name {
-            name: "Player".to_string(),
-        })
-        .with(HungerClock {
-            state: HungerState::WellFed,
-            duration: 20,
-        })
+        .with(Viewshed { visible_tiles: Vec::new(), range: 8, dirty: true })
+        .with(Name { name: "Player".to_string() })
+        .with(HungerClock { state: HungerState::WellFed, duration: 20 })
         .marked::<SimpleMarker<SerializeMe>>()
         .build()
 }
@@ -41,15 +29,8 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
 pub fn battle_player(ecs: &mut World) {
     ecs.create_entity()
         .with(Player {})
-        .with(CombatStats {
-            max_hp: 100,
-            hp: 100,
-            defense: 2,
-            power: 50,
-        })
-        .with(Name {
-            name: "Player".to_string(),
-        })
+        .with(CombatStats { max_hp: 100, hp: 100, defense: 2, power: 50 })
+        .with(Name { name: "Player".to_string() })
         .build();
 }
 
@@ -121,7 +102,7 @@ fn goblin(ecs: &mut World, x: i32, y: i32) {
     monster(ecs, x, y, rltk::to_cp437('g'));
 }
 
-fn monster (ecs: &mut World, x: i32, y: i32, glyph: rltk::FontCharType) {
+fn monster(ecs: &mut World, x: i32, y: i32, glyph: rltk::FontCharType) {
     ecs.create_entity()
         .with(Position { x, y })
         .with(Renderable {
@@ -130,11 +111,7 @@ fn monster (ecs: &mut World, x: i32, y: i32, glyph: rltk::FontCharType) {
             bg: RGB::named(rltk::BLACK),
             render_order: 1,
         })
-        .with(Viewshed {
-            visible_tiles: Vec::new(),
-            range: 8,
-            dirty: true,
-        })
+        .with(Viewshed { visible_tiles: Vec::new(), range: 8, dirty: true })
         .with(Monster {})
         .with(BlocksTile {})
         .marked::<SimpleMarker<SerializeMe>>()
@@ -151,15 +128,8 @@ pub fn b_goblin(ecs: &mut World) {
 fn battle_monster<S: ToString>(ecs: &mut World, name: S) {
     ecs.create_entity()
         .with(Monster {})
-        .with(Name {
-            name: name.to_string(),
-        })
-        .with(CombatStats {
-            max_hp: 16,
-            hp: 16,
-            defense: 1,
-            power: 4,
-        })
+        .with(Name { name: name.to_string() })
+        .with(CombatStats { max_hp: 16, hp: 16, defense: 1, power: 4 })
         .build();
 }
 
@@ -172,9 +142,7 @@ fn health_potion(ecs: &mut World, x: i32, y: i32) {
             bg: RGB::named(rltk::BLACK),
             render_order: 2,
         })
-        .with(Name {
-            name: "Health Potion".to_string(),
-        })
+        .with(Name { name: "Health Potion".to_string() })
         .with(Item {})
         .with(Consumable {})
         .with(ProvidesHealing { heal_amount: 8 })
@@ -191,13 +159,9 @@ fn dagger(ecs: &mut World, x: i32, y: i32) {
             bg: RGB::named(rltk::BLACK),
             render_order: 2,
         })
-        .with(Name {
-            name: "Dagger".to_string(),
-        })
+        .with(Name { name: "Dagger".to_string() })
         .with(Item {})
-        .with(Equippable {
-            slot: EquipmentSlot::Melee,
-        })
+        .with(Equippable { slot: EquipmentSlot::Melee })
         .with(MeleePowerBonus { power: 2 })
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
@@ -212,13 +176,9 @@ fn shield(ecs: &mut World, x: i32, y: i32) {
             bg: RGB::named(rltk::BLACK),
             render_order: 2,
         })
-        .with(Name {
-            name: "Shield".to_string(),
-        })
+        .with(Name { name: "Shield".to_string() })
         .with(Item {})
-        .with(Equippable {
-            slot: EquipmentSlot::Shield,
-        })
+        .with(Equippable { slot: EquipmentSlot::Shield })
         .with(DefenseBonus { defense: 1 })
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
@@ -233,13 +193,9 @@ fn longsword(ecs: &mut World, x: i32, y: i32) {
             bg: RGB::named(rltk::BLACK),
             render_order: 2,
         })
-        .with(Name {
-            name: "Longsword".to_string(),
-        })
+        .with(Name { name: "Longsword".to_string() })
         .with(Item {})
-        .with(Equippable {
-            slot: EquipmentSlot::Melee,
-        })
+        .with(Equippable { slot: EquipmentSlot::Melee })
         .with(MeleePowerBonus { power: 4 })
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
@@ -254,13 +210,9 @@ fn tower_shield(ecs: &mut World, x: i32, y: i32) {
             bg: RGB::named(rltk::BLACK),
             render_order: 2,
         })
-        .with(Name {
-            name: "Tower Shield".to_string(),
-        })
+        .with(Name { name: "Tower Shield".to_string() })
         .with(Item {})
-        .with(Equippable {
-            slot: EquipmentSlot::Shield,
-        })
+        .with(Equippable { slot: EquipmentSlot::Shield })
         .with(DefenseBonus { defense: 3 })
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
@@ -275,9 +227,7 @@ fn rations(ecs: &mut World, x: i32, y: i32) {
             bg: RGB::named(rltk::BLACK),
             render_order: 2,
         })
-        .with(Name {
-            name: "Rations".to_string(),
-        })
+        .with(Name { name: "Rations".to_string() })
         .with(Item {})
         .with(ProvidesFood {})
         .with(Consumable {})
