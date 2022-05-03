@@ -29,6 +29,7 @@ mod inventory_system;
 mod spawner;
 use inventory_system::{ItemCollectionSystem, ItemDropSystem, ItemRemoveSystem, ItemUseSystem};
 mod hunger_system;
+pub mod map_builders;
 mod particle_system;
 pub mod random_table;
 pub mod rex_assets;
@@ -43,21 +44,15 @@ pub enum RunState {
     BattleEncounter,
     BattleCommand,
     BattleInventory,
-    BattleItemTargeting {
-        item: Entity,
-    },
+    BattleItemTargeting { item: Entity },
     BattleTurn,
     BattleResult,
     BattleAwaiting,
     BattleTargeting,
     ShowInventory,
-    ItemTargeting {
-        item: Entity,
-    },
+    ItemTargeting { item: Entity },
     ShowDropItem,
-    MainMenu {
-        menu_selection: gui::MainMenuSelection,
-    },
+    MainMenu { menu_selection: gui::MainMenuSelection },
     SaveGame,
     NextLevel,
     ShowRemoveItem,
@@ -276,12 +271,7 @@ impl GameState for State {
                         gui::BattleTargetingResult::Selected => {
                             let target_entity = result.1.unwrap();
                             wants_to_melee
-                                .insert(
-                                    entity,
-                                    WantsToMelee {
-                                        target: target_entity,
-                                    },
-                                )
+                                .insert(entity, WantsToMelee { target: target_entity })
                                 .expect("Unable to insert WantsToMelee");
 
                             newrunstate = RunState::BattleTurn
@@ -363,9 +353,7 @@ impl GameState for State {
                 let result = gui::main_menu(self, ctx);
                 match result {
                     gui::MainMenuResult::NoSelection { selected } => {
-                        newrunstate = RunState::MainMenu {
-                            menu_selection: selected,
-                        }
+                        newrunstate = RunState::MainMenu { menu_selection: selected }
                     }
                     gui::MainMenuResult::Selected { selected } => match selected {
                         gui::MainMenuSelection::NewGame => newrunstate = RunState::PreRun,
@@ -386,17 +374,15 @@ impl GameState for State {
                     gui::GameOverResult::NoSelection => {}
                     gui::GameOverResult::QuitToMenu => {
                         self.game_over_cleanup();
-                        newrunstate = RunState::MainMenu {
-                            menu_selection: gui::MainMenuSelection::NewGame,
-                        };
+                        newrunstate =
+                            RunState::MainMenu { menu_selection: gui::MainMenuSelection::NewGame };
                     }
                 }
             }
             RunState::SaveGame => {
                 saveload_system::save_game(&mut self.ecs);
-                newrunstate = RunState::MainMenu {
-                    menu_selection: gui::MainMenuSelection::LoadGame,
-                };
+                newrunstate =
+                    RunState::MainMenu { menu_selection: gui::MainMenuSelection::LoadGame };
             }
             RunState::NextLevel => {
                 self.goto_next_level();
@@ -458,28 +444,27 @@ impl State {
         // Delete entities that aren't the player or his/her equipment
         let to_delete = self.entities_to_remove_on_level_change();
         for target in to_delete {
-            self.ecs
-                .delete_entity(target)
-                .expect("Unable to delete entity");
+            self.ecs.delete_entity(target).expect("Unable to delete entity");
         }
 
         // Build a new map and place the player
-        let worldmap;
+        let mut builder;
         let current_depth;
+        let player_start;
         {
             let mut worldmap_resource = self.ecs.write_resource::<Map>();
             current_depth = worldmap_resource.depth;
-            *worldmap_resource = Map::new_map_rooms_and_corridors(current_depth + 1);
-            worldmap = worldmap_resource.clone();
+            builder = map_builders::random_builder(current_depth + 1);
+            builder.build_map();
+            *worldmap_resource = builder.get_map();
+            player_start = builder.get_starting_position();
         }
 
         // Spawn bad guys
-        for room in worldmap.rooms.iter().skip(1) {
-            spawner::spawn_room(&mut self.ecs, room, current_depth + 1);
-        }
+        builder.spawn_entities(&mut self.ecs);
 
         // Place the player and update resources
-        let (player_x, player_y) = worldmap.rooms[0].center();
+        let (player_x, player_y) = (player_start.x, player_start.y);
         let mut player_position = self.ecs.write_resource::<Point>();
         *player_position = Point::new(player_x, player_y);
         let mut position_components = self.ecs.write_storage::<Position>();
@@ -520,20 +505,20 @@ impl State {
         }
 
         // Build a new map and place the player
-        let worldmap;
+        let mut builder = map_builders::random_builder(1);
+        let player_start;
         {
             let mut worldmap_resource = self.ecs.write_resource::<Map>();
-            *worldmap_resource = Map::new_map_rooms_and_corridors(1);
-            worldmap = worldmap_resource.clone();
+            builder.build_map();
+            player_start = builder.get_starting_position();
+            *worldmap_resource = builder.get_map();
         }
 
         // Spawn bad guys
-        for room in worldmap.rooms.iter().skip(1) {
-            spawner::spawn_room(&mut self.ecs, room, 1);
-        }
+        builder.spawn_entities(&mut self.ecs);
 
         // Place the player and update resources
-        let (player_x, player_y) = worldmap.rooms[0].center();
+        let (player_x, player_y) = (player_start.x, player_start.y);
         let player_entity = spawner::player(&mut self.ecs, player_x, player_y);
         let mut player_position = self.ecs.write_resource::<Point>();
         *player_position = Point::new(player_x, player_y);
@@ -557,9 +542,7 @@ impl State {
 
 fn main() -> rltk::BError {
     use rltk::RltkBuilder;
-    let mut context = RltkBuilder::simple80x50()
-        .with_title("Battle Digger Clone")
-        .build()?;
+    let mut context = RltkBuilder::simple80x50().with_title("Battle Digger Clone").build()?;
     context.with_post_scanlines(true);
     let mut gs = State { ecs: World::new() };
     gs.ecs.register::<Position>();
@@ -595,30 +578,25 @@ fn main() -> rltk::BError {
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
-    let map: Map = Map::new_map_rooms_and_corridors(1);
-    let (player_x, player_y) = map.rooms[0].center();
+    let mut builder = map_builders::random_builder(1);
+    builder.build_map();
+    let player_start = builder.get_starting_position();
+    let map = builder.get_map();
+    let (player_x, player_y) = (player_start.x, player_start.y);
 
     let player_entity = spawner::player(&mut gs.ecs, player_x, player_y);
     let battle_player_entity = spawner::battle_player(&mut gs.ecs);
 
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
-    for room in map.rooms.iter().skip(1) {
-        spawner::spawn_room(&mut gs.ecs, room, 10);
-    }
+    builder.spawn_entities(&mut gs.ecs);
 
     gs.ecs.insert(map);
     gs.ecs.insert(Point::new(player_x, player_y));
     gs.ecs.insert(player_entity);
     gs.ecs.insert(battle_player_entity);
-    gs.ecs.insert(RunState::MainMenu {
-        menu_selection: gui::MainMenuSelection::NewGame,
-    });
-    gs.ecs.insert(gamelog::GameLog {
-        entries: vec!["Enter the cave...".to_string()],
-    });
-    gs.ecs.insert(gamelog::BattleLog {
-        entries: vec!["".to_string()],
-    });
+    gs.ecs.insert(RunState::MainMenu { menu_selection: gui::MainMenuSelection::NewGame });
+    gs.ecs.insert(gamelog::GameLog { entries: vec!["Enter the cave...".to_string()] });
+    gs.ecs.insert(gamelog::BattleLog { entries: vec!["".to_string()] });
     gs.ecs.insert(particle_system::ParticleBuilder::new());
     gs.ecs.insert(rex_assets::RexAssets::new());
 

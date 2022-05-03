@@ -139,12 +139,7 @@ pub fn invoke_battle(ecs: &mut World) {
         let mut runstate = ecs.write_resource::<RunState>();
         *runstate = RunState::BattleEncounter;
         battle
-            .insert(
-                wants_encounter.monster,
-                Battle {
-                    monster: wants_encounter.monster,
-                },
-            )
+            .insert(wants_encounter.monster, Battle { monster: wants_encounter.monster })
             .expect("Unable to insert encounter");
 
         battlelog.entries = vec![];

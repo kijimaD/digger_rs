@@ -37,9 +37,7 @@ pub fn cull_dead_particles(ecs: &mut World, ctx: &Rltk) {
 impl ParticleBuilder {
     #[allow(clippy::new_without_default)]
     pub fn new() -> ParticleBuilder {
-        ParticleBuilder {
-            requests: Vec::new(),
-        }
+        ParticleBuilder { requests: Vec::new() }
     }
 
     pub fn request(
@@ -51,14 +49,7 @@ impl ParticleBuilder {
         glyph: rltk::FontCharType,
         lifetime: f32,
     ) {
-        self.requests.push(ParticleRequest {
-            x,
-            y,
-            fg,
-            bg,
-            glyph,
-            lifetime,
-        });
+        self.requests.push(ParticleRequest { x, y, fg, bg, glyph, lifetime });
     }
 }
 
@@ -79,13 +70,7 @@ impl<'a> System<'a> for ParticleSpawnSystem {
         for new_particle in particle_builder.requests.iter() {
             let p = entities.create();
             positions
-                .insert(
-                    p,
-                    Position {
-                        x: new_particle.x,
-                        y: new_particle.y,
-                    },
-                )
+                .insert(p, Position { x: new_particle.x, y: new_particle.y })
                 .expect("Unable to insert position");
             renderables
                 .insert(
@@ -99,12 +84,7 @@ impl<'a> System<'a> for ParticleSpawnSystem {
                 )
                 .expect("Unable to insert renderable");
             particles
-                .insert(
-                    p,
-                    ParticleLifetime {
-                        lifetime_ms: new_particle.lifetime,
-                    },
-                )
+                .insert(p, ParticleLifetime { lifetime_ms: new_particle.lifetime })
                 .expect("Unable to insert lifetime");
         }
 
