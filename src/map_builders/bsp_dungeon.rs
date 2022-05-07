@@ -64,7 +64,7 @@ impl BspDungeonBuilder {
         let mut rng = RandomNumberGenerator::new();
 
         self.rects.clear();
-        self.rects.push(Rect::new(2, 2, self.map.width-5, self.map.height-5));
+        self.rects.push(Rect::new(2, 2, self.map.width - 5, self.map.height - 5));
         let first_room = self.rects[0];
         self.add_subrects(first_room);
 
@@ -83,26 +83,28 @@ impl BspDungeonBuilder {
             n_rooms += 1;
         }
 
-        self.rooms.sort_by(|a,b| a.x1.cmp(&b.x1) );
+        self.rooms.sort_by(|a, b| a.x1.cmp(&b.x1));
 
         // corridors
-        for i in 0..self.rooms.len()-1 {
+        for i in 0..self.rooms.len() - 1 {
             let room = self.rooms[i];
-            let next_room = self.rooms[i+1];
-            let start_x = room.x1 + (rng.roll_dice(1, i32::abs(room.x1 - room.x2)) -1);
-            let start_y = room.y1 + (rng.roll_dice(1, i32::abs(room.y1 - room.y2)) -1);
-            let end_x = next_room.x1 + (rng.roll_dice(1, i32::abs(next_room.x1 - next_room.x2))-1);
-            let end_y = next_room.y1 + (rng.roll_dice(1, i32::abs(next_room.y1 - next_room.y2))-1);
+            let next_room = self.rooms[i + 1];
+            let start_x = room.x1 + (rng.roll_dice(1, i32::abs(room.x1 - room.x2)) - 1);
+            let start_y = room.y1 + (rng.roll_dice(1, i32::abs(room.y1 - room.y2)) - 1);
+            let end_x =
+                next_room.x1 + (rng.roll_dice(1, i32::abs(next_room.x1 - next_room.x2)) - 1);
+            let end_y =
+                next_room.y1 + (rng.roll_dice(1, i32::abs(next_room.y1 - next_room.y2)) - 1);
             self.draw_corridor(start_x, start_y, end_x, end_y);
             self.take_snapshot();
         }
 
         // player position
         let start = self.rooms[0].center();
-        self.starting_position = Position{ x: start.0, y: start.1 };
+        self.starting_position = Position { x: start.0, y: start.1 };
 
         // stairs
-        let stairs = self.rooms[self.rooms.len()-1].center();
+        let stairs = self.rooms[self.rooms.len() - 1].center();
         let stairs_idx = self.map.xy_idx(stairs.0, stairs.1);
         self.map.tiles[stairs_idx] = TileType::DownStairs;
     }
@@ -123,12 +125,19 @@ impl BspDungeonBuilder {
         self.rects.push(Rect::new(rect.x1, rect.y1, half_width, half_height));
         self.rects.push(Rect::new(rect.x1, rect.y1 + half_height, half_width, half_height));
         self.rects.push(Rect::new(rect.x1 + half_width, rect.y1, half_width, half_height));
-        self.rects.push(Rect::new(rect.x1 + half_width, rect.y1 + half_height, half_width, half_height));
+        self.rects.push(Rect::new(
+            rect.x1 + half_width,
+            rect.y1 + half_height,
+            half_width,
+            half_height,
+        ));
     }
 
     fn get_random_rect(&mut self, rng: &mut RandomNumberGenerator) -> Rect {
-        if self.rects.len() == 1 { return self.rects[0]; }
-        let idx = (rng.roll_dice(1, self.rects.len() as i32)-1) as usize;
+        if self.rects.len() == 1 {
+            return self.rects[0];
+        }
+        let idx = (rng.roll_dice(1, self.rects.len() as i32) - 1) as usize;
         self.rects[idx]
     }
 
@@ -144,11 +153,11 @@ impl BspDungeonBuilder {
         let rect_width = i32::abs(rect.x1 - rect.x2);
         let rect_height = i32::abs(rect.y1 - rect.y2);
 
-        let w = i32::max(3, rng.roll_dice(1, i32::min(rect_width, 10))-1) + 1;
-        let h = i32::max(3, rng.roll_dice(1, i32::min(rect_height, 10))-1) + 1;
+        let w = i32::max(3, rng.roll_dice(1, i32::min(rect_width, 10)) - 1) + 1;
+        let h = i32::max(3, rng.roll_dice(1, i32::min(rect_height, 10)) - 1) + 1;
 
-        result.x1 += rng.roll_dice(1, 6)-1;
-        result.y1 += rng.roll_dice(1, 6)-1;
+        result.x1 += rng.roll_dice(1, 6) - 1;
+        result.y1 += rng.roll_dice(1, 6) - 1;
         result.x2 = result.x1 + w;
         result.y2 = result.y1 + h;
 
@@ -164,12 +173,20 @@ impl BspDungeonBuilder {
 
         let mut can_build = true;
 
-        for y in expanded.y1 ..= expanded.y2 {
-            for x in expanded.x1 ..= expanded.x2 {
-                if x > self.map.width-2 { can_build = false; }
-                if y > self.map.height-2 { can_build = false; }
-                if x < 1 { can_build = false; }
-                if y < 1 { can_build = false; }
+        for y in expanded.y1..=expanded.y2 {
+            for x in expanded.x1..=expanded.x2 {
+                if x > self.map.width - 2 {
+                    can_build = false;
+                }
+                if y > self.map.height - 2 {
+                    can_build = false;
+                }
+                if x < 1 {
+                    can_build = false;
+                }
+                if y < 1 {
+                    can_build = false;
+                }
                 if can_build {
                     let idx = self.map.xy_idx(x, y);
                     if self.map.tiles[idx] != TileType::Wall {
