@@ -158,6 +158,7 @@ impl DLABuilder {
         let total_tiles = self.map.width * self.map.height;
         let desired_floor_tiles = (self.floor_percent * total_tiles as f32) as usize;
         let mut floor_tile_count = self.map.tiles.iter().filter(|a| **a == TileType::Floor).count();
+        let mut i = 0;
         while floor_tile_count < desired_floor_tiles {
             match self.algorithm {
                 DLAAlgorithm::WalkInwards => {
@@ -255,7 +256,10 @@ impl DLABuilder {
                 }
             }
 
-            self.take_snapshot();
+            if i % 50 == 0 {
+                self.take_snapshot();
+            }
+            i += 1;
 
             floor_tile_count = self.map.tiles.iter().filter(|a| **a == TileType::Floor).count();
         }
