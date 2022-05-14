@@ -116,7 +116,7 @@ impl State {
 
         let mut rng = self.ecs.write_resource::<rltk::RandomNumberGenerator>();
         let mut builder = map_builders::random_builder(new_depth, &mut rng);
-        builder.build_map();
+        builder.build_map(&mut rng);
         self.mapgen_history = builder.build_data.history.clone();
         let player_start;
         {
