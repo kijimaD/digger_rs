@@ -22,6 +22,14 @@ mod room_based_starting_position;
 use room_based_spawner::RoomBasedSpawner;
 use room_based_stairs::RoomBasedStairs;
 use room_based_starting_position::RoomBasedStartingPosition;
+mod area_starting_points;
+use area_starting_points::{AreaStartingPosition, XStart, YStart};
+mod cull_unreachable;
+use cull_unreachable::CullUnreachable;
+mod voronoi_spawning;
+use voronoi_spawning::VoronoiSpawning;
+mod distant_exit;
+use distant_exit::DistantExit;
 
 pub struct BuilderMap {
     pub spawn_list: Vec<(usize, String)>,
@@ -105,11 +113,43 @@ pub trait MetaMapBuilder {
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap);
 }
 
+fn random_initial_builder(
+    rng: &mut rltk::RandomNumberGenerator,
+) -> (Box<dyn InitialMapBuilder>, bool) {
+    let builder = rng.roll_dice(1, 17);
+    let result: (Box<dyn InitialMapBuilder>, bool);
+    match builder {
+        1 => result = (BspDungeonBuilder::new(), true),
+        2 => result = (BspInteriorBuilder::new(), true),
+        3 => result = (CellularAutomataBuilder::new(), false),
+        4 => result = (DrunkardsWalkBuilder::open_area(), false),
+        5 => result = (DrunkardsWalkBuilder::open_halls(), false),
+        6 => result = (DrunkardsWalkBuilder::winding_passages(), false),
+        7 => result = (DrunkardsWalkBuilder::fat_passages(), false),
+        8 => result = (DrunkardsWalkBuilder::fearful_symmetry(), false),
+        9 => result = (MazeBuilder::new(), false),
+        10 => result = (DLABuilder::walk_inwards(), false),
+        11 => result = (DLABuilder::walk_outwards(), false),
+        12 => result = (DLABuilder::central_attractor(), false),
+        13 => result = (DLABuilder::insectoid(), false),
+        _ => result = (SimpleMapBuilder::new(), true),
+    }
+    result
+}
+
 pub fn random_builder(new_depth: i32, rng: &mut rltk::RandomNumberGenerator) -> BuilderChain {
     let mut builder = BuilderChain::new(new_depth);
-    builder.start_with(SimpleMapBuilder::new());
-    builder.with(RoomBasedSpawner::new());
-    builder.with(RoomBasedStartingPosition::new());
-    builder.with(RoomBasedStairs::new());
+    let (random_starter, has_rooms) = random_initial_builder(rng);
+    builder.start_with(random_starter);
+    if has_rooms {
+        builder.with(RoomBasedSpawner::new());
+        builder.with(RoomBasedStairs::new());
+        builder.with(RoomBasedStartingPosition::new());
+    } else {
+        builder.with(AreaStartingPosition::new(XStart::CENTER, YStart::CENTER));
+        builder.with(CullUnreachable::new());
+        builder.with(VoronoiSpawning::new());
+        builder.with(DistantExit::new());
+    }
     builder
 }
