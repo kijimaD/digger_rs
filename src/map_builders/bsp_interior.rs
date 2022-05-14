@@ -28,10 +28,10 @@ impl BspInteriorBuilder {
         self.rects.clear();
         self.rects.push(Rect::new(1, 1, build_data.map.width - 2, build_data.map.height - 2));
         let first_room = self.rects[0];
-        self.add_subrects(first_room, &mut rng);
+        self.add_subrects(first_room, rng);
 
-        let rooms = self.rects.clone();
-        for r in rooms.iter() {
+        let rooms_copy = self.rects.clone();
+        for r in rooms_copy.iter() {
             let room = *r;
             rooms.push(room);
             for y in room.y1..room.y2 {

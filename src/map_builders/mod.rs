@@ -106,7 +106,7 @@ pub trait MetaMapBuilder {
 }
 
 pub fn random_builder(new_depth: i32, rng: &mut rltk::RandomNumberGenerator) -> BuilderChain {
-    let builder = BuilderChain::new(new_depth);
+    let mut builder = BuilderChain::new(new_depth);
     builder.start_with(SimpleMapBuilder::new());
     builder.with(RoomBasedSpawner::new());
     builder.with(RoomBasedStartingPosition::new());
