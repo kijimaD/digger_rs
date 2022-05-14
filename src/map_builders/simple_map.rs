@@ -1,9 +1,8 @@
 use super::{
-    apply_horizontal_tunnel, apply_room_to_map, apply_vertical_tunnel, spawner, BuilderMap,
-    InitialMapBuilder, Map, Position, Rect, TileType, SHOW_MAPGEN_VISUALIZER,
+    apply_horizontal_tunnel, apply_room_to_map, apply_vertical_tunnel, BuilderMap,
+    InitialMapBuilder, Rect,
 };
 use rltk::RandomNumberGenerator;
-use specs::prelude::*;
 
 pub struct SimpleMapBuilder {}
 
@@ -30,7 +29,7 @@ impl SimpleMapBuilder {
         const MAX_SIZE: i32 = 10;
         let mut rooms: Vec<Rect> = Vec::new();
 
-        for i in 0..MAX_ROOMS {
+        for _i in 0..MAX_ROOMS {
             let w = rng.range(MIN_SIZE, MAX_SIZE);
             let h = rng.range(MIN_SIZE, MAX_SIZE);
             let x = rng.roll_dice(1, build_data.map.width - w - 1) - 1;
@@ -48,7 +47,7 @@ impl SimpleMapBuilder {
 
                 if !rooms.is_empty() {
                     let (new_x, new_y) = new_room.center();
-                    let (prev_x, prev_y) = rooms[i as usize - 1].center();
+                    let (prev_x, prev_y) = rooms[rooms.len() - 1].center();
                     if rng.range(0, 2) == 1 {
                         apply_horizontal_tunnel(&mut build_data.map, prev_x, new_x, prev_y);
                         apply_vertical_tunnel(&mut build_data.map, prev_y, new_y, new_x);
