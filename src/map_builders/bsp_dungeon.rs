@@ -17,8 +17,8 @@ impl InitialMapBuilder for BspDungeonBuilder {
 }
 
 impl BspDungeonBuilder {
-    pub fn new(new_depth: i32) -> BspDungeonBuilder {
-        BspDungeonBuilder { rects: Vec::new() }
+    pub fn new() -> Box<BspDungeonBuilder> {
+        Box::new(BspDungeonBuilder { rects: Vec::new() })
     }
 
     fn build(&mut self, rng: &mut RandomNumberGenerator, build_data: &mut BuilderMap) {

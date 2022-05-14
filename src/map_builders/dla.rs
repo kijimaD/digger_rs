@@ -38,7 +38,7 @@ impl DLABuilder {
         })
     }
 
-    pub fn walk_inwards(new_depth: i32) -> Box<DLABuilder> {
+    pub fn walk_inwards() -> Box<DLABuilder> {
         Box::new(DLABuilder {
             algorithm: DLAAlgorithm::WalkInwards,
             brush_size: 1,
@@ -47,7 +47,7 @@ impl DLABuilder {
         })
     }
 
-    pub fn walk_outwards(new_depth: i32) -> Box<DLABuilder> {
+    pub fn walk_outwards() -> Box<DLABuilder> {
         Box::new(DLABuilder {
             algorithm: DLAAlgorithm::WalkOutwards,
             brush_size: 2,
@@ -56,7 +56,7 @@ impl DLABuilder {
         })
     }
 
-    pub fn central_attractor(new_depth: i32) -> Box<DLABuilder> {
+    pub fn central_attractor() -> Box<DLABuilder> {
         Box::new(DLABuilder {
             algorithm: DLAAlgorithm::CentralAttractor,
             brush_size: 2,
@@ -65,7 +65,7 @@ impl DLABuilder {
         })
     }
 
-    pub fn insectoid(new_depth: i32) -> Box<DLABuilder> {
+    pub fn insectoid() -> Box<DLABuilder> {
         Box::new(DLABuilder {
             algorithm: DLAAlgorithm::CentralAttractor,
             brush_size: 2,
