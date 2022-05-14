@@ -1,6 +1,6 @@
 use super::{
     generate_voronoi_spawn_regions, paint, remove_unreachable_areas_returning_most_distant,
-    spawner, BuilderMap, InitialMapBuilder, Map, Position, Symmetry, TileType,
+    spawner, BuilderMap, InitialMapBuilder, Map, MetaMapBuilder, Position, Symmetry, TileType,
     SHOW_MAPGEN_VISUALIZER,
 };
 use rltk::RandomNumberGenerator;
@@ -19,6 +19,13 @@ pub struct DLABuilder {
     brush_size: i32,
     symmetry: Symmetry,
     floor_percent: f32,
+}
+
+impl MetaMapBuilder for DLABuilder {
+    #[allow(dead_code)]
+    fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
+        self.build(rng, build_data);
+    }
 }
 
 impl InitialMapBuilder for DLABuilder {
@@ -71,6 +78,15 @@ impl DLABuilder {
             brush_size: 2,
             symmetry: Symmetry::Horizontal,
             floor_percent: 0.25,
+        })
+    }
+
+    pub fn heavy_erosion() -> Box<DLABuilder> {
+        Box::new(DLABuilder {
+            algorithm: DLAAlgorithm::WalkInwards,
+            brush_size: 2,
+            symmetry: Symmetry::None,
+            floor_percent: 0.35,
         })
     }
 

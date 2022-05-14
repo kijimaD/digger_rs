@@ -1,6 +1,6 @@
 use super::{
     generate_voronoi_spawn_regions, paint, remove_unreachable_areas_returning_most_distant,
-    spawner, BuilderMap, InitialMapBuilder, Map, Position, Symmetry, TileType,
+    spawner, BuilderMap, InitialMapBuilder, Map, MetaMapBuilder, Position, Symmetry, TileType,
     SHOW_MAPGEN_VISUALIZER,
 };
 use rltk::RandomNumberGenerator;
@@ -26,6 +26,13 @@ pub struct DrunkardsWalkBuilder {
 }
 
 impl InitialMapBuilder for DrunkardsWalkBuilder {
+    #[allow(dead_code)]
+    fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
+        self.build(rng, build_data);
+    }
+}
+
+impl MetaMapBuilder for DrunkardsWalkBuilder {
     #[allow(dead_code)]
     fn build_map(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
         self.build(rng, build_data);
