@@ -44,6 +44,8 @@ mod room_draw;
 use room_draw::RoomDrawer;
 mod rooms_corridors_nearest;
 use rooms_corridors_nearest::NearestCorridors;
+mod rooms_corridors_lines;
+use rooms_corridors_lines::StraightLineCorridors;
 
 pub struct BuilderMap {
     pub spawn_list: Vec<(usize, String)>,
