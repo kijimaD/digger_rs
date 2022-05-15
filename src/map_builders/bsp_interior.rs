@@ -1,6 +1,6 @@
 use super::{
-    apply_room_to_map, draw_corridor, spawner, BuilderMap, InitialMapBuilder, Map, Position, Rect,
-    TileType, SHOW_MAPGEN_VISUALIZER,
+    draw_corridor, spawner, BuilderMap, InitialMapBuilder, Map, Position, Rect, TileType,
+    SHOW_MAPGEN_VISUALIZER,
 };
 use rltk::RandomNumberGenerator;
 use specs::prelude::*;

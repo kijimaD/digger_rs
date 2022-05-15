@@ -1,7 +1,7 @@
 use super::{
-    apply_room_to_map, generate_voronoi_spawn_regions,
-    remove_unreachable_areas_returning_most_distant, spawner, BuilderMap, InitialMapBuilder, Map,
-    MetaMapBuilder, Position, Rect, TileType, SHOW_MAPGEN_VISUALIZER,
+    generate_voronoi_spawn_regions, remove_unreachable_areas_returning_most_distant, spawner,
+    BuilderMap, InitialMapBuilder, Map, MetaMapBuilder, Position, Rect, TileType,
+    SHOW_MAPGEN_VISUALIZER,
 };
 use rltk::RandomNumberGenerator;
 use specs::prelude::*;
