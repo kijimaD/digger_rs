@@ -1,5 +1,4 @@
-
-use super::{MetaMapBuilder, BuilderMap, Rect, draw_corridor };
+use super::{draw_corridor, BuilderMap, MetaMapBuilder, Rect};
 use rltk::RandomNumberGenerator;
 
 pub struct BspCorridors {}
@@ -13,7 +12,7 @@ impl MetaMapBuilder for BspCorridors {
 
 impl BspCorridors {
     pub fn new() -> Box<BspCorridors> {
-        Box::new(BspCorridors{})
+        Box::new(BspCorridors {})
     }
 
     fn corridors(&mut self, rng: &mut RandomNumberGenerator, build_data: &mut BuilderMap) {

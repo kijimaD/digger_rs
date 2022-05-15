@@ -129,7 +129,7 @@ fn random_start_position(rng: &mut rltk::RandomNumberGenerator) -> (XStart, YSta
     match xroll {
         1 => x = XStart::LEFT,
         2 => x = XStart::CENTER,
-        _ => x = XStart::RIGHT
+        _ => x = XStart::RIGHT,
     }
 
     let y;
@@ -137,7 +137,7 @@ fn random_start_position(rng: &mut rltk::RandomNumberGenerator) -> (XStart, YSta
     match yroll {
         1 => y = YStart::BOTTOM,
         2 => y = YStart::CENTER,
-        _ => y = YStart::TOP
+        _ => y = YStart::TOP,
     }
 
     (x, y)
@@ -172,7 +172,7 @@ pub fn random_builder(new_depth: i32, rng: &mut rltk::RandomNumberGenerator) -> 
     let type_roll = rng.roll_dice(1, 2);
     match type_roll {
         1 => random_room_builder(rng, &mut builder),
-        _ => random_shape_builder(rng, &mut builder)
+        _ => random_shape_builder(rng, &mut builder),
     }
     builder
 }
@@ -182,7 +182,7 @@ fn random_room_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut Buil
     match build_roll {
         1 => builder.start_with(SimpleMapBuilder::new()),
         2 => builder.start_with(BspDungeonBuilder::new()),
-        _ => builder.start_with(BspInteriorBuilder::new())
+        _ => builder.start_with(BspInteriorBuilder::new()),
     }
 
     if build_roll != 3 {
@@ -199,7 +199,7 @@ fn random_room_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut Buil
 
         match corridor_roll {
             1 => builder.with(DoglegCorridors::new()),
-            _ => builder.with(BspCorridors::new())
+            _ => builder.with(BspCorridors::new()),
         }
 
         let modifier_roll = rng.roll_dice(1, 6);
@@ -222,13 +222,13 @@ fn random_room_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut Buil
     let exit_roll = rng.roll_dice(1, 2);
     match exit_roll {
         1 => builder.with(RoomBasedStairs::new()),
-        _ => builder.with(DistantExit::new())
+        _ => builder.with(DistantExit::new()),
     }
 
     let spawn_roll = rng.roll_dice(1, 2);
     match spawn_roll {
         1 => builder.with(RoomBasedSpawner::new()),
-        _ => builder.with(VoronoiSpawning::new())
+        _ => builder.with(VoronoiSpawning::new()),
     }
 }
 
