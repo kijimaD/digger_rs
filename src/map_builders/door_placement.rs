@@ -16,19 +16,6 @@ impl DoorPlacement {
         Box::new(DoorPlacement{ })
     }
 
-    fn doors(&mut self, _rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
-        if let Some(halls_original) = &build_data.corridors {
-            let halls = halls_original.clone();
-            for hall in halls.iter() {
-                if hall.len() > 2 {
-                    if self.door_possible(build_data, hall[0]) {
-                        build_data.spawn_list.push((hall[0], "Door".to_string()));
-                    }
-                }
-            }
-        }
-    }
-
     fn door_possible(&self, build_data : &mut BuilderMap, idx : usize) -> bool {
         let x = idx % build_data.map.width as usize;
         let y = idx / build_data.map.width as usize;
@@ -60,5 +47,18 @@ impl DoorPlacement {
         }
 
         false
+    }
+
+    fn doors(&mut self, _rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
+        if let Some(halls_original) = &build_data.corridors {
+            let halls = halls_original.clone();
+            for hall in halls.iter() {
+                if hall.len() > 2 {
+                    if self.door_possible(build_data, hall[0]) {
+                        build_data.spawn_list.push((hall[0], "Door".to_string()));
+                    }
+                }
+            }
+        }
     }
 }

@@ -48,6 +48,8 @@ mod rooms_corridors_lines;
 use rooms_corridors_lines::StraightLineCorridors;
 mod room_corridor_spawner;
 use room_corridor_spawner::CorridorSpawner;
+mod door_placement;
+use door_placement::DoorPlacement;
 
 pub struct BuilderMap {
     pub spawn_list: Vec<(usize, String)>,
