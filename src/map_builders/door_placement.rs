@@ -31,6 +31,9 @@ impl DoorPlacement {
         let y = (idx / build_data.map.width as usize) as i32;
 
         // Check for east-west door possibility
+        // #######
+        //    +
+        // #######
         if build_data.map.tiles[idx] == TileType::Floor
             && (x > 1 && build_data.map.tiles[idx - 1] == TileType::Floor)
             && (x < build_data.map.width - 2 && build_data.map.tiles[idx + 1] == TileType::Floor)
@@ -43,6 +46,9 @@ impl DoorPlacement {
         }
 
         // Check for north-south door possibility
+        // # #
+        // #+#
+        // # #
         if build_data.map.tiles[idx] == TileType::Floor
             && (x > 1 && build_data.map.tiles[idx - 1] == TileType::Wall)
             && (x < build_data.map.width - 2 && build_data.map.tiles[idx + 1] == TileType::Wall)
