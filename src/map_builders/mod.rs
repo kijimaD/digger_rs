@@ -186,6 +186,8 @@ pub fn random_builder(new_depth: i32, rng: &mut rltk::RandomNumberGenerator) -> 
         1 => random_room_builder(rng, &mut builder),
         _ => random_shape_builder(rng, &mut builder),
     }
+
+    builder.with(DoorPlacement::new());
     builder
 }
 

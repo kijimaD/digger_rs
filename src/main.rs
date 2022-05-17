@@ -592,6 +592,8 @@ fn main() -> rltk::BError {
     gs.ecs.register::<ProvidesFood>();
     gs.ecs.register::<WantsToRemoveItem>();
     gs.ecs.register::<ParticleLifetime>();
+    gs.ecs.register::<BlocksVisibility>();
+    gs.ecs.register::<Door>();
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 

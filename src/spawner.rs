@@ -1,8 +1,8 @@
 use super::{
-    map::MAPWIDTH, random_table::RandomTable, BlocksTile, CombatStats, Consumable, DefenseBonus,
-    EquipmentSlot, Equippable, HungerClock, HungerState, Item, Map, MeleePowerBonus, Monster, Name,
-    Player, Position, ProvidesFood, ProvidesHealing, Rect, Renderable, SerializeMe, TileType,
-    Viewshed,
+    map::MAPWIDTH, random_table::RandomTable, BlocksTile, BlocksVisibility, CombatStats,
+    Consumable, DefenseBonus, Door, EquipmentSlot, Equippable, HungerClock, HungerState, Item, Map,
+    MeleePowerBonus, Monster, Name, Player, Position, ProvidesFood, ProvidesHealing, Rect,
+    Renderable, SerializeMe, TileType, Viewshed,
 };
 use rltk::{RandomNumberGenerator, RGB};
 use specs::prelude::*;
@@ -272,14 +272,17 @@ fn rations(ecs: &mut World, x: i32, y: i32) {
 
 fn door(ecs: &mut World, x: i32, y: i32) {
     ecs.create_entity()
-        .with(Position{x, y})
-        .with(Renderable{
+        .with(Position { x, y })
+        .with(Renderable {
             glyph: rltk::to_cp437('+'),
             fg: RGB::named(rltk::CHOCOLATE),
             bg: RGB::named(rltk::BLACK),
-            render_order: 2
+            render_order: 2,
         })
-        .with(Name{ name: "Door".to_string() })
+        .with(Name { name: "Door".to_string() })
+        .with(BlocksTile {})
+        .with(BlocksVisibility {})
+        .with(Door { open: false })
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
 }
