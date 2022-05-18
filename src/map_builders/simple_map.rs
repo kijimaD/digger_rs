@@ -1,4 +1,4 @@
-use super::{apply_horizontal_tunnel, apply_vertical_tunnel, BuilderMap, InitialMapBuilder, Rect};
+use super::{BuilderMap, InitialMapBuilder, Rect};
 use rltk::RandomNumberGenerator;
 
 pub struct SimpleMapBuilder {}
@@ -22,7 +22,7 @@ impl SimpleMapBuilder {
         const MAX_SIZE: i32 = 10;
         let mut rooms: Vec<Rect> = Vec::new();
 
-        for i in 0..MAX_ROOMS {
+        for _i in 0..MAX_ROOMS {
             let w = rng.range(MIN_SIZE, MAX_SIZE);
             let h = rng.range(MIN_SIZE, MAX_SIZE);
             let x = rng.roll_dice(1, build_data.map.width - w - 1) - 1;

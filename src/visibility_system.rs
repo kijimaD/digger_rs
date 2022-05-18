@@ -1,4 +1,4 @@
-use super::{BlocksVisibility, Map, Name, Player, Position, Viewshed};
+use super::{BlocksVisibility, Map, Player, Position, Viewshed};
 use rltk::{field_of_view, Point};
 use specs::prelude::*;
 

@@ -1,11 +1,5 @@
-use super::{
-    generate_voronoi_spawn_regions, paint, remove_unreachable_areas_returning_most_distant,
-    spawner, BuilderMap, InitialMapBuilder, Map, MetaMapBuilder, Position, Symmetry, TileType,
-    SHOW_MAPGEN_VISUALIZER,
-};
+use super::{paint, BuilderMap, InitialMapBuilder, MetaMapBuilder, Position, Symmetry, TileType};
 use rltk::RandomNumberGenerator;
-use specs::prelude::*;
-use std::collections::HashMap;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum DrunkSpawnMode {
@@ -40,6 +34,7 @@ impl MetaMapBuilder for DrunkardsWalkBuilder {
 }
 
 impl DrunkardsWalkBuilder {
+    #[allow(dead_code)]
     pub fn new(settings: DrunkardSettings) -> DrunkardsWalkBuilder {
         DrunkardsWalkBuilder { settings }
     }
