@@ -1,11 +1,5 @@
-use super::{
-    generate_voronoi_spawn_regions, remove_unreachable_areas_returning_most_distant, spawner,
-    BuilderMap, InitialMapBuilder, Map, MetaMapBuilder, Position, Rect, TileType,
-    SHOW_MAPGEN_VISUALIZER,
-};
+use super::{BuilderMap, InitialMapBuilder, MetaMapBuilder, TileType};
 use rltk::RandomNumberGenerator;
-use specs::prelude::*;
-use std::collections::HashMap;
 
 pub struct CellularAutomataBuilder {}
 

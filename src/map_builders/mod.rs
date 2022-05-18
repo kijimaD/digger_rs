@@ -48,6 +48,8 @@ mod rooms_corridors_lines;
 use rooms_corridors_lines::StraightLineCorridors;
 mod room_corridor_spawner;
 use room_corridor_spawner::CorridorSpawner;
+mod door_placement;
+use door_placement::DoorPlacement;
 
 pub struct BuilderMap {
     pub spawn_list: Vec<(usize, String)>,
@@ -153,30 +155,6 @@ fn random_start_position(rng: &mut rltk::RandomNumberGenerator) -> (XStart, YSta
     (x, y)
 }
 
-fn random_initial_builder(
-    rng: &mut rltk::RandomNumberGenerator,
-) -> (Box<dyn InitialMapBuilder>, bool) {
-    let builder = rng.roll_dice(1, 17);
-    let result: (Box<dyn InitialMapBuilder>, bool);
-    match builder {
-        1 => result = (BspDungeonBuilder::new(), true),
-        2 => result = (BspInteriorBuilder::new(), true),
-        3 => result = (CellularAutomataBuilder::new(), false),
-        4 => result = (DrunkardsWalkBuilder::open_area(), false),
-        5 => result = (DrunkardsWalkBuilder::open_halls(), false),
-        6 => result = (DrunkardsWalkBuilder::winding_passages(), false),
-        7 => result = (DrunkardsWalkBuilder::fat_passages(), false),
-        8 => result = (DrunkardsWalkBuilder::fearful_symmetry(), false),
-        9 => result = (MazeBuilder::new(), false),
-        10 => result = (DLABuilder::walk_inwards(), false),
-        11 => result = (DLABuilder::walk_outwards(), false),
-        12 => result = (DLABuilder::central_attractor(), false),
-        13 => result = (DLABuilder::insectoid(), false),
-        _ => result = (SimpleMapBuilder::new(), true),
-    }
-    result
-}
-
 pub fn random_builder(new_depth: i32, rng: &mut rltk::RandomNumberGenerator) -> BuilderChain {
     let mut builder = BuilderChain::new(new_depth);
     let type_roll = rng.roll_dice(1, 2);
@@ -184,6 +162,8 @@ pub fn random_builder(new_depth: i32, rng: &mut rltk::RandomNumberGenerator) -> 
         1 => random_room_builder(rng, &mut builder),
         _ => random_shape_builder(rng, &mut builder),
     }
+
+    builder.with(DoorPlacement::new());
     builder
 }
 
@@ -263,7 +243,8 @@ fn random_shape_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut Bui
         8 => builder.start_with(DLABuilder::walk_inwards()),
         9 => builder.start_with(DLABuilder::walk_outwards()),
         10 => builder.start_with(DLABuilder::central_attractor()),
-        _ => builder.start_with(DLABuilder::insectoid()),
+        11 => builder.start_with(DLABuilder::insectoid()),
+        _ => builder.start_with(DLABuilder::heavy_erosion()),
     }
 
     // Set the start to the center and cull

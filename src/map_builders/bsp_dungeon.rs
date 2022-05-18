@@ -1,9 +1,5 @@
-use super::{
-    apply_horizontal_tunnel, apply_vertical_tunnel, draw_corridor, spawner, BuilderMap,
-    InitialMapBuilder, Map, Position, Rect, TileType, SHOW_MAPGEN_VISUALIZER,
-};
+use super::{BuilderMap, InitialMapBuilder, Rect, TileType};
 use rltk::RandomNumberGenerator;
-use specs::prelude::*;
 
 pub struct BspDungeonBuilder {
     rects: Vec<Rect>,

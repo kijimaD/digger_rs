@@ -1,6 +1,7 @@
 use super::{
-    gamelog::GameLog, CombatStats, HungerClock, HungerState, Item, Map, Monster, Name, Player,
-    Position, RunState, State, TileType, Viewshed, WantsToEncounter, WantsToPickupItem,
+    gamelog::GameLog, BlocksTile, BlocksVisibility, CombatStats, Door, HungerClock, HungerState,
+    Item, Map, Monster, Name, Player, Position, Renderable, RunState, State, TileType, Viewshed,
+    WantsToEncounter, WantsToPickupItem,
 };
 use rltk::{Point, Rltk, VirtualKeyCode};
 use specs::prelude::*;
@@ -14,6 +15,10 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let combat_stats = ecs.read_storage::<CombatStats>();
     let map = ecs.fetch::<Map>();
     let mut wants_to_encounter = ecs.write_storage::<WantsToEncounter>();
+    let mut doors = ecs.write_storage::<Door>();
+    let mut blocks_visibility = ecs.write_storage::<BlocksVisibility>();
+    let mut blocks_movement = ecs.write_storage::<BlocksTile>();
+    let mut renderables = ecs.write_storage::<Renderable>();
 
     for (entity, _player, pos, viewshed) in
         (&entities, &players, &mut positions, &mut viewsheds).join()
@@ -34,6 +39,15 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
                     .insert(entity, WantsToEncounter { monster: *potential_target })
                     .expect("Unable to insert encounter");
                 return;
+            }
+            let door = doors.get_mut(*potential_target);
+            if let Some(door) = door {
+                door.open = true;
+                blocks_visibility.remove(*potential_target);
+                blocks_movement.remove(*potential_target);
+                let glyph = renderables.get_mut(*potential_target).unwrap();
+                glyph.glyph = rltk::to_cp437('/');
+                viewshed.dirty = true;
             }
         }
 

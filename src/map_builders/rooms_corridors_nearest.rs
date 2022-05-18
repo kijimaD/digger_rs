@@ -1,5 +1,4 @@
 use super::{draw_corridor, BuilderMap, MetaMapBuilder, Rect};
-use rltk::RandomNumberGenerator;
 use std::collections::HashSet;
 
 pub struct NearestCorridors {}
@@ -17,7 +16,7 @@ impl NearestCorridors {
         Box::new(NearestCorridors {})
     }
 
-    fn corridors(&mut self, rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
+    fn corridors(&mut self, _rng: &mut rltk::RandomNumberGenerator, build_data: &mut BuilderMap) {
         let rooms: Vec<Rect>;
         if let Some(rooms_builder) = &build_data.rooms {
             rooms = rooms_builder.clone();

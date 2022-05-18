@@ -32,7 +32,7 @@ impl RoomSorter {
                 build_data.rooms.as_mut().unwrap().sort_by(|a, b| a.x1.cmp(&b.x1))
             }
             RoomSort::RIGHTMOST => {
-                build_data.rooms.as_mut().unwrap().sort_by(|a, b| a.x2.cmp(&a.x2))
+                build_data.rooms.as_mut().unwrap().sort_by(|a, b| b.x2.cmp(&a.x2))
             }
             RoomSort::TOPMOST => build_data.rooms.as_mut().unwrap().sort_by(|a, b| a.y1.cmp(&b.y1)),
             RoomSort::BOTTOMMOST => {

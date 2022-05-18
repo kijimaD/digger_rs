@@ -1,5 +1,4 @@
 use super::{BuilderMap, MetaMapBuilder, Rect, TileType};
-use rltk::RandomNumberGenerator;
 
 pub struct RoomDrawer {}
 
