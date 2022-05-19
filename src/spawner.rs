@@ -131,13 +131,13 @@ pub fn spawn_entity(ecs: &mut World, spawn: &(&usize, &String)) {
 }
 
 fn orc(ecs: &mut World, x: i32, y: i32) {
-    monster(ecs, x, y, rltk::to_cp437('o'));
+    monster(ecs, x, y, rltk::to_cp437('o'), "Orc");
 }
 fn goblin(ecs: &mut World, x: i32, y: i32) {
-    monster(ecs, x, y, rltk::to_cp437('g'));
+    monster(ecs, x, y, rltk::to_cp437('g'), "Goblin");
 }
 
-fn monster(ecs: &mut World, x: i32, y: i32, glyph: rltk::FontCharType) {
+fn monster<S: ToString>(ecs: &mut World, x: i32, y: i32, glyph: rltk::FontCharType, name: S) {
     ecs.create_entity()
         .with(Position { x, y })
         .with(Renderable {
@@ -149,6 +149,7 @@ fn monster(ecs: &mut World, x: i32, y: i32, glyph: rltk::FontCharType) {
         .with(Viewshed { visible_tiles: Vec::new(), range: 8, dirty: true })
         .with(Monster {})
         .with(BlocksTile {})
+        .with(Name { name: name.to_string() })
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
 }
