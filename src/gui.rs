@@ -1,6 +1,6 @@
 use super::{
-    gamelog::BattleLog, gamelog::GameLog, Battle, CombatStats, Consumable, Equipped, HungerClock,
-    HungerState, InBackpack, Map, Monster, Name, Player, Position, RunState, State,
+    camera, gamelog::BattleLog, gamelog::GameLog, Battle, CombatStats, Consumable, Equipped,
+    HungerClock, HungerState, InBackpack, Map, Monster, Name, Player, Position, RunState, State,
 };
 use rltk::{Point, RandomNumberGenerator, Rltk, VirtualKeyCode, RGB};
 use specs::prelude::*;
@@ -73,18 +73,30 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
 }
 
 fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
+    let (min_x, _max_x, min_y, _max_y) = camera::get_screen_bounds(ecs, ctx);
     let map = ecs.fetch::<Map>();
     let names = ecs.read_storage::<Name>();
     let positions = ecs.read_storage::<Position>();
 
     let mouse_pos = ctx.mouse_pos();
-    if mouse_pos.0 >= map.width || mouse_pos.1 >= map.height {
+    let mut mouse_map_pos = mouse_pos;
+    mouse_map_pos.0 += min_x;
+    mouse_map_pos.1 += min_y;
+    if mouse_map_pos.0 >= map.width - 1
+        || mouse_map_pos.1 >= map.height - 1
+        || mouse_map_pos.0 < 1
+        || mouse_map_pos.1 < 1
+    {
+        return;
+    }
+    if !map.visible_tiles[map.xy_idx(mouse_map_pos.0, mouse_map_pos.1)] {
         return;
     }
     let mut tooltip: Vec<String> = Vec::new();
     for (name, position) in (&names, &positions).join() {
         let idx = map.xy_idx(position.x, position.y);
-        if position.x == mouse_pos.0 && position.y == mouse_pos.1 && map.visible_tiles[idx] {
+        if position.x == mouse_map_pos.0 && position.y == mouse_map_pos.1 && map.visible_tiles[idx]
+        {
             tooltip.push(name.name.to_string());
         }
     }
