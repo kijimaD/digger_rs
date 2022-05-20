@@ -28,6 +28,7 @@ mod gui;
 mod inventory_system;
 mod spawner;
 use inventory_system::{ItemCollectionSystem, ItemDropSystem, ItemRemoveSystem, ItemUseSystem};
+pub mod camera;
 mod hunger_system;
 pub mod map_builders;
 mod particle_system;
@@ -115,7 +116,7 @@ impl State {
         self.mapgen_history.clear();
 
         let mut rng = self.ecs.write_resource::<rltk::RandomNumberGenerator>();
-        let mut builder = map_builders::random_builder(new_depth, &mut rng);
+        let mut builder = map_builders::random_builder(new_depth, &mut rng, 80, 50);
         builder.build_map(&mut rng);
         self.mapgen_history = builder.build_data.history.clone();
         let player_start;
@@ -171,24 +172,8 @@ impl GameState for State {
             | RunState::BattleTargeting
             | RunState::BattleResult => {}
             _ => {
-                draw_map(&self.ecs.fetch::<Map>(), ctx);
-
-                {
-                    let positions = self.ecs.read_storage::<Position>();
-                    let renderables = self.ecs.read_storage::<Renderable>();
-                    let map = self.ecs.fetch::<Map>();
-
-                    let mut data = (&positions, &renderables).join().collect::<Vec<_>>();
-                    data.sort_by(|&a, &b| b.1.render_order.cmp(&a.1.render_order));
-                    for (pos, render) in data.iter() {
-                        let idx = map.xy_idx(pos.x, pos.y);
-                        if map.visible_tiles[idx] {
-                            ctx.set(pos.x, pos.y, render.fg, render.bg, render.glyph)
-                        }
-                    }
-
-                    gui::draw_ui(&self.ecs, ctx);
-                }
+                camera::render_camera(&self.ecs, ctx);
+                gui::draw_ui(&self.ecs, ctx);
             }
         }
 
@@ -212,7 +197,9 @@ impl GameState for State {
                     newrunstate = self.mapgen_next_state.unwrap();
                 }
                 ctx.cls();
-                draw_map(&self.mapgen_history[self.mapgen_index], ctx);
+                if self.mapgen_index < self.mapgen_history.len() {
+                    camera::render_debug_map(&self.mapgen_history[self.mapgen_index], ctx);
+                }
 
                 self.mapgen_timer += ctx.frame_time_ms;
                 if self.mapgen_timer > 300.0 {
@@ -597,7 +584,7 @@ fn main() -> rltk::BError {
 
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
-    gs.ecs.insert(Map::new(1));
+    gs.ecs.insert(Map::new(1, 64, 64));
     gs.ecs.insert(Point::new(0, 0));
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
     let player_entity = spawner::player(&mut gs.ecs, 0, 0);

@@ -1,8 +1,8 @@
 use super::{
-    map::MAPWIDTH, random_table::RandomTable, BlocksTile, BlocksVisibility, CombatStats,
-    Consumable, DefenseBonus, Door, EquipmentSlot, Equippable, HungerClock, HungerState, Item, Map,
-    MeleePowerBonus, Monster, Name, Player, Position, ProvidesFood, ProvidesHealing, Rect,
-    Renderable, SerializeMe, TileType, Viewshed,
+    random_table::RandomTable, BlocksTile, BlocksVisibility, CombatStats, Consumable, DefenseBonus,
+    Door, EquipmentSlot, Equippable, HungerClock, HungerState, Item, Map, MeleePowerBonus, Monster,
+    Name, Player, Position, ProvidesFood, ProvidesHealing, Rect, Renderable, SerializeMe, TileType,
+    Viewshed,
 };
 use rltk::{RandomNumberGenerator, RGB};
 use specs::prelude::*;
@@ -113,8 +113,11 @@ pub fn spawn_region(
 }
 
 pub fn spawn_entity(ecs: &mut World, spawn: &(&usize, &String)) {
-    let x = (*spawn.0 % MAPWIDTH) as i32;
-    let y = (*spawn.0 / MAPWIDTH) as i32;
+    let map = ecs.fetch::<Map>();
+    let width = map.width as usize;
+    let x = (*spawn.0 % width) as i32;
+    let y = (*spawn.0 / width) as i32;
+    std::mem::drop(map);
 
     match spawn.1.as_ref() {
         "Goblin" => goblin(ecs, x, y),
@@ -131,13 +134,13 @@ pub fn spawn_entity(ecs: &mut World, spawn: &(&usize, &String)) {
 }
 
 fn orc(ecs: &mut World, x: i32, y: i32) {
-    monster(ecs, x, y, rltk::to_cp437('o'));
+    monster(ecs, x, y, rltk::to_cp437('o'), "Orc");
 }
 fn goblin(ecs: &mut World, x: i32, y: i32) {
-    monster(ecs, x, y, rltk::to_cp437('g'));
+    monster(ecs, x, y, rltk::to_cp437('g'), "Goblin");
 }
 
-fn monster(ecs: &mut World, x: i32, y: i32, glyph: rltk::FontCharType) {
+fn monster<S: ToString>(ecs: &mut World, x: i32, y: i32, glyph: rltk::FontCharType, name: S) {
     ecs.create_entity()
         .with(Position { x, y })
         .with(Renderable {
@@ -149,6 +152,7 @@ fn monster(ecs: &mut World, x: i32, y: i32, glyph: rltk::FontCharType) {
         .with(Viewshed { visible_tiles: Vec::new(), range: 8, dirty: true })
         .with(Monster {})
         .with(BlocksTile {})
+        .with(Name { name: name.to_string() })
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
 }
@@ -156,6 +160,8 @@ fn monster(ecs: &mut World, x: i32, y: i32, glyph: rltk::FontCharType) {
 pub fn b_orc(ecs: &mut World) {
     battle_monster(ecs, "Orc");
 }
+
+#[allow(dead_code)]
 pub fn b_goblin(ecs: &mut World) {
     battle_monster(ecs, "Goblin");
 }
