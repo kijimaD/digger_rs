@@ -36,6 +36,8 @@ pub mod random_table;
 pub mod rex_assets;
 pub mod saveload_system;
 pub mod raws;
+#[macro_use]
+extern crate lazy_static;
 
 const SHOW_MAPGEN_VISUALIZER: bool = true;
 
