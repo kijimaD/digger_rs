@@ -1,8 +1,7 @@
 use super::{
-    random_table::RandomTable, raws::*, BlocksTile, BlocksVisibility, CombatStats, Consumable,
-    DefenseBonus, Door, EquipmentSlot, Equippable, HungerClock, HungerState, Item, Map,
-    MeleePowerBonus, Monster, Name, Player, Position, ProvidesFood, ProvidesHealing, Rect,
-    Renderable, SerializeMe, TileType, Viewshed,
+    random_table::RandomTable, raws::*, BlocksTile, BlocksVisibility, CombatStats, Door,
+    HungerClock, HungerState, Map, Monster, Name, Player, Position, Rect, Renderable, SerializeMe,
+    TileType, Viewshed,
 };
 use rltk::{RandomNumberGenerator, RGB};
 use specs::prelude::*;
@@ -133,10 +132,6 @@ pub fn spawn_entity(ecs: &mut World, spawn: &(&usize, &String)) {
     match spawn.1.as_ref() {
         "Goblin" => goblin(ecs, x, y),
         "Orc" => orc(ecs, x, y),
-        "Dagger" => dagger(ecs, x, y),
-        "Shield" => shield(ecs, x, y),
-        "Longsword" => longsword(ecs, x, y),
-        "Tower Shield" => tower_shield(ecs, x, y),
         "Door" => door(ecs, x, y),
         _ => {}
     }
@@ -180,108 +175,6 @@ fn battle_monster<S: ToString>(ecs: &mut World, name: S) {
         .with(Monster {})
         .with(Name { name: name.to_string() })
         .with(CombatStats { max_hp: 16, hp: 16, defense: 1, power: 4 })
-        .build();
-}
-
-fn health_potion(ecs: &mut World, x: i32, y: i32) {
-    ecs.create_entity()
-        .with(Position { x, y })
-        .with(Renderable {
-            glyph: rltk::to_cp437('¡'),
-            fg: RGB::named(rltk::MAGENTA),
-            bg: RGB::named(rltk::BLACK),
-            render_order: 2,
-        })
-        .with(Name { name: "Health Potion".to_string() })
-        .with(Item {})
-        .with(Consumable {})
-        .with(ProvidesHealing { heal_amount: 8 })
-        .marked::<SimpleMarker<SerializeMe>>()
-        .build();
-}
-
-fn dagger(ecs: &mut World, x: i32, y: i32) {
-    ecs.create_entity()
-        .with(Position { x, y })
-        .with(Renderable {
-            glyph: rltk::to_cp437('/'),
-            fg: RGB::named(rltk::CYAN),
-            bg: RGB::named(rltk::BLACK),
-            render_order: 2,
-        })
-        .with(Name { name: "Dagger".to_string() })
-        .with(Item {})
-        .with(Equippable { slot: EquipmentSlot::Melee })
-        .with(MeleePowerBonus { power: 2 })
-        .marked::<SimpleMarker<SerializeMe>>()
-        .build();
-}
-
-fn shield(ecs: &mut World, x: i32, y: i32) {
-    ecs.create_entity()
-        .with(Position { x, y })
-        .with(Renderable {
-            glyph: rltk::to_cp437('('),
-            fg: RGB::named(rltk::CYAN),
-            bg: RGB::named(rltk::BLACK),
-            render_order: 2,
-        })
-        .with(Name { name: "Shield".to_string() })
-        .with(Item {})
-        .with(Equippable { slot: EquipmentSlot::Shield })
-        .with(DefenseBonus { defense: 1 })
-        .marked::<SimpleMarker<SerializeMe>>()
-        .build();
-}
-
-fn longsword(ecs: &mut World, x: i32, y: i32) {
-    ecs.create_entity()
-        .with(Position { x, y })
-        .with(Renderable {
-            glyph: rltk::to_cp437('/'),
-            fg: RGB::named(rltk::YELLOW),
-            bg: RGB::named(rltk::BLACK),
-            render_order: 2,
-        })
-        .with(Name { name: "Longsword".to_string() })
-        .with(Item {})
-        .with(Equippable { slot: EquipmentSlot::Melee })
-        .with(MeleePowerBonus { power: 4 })
-        .marked::<SimpleMarker<SerializeMe>>()
-        .build();
-}
-
-fn tower_shield(ecs: &mut World, x: i32, y: i32) {
-    ecs.create_entity()
-        .with(Position { x, y })
-        .with(Renderable {
-            glyph: rltk::to_cp437('('),
-            fg: RGB::named(rltk::YELLOW),
-            bg: RGB::named(rltk::BLACK),
-            render_order: 2,
-        })
-        .with(Name { name: "Tower Shield".to_string() })
-        .with(Item {})
-        .with(Equippable { slot: EquipmentSlot::Shield })
-        .with(DefenseBonus { defense: 3 })
-        .marked::<SimpleMarker<SerializeMe>>()
-        .build();
-}
-
-fn rations(ecs: &mut World, x: i32, y: i32) {
-    ecs.create_entity()
-        .with(Position { x, y })
-        .with(Renderable {
-            glyph: rltk::to_cp437('%'),
-            fg: RGB::named(rltk::GREEN),
-            bg: RGB::named(rltk::BLACK),
-            render_order: 2,
-        })
-        .with(Name { name: "Rations".to_string() })
-        .with(Item {})
-        .with(ProvidesFood {})
-        .with(Consumable {})
-        .marked::<SimpleMarker<SerializeMe>>()
         .build();
 }
 

@@ -68,6 +68,7 @@ pub fn spawn_named_item(
                     "damage" => {
                         eb = eb.with(InflictsDamage { damage: effect.1.parse::<i32>().unwrap() })
                     }
+                    "food" => eb = eb.with(ProvidesFood {}),
                     _ => {
                         rltk::console::log(format!(
                             "Warning: consumable effect {} not implemented.",
@@ -76,6 +77,16 @@ pub fn spawn_named_item(
                     }
                 }
             }
+        }
+
+        if let Some(weapon) = &item_template.weapon {
+            eb = eb.with(Equippable { slot: EquipmentSlot::Melee });
+            eb = eb.with(MeleePowerBonus { power: weapon.power_bonus });
+        }
+
+        if let Some(shield) = &item_template.shield {
+            eb = eb.with(Equippable { slot: EquipmentSlot::Shield });
+            eb = eb.with(DefenseBonus { defense: shield.defense_bonus });
         }
 
         return Some(eb.build());
