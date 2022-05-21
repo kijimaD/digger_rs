@@ -33,9 +33,9 @@ mod hunger_system;
 pub mod map_builders;
 mod particle_system;
 pub mod random_table;
+pub mod raws;
 pub mod rex_assets;
 pub mod saveload_system;
-pub mod raws;
 #[macro_use]
 extern crate lazy_static;
 

@@ -1,8 +1,8 @@
 use super::{
-    random_table::RandomTable, BlocksTile, BlocksVisibility, CombatStats, Consumable, DefenseBonus,
-    Door, EquipmentSlot, Equippable, HungerClock, HungerState, Item, Map, MeleePowerBonus, Monster,
-    Name, Player, Position, ProvidesFood, ProvidesHealing, Rect, Renderable, SerializeMe, TileType,
-    Viewshed,
+    random_table::RandomTable, raws::*, BlocksTile, BlocksVisibility, CombatStats, Consumable,
+    DefenseBonus, Door, EquipmentSlot, Equippable, HungerClock, HungerState, Item, Map,
+    MeleePowerBonus, Monster, Name, Player, Position, ProvidesFood, ProvidesHealing, Rect,
+    Renderable, SerializeMe, TileType, Viewshed,
 };
 use rltk::{RandomNumberGenerator, RGB};
 use specs::prelude::*;
@@ -119,15 +119,24 @@ pub fn spawn_entity(ecs: &mut World, spawn: &(&usize, &String)) {
     let y = (*spawn.0 / width) as i32;
     std::mem::drop(map);
 
+    let item_result = spawn_named_item(
+        &RAWS.lock().unwrap(),
+        ecs.create_entity(),
+        &spawn.1,
+        SpawnType::AtPosition { x, y },
+    );
+    if item_result.is_some() {
+        // we succeeded in spawning something from the data
+        return;
+    }
+
     match spawn.1.as_ref() {
         "Goblin" => goblin(ecs, x, y),
         "Orc" => orc(ecs, x, y),
-        "Health Potion" => health_potion(ecs, x, y),
         "Dagger" => dagger(ecs, x, y),
         "Shield" => shield(ecs, x, y),
         "Longsword" => longsword(ecs, x, y),
         "Tower Shield" => tower_shield(ecs, x, y),
-        "Rations" => rations(ecs, x, y),
         "Door" => door(ecs, x, y),
         _ => {}
     }
