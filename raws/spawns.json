@@ -129,5 +129,19 @@
       },
       "vision_range": 8
     }
+  ],
+  "props": [
+    {
+      "name": "Door",
+      "renderable": {
+        "glyph": "+",
+        "fg": "#805A46",
+        "bg": "#000000",
+        "order": 2
+      },
+      "blocks_tile": true,
+      "blocks_visibility": true,
+      "door_open": true
+    }
   ]
 }
