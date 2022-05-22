@@ -1,96 +1,133 @@
 {
-    "items" : [
-        {
-        "name" : "Health Potion",
-        "renderable": {
-            "glyph" : "¡",
-            "fg" : "#FF00FF",
-            "bg" : "#000000",
-            "order" : 2
-        },
-        "consumable" : {
-            "effects" : { "provides_healing" : "8" }
+  "items": [
+    {
+      "name": "Health Potion",
+      "renderable": {
+        "glyph": "¡",
+        "fg": "#FF00FF",
+        "bg": "#000000",
+        "order": 2
+      },
+      "consumable": {
+        "effects": {
+          "provides_healing": "8"
         }
-    },
-
-        {
-        "name" : "Magic Missile Scroll",
-        "renderable": {
-            "glyph" : ")",
-            "fg" : "#00FFFF",
-            "bg" : "#000000",
-            "order" : 2
-        },
-        "consumable" : {
-            "effects" : {
-                "ranged" : "6",
-                "damage" : "20"
-            }
-        }
+      }
     },
     {
-        "name" : "Rations",
-        "renderable": {
-            "glyph" : "%",
-            "fg" : "#00FF00",
-            "bg" : "#000000",
-            "order" : 2
-        },
-        "consumable" : {
-            "effects" : {
-                "food" : ""
-            }
+      "name": "Magic Missile Scroll",
+      "renderable": {
+        "glyph": ")",
+        "fg": "#00FFFF",
+        "bg": "#000000",
+        "order": 2
+      },
+      "consumable": {
+        "effects": {
+          "ranged": "6",
+          "damage": "20"
         }
+      }
     },
-        {
-        "name" : "Dagger",
-        "renderable": {
-            "glyph" : "/",
-            "fg" : "#FFAAAA",
-            "bg" : "#000000",
-            "order" : 2
-        },
-        "weapon" : {
-            "range" : "melee",
-            "power_bonus" : 2
+    {
+      "name": "Rations",
+      "renderable": {
+        "glyph": "%",
+        "fg": "#00FF00",
+        "bg": "#000000",
+        "order": 2
+      },
+      "consumable": {
+        "effects": {
+          "food": ""
         }
+      }
     },
-        {
-        "name" : "Longsword",
-        "renderable": {
-            "glyph" : "/",
-            "fg" : "#FFAAFF",
-            "bg" : "#000000",
-            "order" : 2
-        },
-        "weapon" : {
-            "range" : "melee",
-            "power_bonus" : 4
-        }
+    {
+      "name": "Dagger",
+      "renderable": {
+        "glyph": "/",
+        "fg": "#FFAAAA",
+        "bg": "#000000",
+        "order": 2
+      },
+      "weapon": {
+        "range": "melee",
+        "power_bonus": 2
+      }
     },
-        {
-        "name" : "Shield",
-        "renderable": {
-            "glyph" : "[",
-            "fg" : "#00AAFF",
-            "bg" : "#000000",
-            "order" : 2
-        },
-        "shield" : {
-            "defense_bonus" : 1
-        }
+    {
+      "name": "Longsword",
+      "renderable": {
+        "glyph": "/",
+        "fg": "#FFAAFF",
+        "bg": "#000000",
+        "order": 2
+      },
+      "weapon": {
+        "range": "melee",
+        "power_bonus": 4
+      }
     },
-        {
-        "name" : "Tower Shield",
-        "renderable": {
-            "glyph" : "[",
-            "fg" : "#00FFFF",
-            "bg" : "#000000",
-            "order" : 2
-        },
-        "shield" : {
-            "defense_bonus" : 3
-        }
+    {
+      "name": "Shield",
+      "renderable": {
+        "glyph": "[",
+        "fg": "#00AAFF",
+        "bg": "#000000",
+        "order": 2
+      },
+      "shield": {
+        "defense_bonus": 1
+      }
+    },
+    {
+      "name": "Tower Shield",
+      "renderable": {
+        "glyph": "[",
+        "fg": "#00FFFF",
+        "bg": "#000000",
+        "order": 2
+      },
+      "shield": {
+        "defense_bonus": 3
+      }
     }
-    ]
+  ],
+  "mobs": [
+    {
+      "name": "Orc",
+      "renderable": {
+        "glyph": "o",
+        "fg": "#FF0000",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "stats": {
+        "max_hp": 16,
+        "hp": 16,
+        "defense": 1,
+        "power": 4
+      },
+      "vision_range": 8
+    },
+    {
+      "name": "Goblin",
+      "renderable": {
+        "glyph": "g",
+        "fg": "#FF0000",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "stats": {
+        "max_hp": 8,
+        "hp": 8,
+        "defense": 1,
+        "power": 3
+      },
+      "vision_range": 8
+    }
+  ]
 }
