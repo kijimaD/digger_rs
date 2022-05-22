@@ -15,21 +15,6 @@
       }
     },
     {
-      "name": "Magic Missile Scroll",
-      "renderable": {
-        "glyph": ")",
-        "fg": "#00FFFF",
-        "bg": "#000000",
-        "order": 2
-      },
-      "consumable": {
-        "effects": {
-          "ranged": "6",
-          "damage": "20"
-        }
-      }
-    },
-    {
       "name": "Rations",
       "renderable": {
         "glyph": "%",
@@ -104,12 +89,6 @@
         "order": 1
       },
       "blocks_tile": true,
-      "stats": {
-        "max_hp": 16,
-        "hp": 16,
-        "defense": 1,
-        "power": 4
-      },
       "vision_range": 8
     },
     {
@@ -121,12 +100,6 @@
         "order": 1
       },
       "blocks_tile": true,
-      "stats": {
-        "max_hp": 8,
-        "hp": 8,
-        "defense": 1,
-        "power": 3
-      },
       "vision_range": 8
     }
   ],
