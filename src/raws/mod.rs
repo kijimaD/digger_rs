@@ -19,7 +19,7 @@ lazy_static! {
 pub struct Raws {
     pub items: Vec<Item>,
     pub mobs: Vec<Mob>,
-    pub props: Vec<Prop>
+    pub props: Vec<Prop>,
 }
 
 pub fn load_raws() {

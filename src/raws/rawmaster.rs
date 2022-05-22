@@ -11,7 +11,7 @@ pub struct RawMaster {
     raws: Raws,
     item_index: HashMap<String, usize>,
     mob_index: HashMap<String, usize>,
-    prop_index: HashMap<String, usize>
+    prop_index: HashMap<String, usize>,
 }
 
 impl RawMaster {
@@ -20,7 +20,7 @@ impl RawMaster {
             raws: Raws { items: Vec::new(), mobs: Vec::new(), props: Vec::new() },
             item_index: HashMap::new(),
             mob_index: HashMap::new(),
-            prop_index: HashMap::new()
+            prop_index: HashMap::new(),
         }
     }
 
@@ -136,7 +136,12 @@ pub fn spawn_named_mob(
     None
 }
 
-pub fn spawn_named_prop(raws: &RawMaster, new_entity: EntityBuilder, key: &str, pos: SpawnType) -> Option<Entity> {
+pub fn spawn_named_prop(
+    raws: &RawMaster,
+    new_entity: EntityBuilder,
+    key: &str,
+    pos: SpawnType,
+) -> Option<Entity> {
     if raws.prop_index.contains_key(key) {
         let prop_template = &raws.raws.props[raws.prop_index[key]];
 
@@ -148,16 +153,20 @@ pub fn spawn_named_prop(raws: &RawMaster, new_entity: EntityBuilder, key: &str, 
             eb = eb.with(get_renderable_component(renderable));
         }
 
-        eb = eb.with(Name{ name: prop_template.name.clone() });
+        eb = eb.with(Name { name: prop_template.name.clone() });
 
         if let Some(blocks_tile) = prop_template.blocks_tile {
-            if blocks_tile { eb = eb.with(BlocksTile{}) };
+            if blocks_tile {
+                eb = eb.with(BlocksTile {})
+            };
         }
         if let Some(blocks_visibility) = prop_template.blocks_visibility {
-            if blocks_visibility { eb = eb.with(BlocksVisibility{}) };
+            if blocks_visibility {
+                eb = eb.with(BlocksVisibility {})
+            };
         }
         if let Some(door_open) = prop_template.door_open {
-            eb = eb.with(Door{ open: door_open });
+            eb = eb.with(Door { open: door_open });
         }
 
         return Some(eb.build());
@@ -165,7 +174,12 @@ pub fn spawn_named_prop(raws: &RawMaster, new_entity: EntityBuilder, key: &str, 
     None
 }
 
-pub fn spawn_named_entity(raws: &RawMaster, new_entity: EntityBuilder, key: &str, pos: SpawnType) -> Option<Entity> {
+pub fn spawn_named_entity(
+    raws: &RawMaster,
+    new_entity: EntityBuilder,
+    key: &str,
+    pos: SpawnType,
+) -> Option<Entity> {
     if raws.item_index.contains_key(key) {
         return spawn_named_item(raws, new_entity, key, pos);
     } else if raws.mob_index.contains_key(key) {
