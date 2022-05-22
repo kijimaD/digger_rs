@@ -71,9 +71,6 @@ pub fn spawn_named_item(
                         eb = eb
                             .with(ProvidesHealing { heal_amount: effect.1.parse::<i32>().unwrap() })
                     }
-                    "damage" => {
-                        eb = eb.with(InflictsDamage { damage: effect.1.parse::<i32>().unwrap() })
-                    }
                     "food" => eb = eb.with(ProvidesFood {}),
                     _ => {
                         rltk::console::log(format!(

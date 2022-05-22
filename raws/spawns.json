@@ -37,7 +37,6 @@
         "order": 2
       },
       "weapon": {
-        "range": "melee",
         "power_bonus": 2
       }
     },
@@ -50,7 +49,6 @@
         "order": 2
       },
       "weapon": {
-        "range": "melee",
         "power_bonus": 4
       }
     },

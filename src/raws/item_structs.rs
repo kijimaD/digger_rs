@@ -25,7 +25,6 @@ pub struct Consumable {
 
 #[derive(Deserialize, Debug)]
 pub struct Weapon {
-    pub range: String,
     pub power_bonus: i32,
 }
 
