@@ -42,8 +42,8 @@ fn room_table(map_depth: i32) -> RandomTable {
         .add("Orc", 1 + map_depth)
         .add("Health Potion", 7)
         .add("Dagger", 3)
-        .add("Shield", 3)
         .add("Longsword", map_depth - 1)
+        .add("Shield", 3)
         .add("Tower Shield", map_depth - 1)
         .add("Rations", 10)
 }
