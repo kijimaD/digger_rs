@@ -2,7 +2,7 @@ use super::Raws;
 use crate::components::*;
 use crate::random_table::RandomTable;
 use specs::prelude::*;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 pub enum SpawnType {
     AtPosition { x: i32, y: i32 },
@@ -33,14 +33,42 @@ impl RawMaster {
     pub fn load(&mut self, raws: Raws) {
         self.raws = raws;
         self.item_index = HashMap::new();
+        let mut used_names: HashSet<String> = HashSet::new();
         for (i, item) in self.raws.items.iter().enumerate() {
+            if used_names.contains(&item.name) {
+                rltk::console::log(format!(
+                    "WARNING - duplicate item name in raws [{}]",
+                    item.name
+                ));
+            }
             self.item_index.insert(item.name.clone(), i);
+            used_names.insert(item.name.clone());
         }
         for (i, mob) in self.raws.mobs.iter().enumerate() {
+            if used_names.contains(&mob.name) {
+                rltk::console::log(format!("WARNING - duplicate mob name in raws [{}]", mob.name));
+            }
             self.mob_index.insert(mob.name.clone(), i);
+            used_names.insert(mob.name.clone());
         }
         for (i, prop) in self.raws.props.iter().enumerate() {
+            if used_names.contains(&prop.name) {
+                rltk::console::log(format!(
+                    "WARNING - duplicate prop name in raws [{}]",
+                    prop.name
+                ));
+            }
             self.prop_index.insert(prop.name.clone(), i);
+            used_names.insert(prop.name.clone());
+        }
+
+        for spawn in self.raws.spawn_table.iter() {
+            if !used_names.contains(&spawn.name) {
+                rltk::console::log(format!(
+                    "WARNING! - Spawn tables references unspecified entity {}",
+                    spawn.name
+                ));
+            }
         }
     }
 }
