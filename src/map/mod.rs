@@ -2,13 +2,8 @@ use rltk::{Algorithm2D, BaseMap, Point, Rltk, RGB};
 use serde::{Deserialize, Serialize};
 use specs::prelude::*;
 use std::collections::HashSet;
-
-#[derive(PartialEq, Copy, Clone, Serialize, Deserialize)]
-pub enum TileType {
-    Wall,
-    Floor,
-    DownStairs,
-}
+mod tiletype;
+pub use tiletype::{TileType, tile_walkable, tile_opaque};
 
 #[derive(Default, Serialize, Deserialize, Clone)]
 pub struct Map {
@@ -42,7 +37,7 @@ impl Map {
 
     pub fn populate_blocked(&mut self) {
         for (i, tile) in self.tiles.iter_mut().enumerate() {
-            self.blocked[i] = *tile == TileType::Wall;
+            self.blocked[i] = !tile_walkable(*tile);
         }
     }
 
@@ -73,7 +68,11 @@ impl Map {
 impl BaseMap for Map {
     fn is_opaque(&self, idx: usize) -> bool {
         let idx_u = idx as usize;
-        self.tiles[idx_u] == TileType::Wall || self.view_blocked.contains(&idx_u)
+        if idx_u > 0 && idx_u < self.tiles.len() {
+            self.tiles[idx_u] == TileType::Wall || self.view_blocked.contains(&idx_u)
+        } else {
+            true
+        }
     }
 
     fn get_pathing_distance(&self, idx1: usize, idx2: usize) -> f32 {
@@ -169,48 +168,5 @@ fn wall_glyph(map: &Map, x: i32, y: i32) -> rltk::FontCharType {
         14 => 203,
         15 => 206,
         _ => 35,
-    }
-}
-
-pub fn draw_map(map: &Map, ctx: &mut Rltk) {
-    let mut y = 0;
-    let mut x = 0;
-    for (idx, tile) in map.tiles.iter().enumerate() {
-        // Render a tile depending upon the tile type
-
-        if map.revealed_tiles[idx] {
-            let glyph;
-            let mut fg;
-            let mut bg = RGB::from_f32(0., 0., 0.);
-            match tile {
-                TileType::Floor => {
-                    glyph = rltk::to_cp437('.');
-                    fg = RGB::from_f32(0.0, 0.5, 0.5);
-                }
-                TileType::Wall => {
-                    glyph = wall_glyph(&*map, x, y);
-                    fg = RGB::from_f32(0., 1.0, 0.);
-                }
-                TileType::DownStairs => {
-                    glyph = rltk::to_cp437('>');
-                    fg = RGB::from_f32(0., 1.0, 1.0);
-                }
-            }
-            if map.bloodstains.contains(&idx) {
-                bg = RGB::from_f32(0.75, 0., 0.);
-            }
-            if !map.visible_tiles[idx] {
-                fg = fg.to_greyscale();
-                bg = RGB::from_f32(0., 0., 0.); // 視界外では表示しない
-            }
-            ctx.set(x, y, fg, bg, glyph);
-        }
-
-        // Move the coordinates
-        x += 1;
-        if x > (map.width * map.height) as i32 - 1 {
-            x = 0;
-            y += 1;
-        }
     }
 }
