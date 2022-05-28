@@ -1,0 +1,204 @@
+{
+  "spawn_table": [
+    {
+      "name": "Goblin",
+      "weight": 10,
+      "min_depth": 0,
+      "max_depth": 100
+    },
+    {
+      "name": "Orc",
+      "weight": 1,
+      "min_depth": 0,
+      "max_depth": 100,
+      "add_map_depth_to_weight": true
+    },
+    {
+      "name": "Kobold",
+      "weight": 15,
+      "min_depth": 0,
+      "max_depth": 3
+    },
+    {
+      "name": "Health Potion",
+      "weight": 7,
+      "min_depth": 0,
+      "max_depth": 100
+    },
+    {
+      "name": "Dagger",
+      "weight": 3,
+      "min_depth": 0,
+      "max_depth": 100
+    },
+    {
+      "name": "Shield",
+      "weight": 3,
+      "min_depth": 0,
+      "max_depth": 100
+    },
+    {
+      "name": "Longsword",
+      "weight": 1,
+      "min_depth": 1,
+      "max_depth": 100
+    },
+    {
+      "name": "Battleaxe",
+      "weight": 1,
+      "min_depth": 2,
+      "max_depth": 100
+    },
+    {
+      "name": "Tower Shield",
+      "weight": 1,
+      "min_depth": 1,
+      "max_depth": 100
+    },
+    {
+      "name": "Rations",
+      "weight": 10,
+      "min_depth": 0,
+      "max_depth": 100
+    }
+  ],
+  "items": [
+    {
+      "name": "Health Potion",
+      "renderable": {
+        "glyph": "¡",
+        "fg": "#FF00FF",
+        "bg": "#000000",
+        "order": 2
+      },
+      "consumable": {
+        "effects": {
+          "provides_healing": "8"
+        }
+      }
+    },
+    {
+      "name": "Rations",
+      "renderable": {
+        "glyph": "%",
+        "fg": "#00FF00",
+        "bg": "#000000",
+        "order": 2
+      },
+      "consumable": {
+        "effects": {
+          "food": ""
+        }
+      }
+    },
+    {
+      "name": "Dagger",
+      "renderable": {
+        "glyph": "/",
+        "fg": "#FFAAAA",
+        "bg": "#000000",
+        "order": 2
+      },
+      "weapon": {
+        "power_bonus": 2
+      }
+    },
+    {
+      "name": "Longsword",
+      "renderable": {
+        "glyph": "/",
+        "fg": "#FFAAFF",
+        "bg": "#000000",
+        "order": 2
+      },
+      "weapon": {
+        "power_bonus": 4
+      }
+    },
+    {
+      "name": "Battleaxe",
+      "renderable": {
+        "glyph": "¶",
+        "fg": "#FF55FF",
+        "bg": "#000000",
+        "order": 2
+      },
+      "weapon": {
+        "power_bonus": 5
+      }
+    },
+    {
+      "name": "Shield",
+      "renderable": {
+        "glyph": "[",
+        "fg": "#00AAFF",
+        "bg": "#000000",
+        "order": 2
+      },
+      "shield": {
+        "defense_bonus": 1
+      }
+    },
+    {
+      "name": "Tower Shield",
+      "renderable": {
+        "glyph": "[",
+        "fg": "#00FFFF",
+        "bg": "#000000",
+        "order": 2
+      },
+      "shield": {
+        "defense_bonus": 3
+      }
+    }
+  ],
+  "mobs": [
+    {
+      "name": "Orc",
+      "renderable": {
+        "glyph": "o",
+        "fg": "#FF0000",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "vision_range": 8
+    },
+    {
+      "name": "Goblin",
+      "renderable": {
+        "glyph": "g",
+        "fg": "#FF0000",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "vision_range": 8
+    },
+    {
+      "name": "Kobold",
+      "renderable": {
+        "glyph": "k",
+        "fg": "#FF0000",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "vision_range": 8
+    }
+  ],
+  "props": [
+    {
+      "name": "Door",
+      "renderable": {
+        "glyph": "+",
+        "fg": "#805A46",
+        "bg": "#000000",
+        "order": 2
+      },
+      "blocks_tile": true,
+      "blocks_visibility": true,
+      "door_open": true
+    }
+  ]
+}

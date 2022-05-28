@@ -33,8 +33,11 @@ mod hunger_system;
 pub mod map_builders;
 mod particle_system;
 pub mod random_table;
+pub mod raws;
 pub mod rex_assets;
 pub mod saveload_system;
+#[macro_use]
+extern crate lazy_static;
 
 const SHOW_MAPGEN_VISUALIZER: bool = true;
 
@@ -581,8 +584,9 @@ fn main() -> rltk::BError {
     gs.ecs.register::<ParticleLifetime>();
     gs.ecs.register::<BlocksVisibility>();
     gs.ecs.register::<Door>();
-
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
+
+    raws::load_raws();
 
     gs.ecs.insert(Map::new(1, 64, 64));
     gs.ecs.insert(Point::new(0, 0));
