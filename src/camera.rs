@@ -80,7 +80,7 @@ fn get_tile_glyph(idx: usize, map: &Map) -> (rltk::FontCharType, RGB, RGB) {
             fg = RGB::named(rltk::CHOCOLATE);
         }
         TileType::Road => {
-            glyph = rltk::to_cp437('~');
+            glyph = rltk::to_cp437('≡');
             fg = RGB::named(rltk::GRAY);
         }
         TileType::Grass => {
@@ -88,11 +88,11 @@ fn get_tile_glyph(idx: usize, map: &Map) -> (rltk::FontCharType, RGB, RGB) {
             fg = RGB::named(rltk::GREEN);
         }
         TileType::ShallowWater => {
-            glyph = rltk::to_cp437('≈');
+            glyph = rltk::to_cp437('~');
             fg = RGB::named(rltk::CYAN);
         }
         TileType::DeepWater => {
-            glyph = rltk::to_cp437('≈');
+            glyph = rltk::to_cp437('~');
             fg = RGB::named(rltk::NAVY_BLUE);
         }
     }
