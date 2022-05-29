@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(PartialEq, Copy, Clone, Serialize, Deserialize)]
 pub enum TileType {
@@ -7,6 +7,7 @@ pub enum TileType {
     DownStairs,
     Road,
     Grass,
+    Gravel,
     ShallowWater,
     DeepWater,
     WoodFloor,
@@ -19,6 +20,7 @@ pub fn tile_walkable(tt: TileType) -> bool {
         | TileType::DownStairs
         | TileType::Road
         | TileType::Grass
+        | TileType::Gravel
         | TileType::ShallowWater
         | TileType::WoodFloor
         | TileType::Bridge => true,
