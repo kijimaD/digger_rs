@@ -33,13 +33,6 @@ impl TownBuilder {
     ) {
         self.grass_layer(build_data);
         self.water_and_piers(rng, build_data);
-
-        // Make visible for screenshot
-        for t in build_data.map.visible_tiles.iter_mut() {
-            *t = true;
-        }
-        build_data.take_snapshot();
-
         let (mut available_building_tiles, wall_gap_y) = self.town_walls(rng, build_data);
         let mut buildings = self.buildings(rng, build_data, &mut available_building_tiles);
         let doors = self.add_doors(rng, build_data, &mut buildings, wall_gap_y);
@@ -54,9 +47,16 @@ impl TownBuilder {
         }
         building_size.sort_by(|a, b| b.1.cmp(&a.1));
 
+        // Start in the pub
         let the_pub = &buildings[building_size[0].0];
         build_data.starting_position =
             Some(Position { x: the_pub.0 + (the_pub.2 / 2), y: the_pub.1 + (the_pub.3 / 2) });
+
+        // Make visible for screenshot
+        for t in build_data.map.visible_tiles.iter_mut() {
+            *t = true;
+        }
+        build_data.take_snapshot();
     }
 
     fn grass_layer(&mut self, build_data: &mut BuilderMap) {
@@ -115,7 +115,7 @@ impl TownBuilder {
                 let idx_right = build_data.map.xy_idx(build_data.width - 2, y);
                 build_data.map.tiles[idx_right] = TileType::Wall;
 
-                for x in 32..build_data.width - 2 {
+                for x in 31..build_data.width - 2 {
                     let gravel_idx = build_data.map.xy_idx(x, y);
                     build_data.map.tiles[gravel_idx] = TileType::Gravel;
                     if y > 2 && y < build_data.height - 1 {
@@ -172,7 +172,7 @@ impl TownBuilder {
                 n_buildings += 1;
                 buildings.push((bx, by, bw, bh));
                 for y in by..by + bh {
-                    for x in bx..bx + bh {
+                    for x in bx..bx + bw {
                         let idx = build_data.map.xy_idx(x, y);
                         build_data.map.tiles[idx] = TileType::WoodFloor;
                         available_building_tiles.remove(&idx);
@@ -218,7 +218,6 @@ impl TownBuilder {
         buildings
     }
 
-    // FIXME: sometimes door location is not proper
     fn add_doors(
         &mut self,
         rng: &mut rltk::RandomNumberGenerator,
@@ -277,7 +276,7 @@ impl TownBuilder {
             nearest_roads.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
 
             let destination = nearest_roads[0].0;
-            let path = rltk::a_star_search(*door_idx, destination, &mut build_data.map);
+            let path = rltk::a_star_search(*door_idx, destination, &build_data.map);
             if path.success {
                 for step in path.steps.iter() {
                     let idx = *step as usize;
