@@ -45,23 +45,18 @@ impl TownBuilder {
         let doors = self.add_doors(rng, build_data, &mut buildings, wall_gap_y);
         self.add_paths(build_data, &doors);
 
-        let exit_idx = build_data.map.xy_idx(build_data.width-5, wall_gap_y);
+        let exit_idx = build_data.map.xy_idx(build_data.width - 5, wall_gap_y);
         build_data.map.tiles[exit_idx] = TileType::DownStairs;
 
         let mut building_size: Vec<(usize, i32)> = Vec::new();
-        for(i, building) in buildings.iter().enumerate() {
-            building_size.push((
-                i,
-                building.2 * building.3
-            ));
+        for (i, building) in buildings.iter().enumerate() {
+            building_size.push((i, building.2 * building.3));
         }
-        building_size.sort_by(|a,b| b.1.cmp(&a.1));
+        building_size.sort_by(|a, b| b.1.cmp(&a.1));
 
         let the_pub = &buildings[building_size[0].0];
-        build_data.starting_position = Some(Position{
-            x: the_pub.0 + (the_pub.2 / 2),
-            y: the_pub.1 + (the_pub.3 / 2),
-        });
+        build_data.starting_position =
+            Some(Position { x: the_pub.0 + (the_pub.2 / 2), y: the_pub.1 + (the_pub.3 / 2) });
     }
 
     fn grass_layer(&mut self, build_data: &mut BuilderMap) {
@@ -147,42 +142,44 @@ impl TownBuilder {
         (available_building_tiles, wall_gap_y)
     }
 
-    fn buildings(&mut self,
-                 rng: &mut rltk::RandomNumberGenerator,
-                 build_data: &mut BuilderMap,
-                 available_building_tiles: &mut HashSet<usize>)
-                 -> Vec<(i32, i32, i32, i32)>
-    {
+    fn buildings(
+        &mut self,
+        rng: &mut rltk::RandomNumberGenerator,
+        build_data: &mut BuilderMap,
+        available_building_tiles: &mut HashSet<usize>,
+    ) -> Vec<(i32, i32, i32, i32)> {
         let mut buildings: Vec<(i32, i32, i32, i32)> = Vec::new(); // x, y, w, h
         let mut n_buildings = 0;
         while n_buildings < 12 {
             let bx = rng.roll_dice(1, build_data.map.width - 32) + 30;
-            let by = rng.roll_dice(1, build_data.map.height)-2;
-            let bw = rng.roll_dice(1, 8)+4;
-            let bh = rng.roll_dice(1, 8)+4;
+            let by = rng.roll_dice(1, build_data.map.height) - 2;
+            let bw = rng.roll_dice(1, 8) + 4;
+            let bh = rng.roll_dice(1, 8) + 4;
             let mut possible = true;
-            for y in by .. by+bh {
-                for x in bx .. bx+bw {
-                    if x < 0 || x > build_data.width-1 || y < 0 || y > build_data.height-1 {
+            for y in by..by + bh {
+                for x in bx..bx + bw {
+                    if x < 0 || x > build_data.width - 1 || y < 0 || y > build_data.height - 1 {
                         possible = false;
                     } else {
                         let idx = build_data.map.xy_idx(x, y);
-                        if !available_building_tiles.contains(&idx) { possible = false; }
+                        if !available_building_tiles.contains(&idx) {
+                            possible = false;
+                        }
                     }
                 }
             }
             if possible {
                 n_buildings += 1;
                 buildings.push((bx, by, bw, bh));
-                for y in by .. by+bh {
-                    for x in bx .. bx+bh {
+                for y in by..by + bh {
+                    for x in bx..bx + bh {
                         let idx = build_data.map.xy_idx(x, y);
                         build_data.map.tiles[idx] = TileType::WoodFloor;
                         available_building_tiles.remove(&idx);
-                        available_building_tiles.remove(&(idx+1));
-                        available_building_tiles.remove(&(idx+build_data.width as usize));
-                        available_building_tiles.remove(&(idx-1));
-                        available_building_tiles.remove(&(idx-build_data.width as usize));
+                        available_building_tiles.remove(&(idx + 1));
+                        available_building_tiles.remove(&(idx + build_data.width as usize));
+                        available_building_tiles.remove(&(idx - 1));
+                        available_building_tiles.remove(&(idx - build_data.width as usize));
                     }
                 }
                 build_data.take_snapshot();
@@ -191,15 +188,25 @@ impl TownBuilder {
 
         // Outline buildings
         let mut mapclone = build_data.map.clone();
-        for y in 2..build_data.height-2 {
-            for x in 32..build_data.width-2 {
+        for y in 2..build_data.height - 2 {
+            for x in 32..build_data.width - 2 {
                 let idx = build_data.map.xy_idx(x, y);
                 if build_data.map.tiles[idx] == TileType::WoodFloor {
                     let mut neighbors = 0;
-                    if build_data.map.tiles[idx - 1] != TileType::WoodFloor { neighbors +=1;}
-                    if build_data.map.tiles[idx + 1] != TileType::WoodFloor { neighbors +=1;}
-                    if build_data.map.tiles[idx-build_data.width as usize] != TileType::WoodFloor { neighbors += 1; }
-                    if build_data.map.tiles[idx+build_data.width as usize] != TileType::WoodFloor { neighbors += 1; }
+                    if build_data.map.tiles[idx - 1] != TileType::WoodFloor {
+                        neighbors += 1;
+                    }
+                    if build_data.map.tiles[idx + 1] != TileType::WoodFloor {
+                        neighbors += 1;
+                    }
+                    if build_data.map.tiles[idx - build_data.width as usize] != TileType::WoodFloor
+                    {
+                        neighbors += 1;
+                    }
+                    if build_data.map.tiles[idx + build_data.width as usize] != TileType::WoodFloor
+                    {
+                        neighbors += 1;
+                    }
                     if neighbors > 0 {
                         mapclone.tiles[idx] = TileType::Wall;
                     }
@@ -212,13 +219,13 @@ impl TownBuilder {
     }
 
     // FIXME: sometimes door location is not proper
-    fn add_doors(&mut self,
+    fn add_doors(
+        &mut self,
         rng: &mut rltk::RandomNumberGenerator,
-        build_data : &mut BuilderMap,
+        build_data: &mut BuilderMap,
         buildings: &mut Vec<(i32, i32, i32, i32)>,
-        wall_gap_y : i32)
-        -> Vec<usize>
-    {
+        wall_gap_y: i32,
+    ) -> Vec<usize> {
         let mut doors = Vec::new();
         for building in buildings.iter() {
             let door_x = building.0 + 1 + rng.roll_dice(1, building.2 - 3); // not including corners
@@ -237,10 +244,7 @@ impl TownBuilder {
         doors
     }
 
-    fn add_paths(&mut self,
-                 build_data: &mut BuilderMap,
-                 doors: &[usize])
-    {
+    fn add_paths(&mut self, build_data: &mut BuilderMap, doors: &[usize]) {
         let mut roads = Vec::new();
         for y in 0..build_data.height {
             for x in 0..build_data.width {
@@ -254,14 +258,20 @@ impl TownBuilder {
         build_data.map.populate_blocked();
         for door_idx in doors.iter() {
             let mut nearest_roads: Vec<(usize, f32)> = Vec::new();
-            let door_pt = rltk::Point::new(*door_idx as i32 % build_data.map.width as i32, *door_idx as i32 / build_data.map.width as i32);
+            let door_pt = rltk::Point::new(
+                *door_idx as i32 % build_data.map.width as i32,
+                *door_idx as i32 / build_data.map.width as i32,
+            );
             for r in roads.iter() {
                 nearest_roads.push((
                     *r,
                     rltk::DistanceAlg::PythagorasSquared.distance2d(
                         door_pt,
-                        rltk::Point::new( *r as i32 % build_data.map.width, *r as i32 / build_data.map.width )
-                    )
+                        rltk::Point::new(
+                            *r as i32 % build_data.map.width,
+                            *r as i32 / build_data.map.width,
+                        ),
+                    ),
                 ));
             }
             nearest_roads.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap());
