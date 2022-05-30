@@ -45,7 +45,23 @@ impl TownBuilder {
         let doors = self.add_doors(rng, build_data, &mut buildings, wall_gap_y);
         self.add_paths(build_data, &doors);
 
-        build_data.starting_position = Some(Position { x: 30, y: 30 })
+        let exit_idx = build_data.map.xy_idx(build_data.width-5, wall_gap_y);
+        build_data.map.tiles[exit_idx] = TileType::DownStairs;
+
+        let mut building_size: Vec<(usize, i32)> = Vec::new();
+        for(i, building) in buildings.iter().enumerate() {
+            building_size.push((
+                i,
+                building.2 * building.3
+            ));
+        }
+        building_size.sort_by(|a,b| b.1.cmp(&a.1));
+
+        let the_pub = &buildings[building_size[0].0];
+        build_data.starting_position = Some(Position{
+            x: the_pub.0 + (the_pub.2 / 2),
+            y: the_pub.1 + (the_pub.3 / 2),
+        });
     }
 
     fn grass_layer(&mut self, build_data: &mut BuilderMap) {
@@ -137,7 +153,7 @@ impl TownBuilder {
                  available_building_tiles: &mut HashSet<usize>)
                  -> Vec<(i32, i32, i32, i32)>
     {
-        let mut buildings: Vec<(i32, i32, i32, i32)> = Vec::new();
+        let mut buildings: Vec<(i32, i32, i32, i32)> = Vec::new(); // x, y, w, h
         let mut n_buildings = 0;
         while n_buildings < 12 {
             let bx = rng.roll_dice(1, build_data.map.width - 32) + 30;
