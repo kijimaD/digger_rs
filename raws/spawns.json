@@ -162,7 +162,8 @@
         "order": 1
       },
       "blocks_tile": true,
-      "vision_range": 8
+      "vision_range": 8,
+      "ai": "melee"
     },
     {
       "name": "Goblin",
@@ -173,7 +174,8 @@
         "order": 1
       },
       "blocks_tile": true,
-      "vision_range": 8
+      "vision_range": 8,
+      "ai": "melee"
     },
     {
       "name": "Kobold",
@@ -184,7 +186,20 @@
         "order": 1
       },
       "blocks_tile": true,
-      "vision_range": 8
+      "vision_range": 8,
+      "ai": "melee"
+    },
+    {
+      "name": "Barkeep",
+      "renderable": {
+        "glyph": "☺",
+        "fg": "#EE82EE",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "vision_range": 4,
+      "ai": "bystander"
     }
   ],
   "props": [
