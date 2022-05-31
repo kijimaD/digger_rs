@@ -331,19 +331,36 @@ impl TownBuilder {
         }
     }
 
-    fn build_pub(&self, building: &(i32, i32, i32, i32), build_data: &mut BuilderMap, rng: &mut rltk::RandomNumberGenerator) {
-        build_data.starting_position = Some(Position{
-            x: building.0 + (building.2 / 2),
-            y: building.1 + (building.3 / 2)
-        });
-        let player_idx = build_data.map.xy_idx(building.0 + (building.2 / 2),
-                                               building.1 + (building.3 / 2));
+    fn build_pub(
+        &self,
+        building: &(i32, i32, i32, i32),
+        build_data: &mut BuilderMap,
+        rng: &mut rltk::RandomNumberGenerator,
+    ) {
+        build_data.starting_position =
+            Some(Position { x: building.0 + (building.2 / 2), y: building.1 + (building.3 / 2) });
+        let player_idx =
+            build_data.map.xy_idx(building.0 + (building.2 / 2), building.1 + (building.3 / 2));
 
-        let mut to_place: Vec<&str> = vec!["Barkeep", "Shady Salesman", "Patron", "Patron", "Keg", "Table", "Chair", "Table", "Chair"];
-        for y in building.1 .. building.1 + building.3 {
-            for x in building.0 .. building.0 + building.2 {
+        let mut to_place: Vec<&str> = vec![
+            "Barkeep",
+            "Shady Salesman",
+            "Patron",
+            "Patron",
+            "Keg",
+            "Table",
+            "Chair",
+            "Table",
+            "Chair",
+        ];
+        for y in building.1..building.1 + building.3 {
+            for x in building.0..building.0 + building.2 {
                 let idx = build_data.map.xy_idx(x, y);
-                if build_data.map.tiles[idx] == TileType::WoodFloor && idx != player_idx && rng.roll_dice(1, 3) == 1 && !to_place.is_empty() {
+                if build_data.map.tiles[idx] == TileType::WoodFloor
+                    && idx != player_idx
+                    && rng.roll_dice(1, 3) == 1
+                    && !to_place.is_empty()
+                {
                     let entity_tag = to_place[0];
                     to_place.remove(0);
                     build_data.spawn_list.push((idx, entity_tag.to_string()));

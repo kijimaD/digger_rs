@@ -200,6 +200,30 @@
       "blocks_tile": true,
       "vision_range": 4,
       "ai": "bystander"
+    },
+    {
+      "name": "Shady Salesman",
+      "renderable": {
+        "glyph": "h",
+        "fg": "#EE82EE",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "vision_range": 4,
+      "ai": "bystander"
+    },
+    {
+      "name": "Patron",
+      "renderable": {
+        "glyph": "☺",
+        "fg": "#AAAAAA",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "vision_range": 4,
+      "ai": "bystander"
     }
   ],
   "props": [

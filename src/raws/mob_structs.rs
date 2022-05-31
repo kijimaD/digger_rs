@@ -7,5 +7,5 @@ pub struct Mob {
     pub renderable: Option<Renderable>,
     pub blocks_tile: bool,
     pub vision_range: i32,
-    pub ai: String
+    pub ai: String,
 }
