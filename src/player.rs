@@ -1,7 +1,7 @@
 use super::{
     gamelog::GameLog, BlocksTile, BlocksVisibility, CombatStats, Door, HungerClock, HungerState,
     Item, Map, Monster, Name, Player, Position, Renderable, RunState, State, TileType, Viewshed,
-    WantsToEncounter, WantsToPickupItem,
+    WantsToEncounter, WantsToPickupItem, Bystander, EntityMoved
 };
 use rltk::{Point, Rltk, VirtualKeyCode};
 use specs::prelude::*;
@@ -15,14 +15,16 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let combat_stats = ecs.read_storage::<CombatStats>();
     let map = ecs.fetch::<Map>();
     let mut wants_to_encounter = ecs.write_storage::<WantsToEncounter>();
+    let mut entity_moved = ecs.write_storage::<EntityMoved>();
     let mut doors = ecs.write_storage::<Door>();
     let mut blocks_visibility = ecs.write_storage::<BlocksVisibility>();
     let mut blocks_movement = ecs.write_storage::<BlocksTile>();
     let mut renderables = ecs.write_storage::<Renderable>();
+    let bystanders = ecs.read_storage::<Bystander>();
 
-    for (entity, _player, pos, viewshed) in
-        (&entities, &players, &mut positions, &mut viewsheds).join()
-    {
+    let mut swap_entities: Vec<(Entity, i32, i32)> = Vec::new();
+
+    for (entity, _player, pos, viewshed) in (&entities, &players, &mut positions, &mut viewsheds).join() {
         if pos.x + delta_x < 1
             || pos.x + delta_x > map.width - 1
             || pos.y + delta_y < 1
@@ -33,13 +35,28 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
         let destination_idx = map.xy_idx(pos.x + delta_x, pos.y + delta_y);
 
         for potential_target in map.tile_content[destination_idx].iter() {
-            let target = combat_stats.get(*potential_target);
-            if let Some(_target) = target {
-                wants_to_encounter
-                    .insert(entity, WantsToEncounter { monster: *potential_target })
-                    .expect("Unable to insert encounter");
-                return;
+            let bystander = bystanders.get(*potential_target);
+            if bystander.is_some() {
+                // Move the bystander
+                swap_entities.push((*potential_target, pos.x, pos.y)); // monster entity, old_player(x, y),
+
+                // Move the player
+                pos.x = min(map.width-1, max(0, pos.x + delta_x));
+                pos.y = min(map.height-1, max(0, pos.y + delta_y));
+                entity_moved.insert(entity, EntityMoved{}).expect("Unable to insert marker");
+
+                viewshed.dirty = true;
+                let mut ppos = ecs.write_resource::<Point>();
+                ppos.x = pos.x;
+                ppos.y = pos.y;
+            } else {
+                let target = combat_stats.get(*potential_target);
+                if let Some(_target) = target {
+                    wants_to_encounter.insert(entity, WantsToEncounter { monster: *potential_target }).expect("Add target failed");
+                    return
+                }
             }
+
             let door = doors.get_mut(*potential_target);
             if let Some(door) = door {
                 door.open = true;
@@ -59,6 +76,14 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
             let mut ppos = ecs.write_resource::<Point>();
             ppos.x = pos.x;
             ppos.y = pos.y;
+        }
+    }
+
+    for swap_entity in swap_entities.iter() {
+        let their_pos = positions.get_mut(swap_entity.0);
+        if let Some(their_pos) = their_pos {
+            their_pos.x = swap_entity.1;
+            their_pos.y = swap_entity.2;
         }
     }
 
@@ -85,7 +110,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
         },
     }
 
-    // 足元の地形で表示
+    // 足元の地形を表示
     let player_idx = map.xy_idx(player_pos.x, player_pos.y);
     if map.tiles[player_idx] == TileType::DownStairs {
         gamelog.entries.push(format!("downstairs."))
