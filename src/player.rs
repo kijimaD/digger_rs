@@ -1,7 +1,7 @@
 use super::{
-    gamelog::GameLog, BlocksTile, BlocksVisibility, CombatStats, Door, HungerClock, HungerState,
-    Item, Map, Monster, Name, Player, Position, Renderable, RunState, State, TileType, Viewshed,
-    WantsToEncounter, WantsToPickupItem, Bystander, EntityMoved
+    gamelog::GameLog, BlocksTile, BlocksVisibility, Bystander, CombatStats, Door, EntityMoved,
+    HungerClock, HungerState, Item, Map, Monster, Name, Player, Position, Renderable, RunState,
+    State, TileType, Viewshed, WantsToEncounter, WantsToPickupItem,
 };
 use rltk::{Point, Rltk, VirtualKeyCode};
 use specs::prelude::*;
@@ -24,7 +24,9 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
 
     let mut swap_entities: Vec<(Entity, i32, i32)> = Vec::new();
 
-    for (entity, _player, pos, viewshed) in (&entities, &players, &mut positions, &mut viewsheds).join() {
+    for (entity, _player, pos, viewshed) in
+        (&entities, &players, &mut positions, &mut viewsheds).join()
+    {
         if pos.x + delta_x < 1
             || pos.x + delta_x > map.width - 1
             || pos.y + delta_y < 1
@@ -41,9 +43,9 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
                 swap_entities.push((*potential_target, pos.x, pos.y)); // monster entity, old_player(x, y),
 
                 // Move the player
-                pos.x = min(map.width-1, max(0, pos.x + delta_x));
-                pos.y = min(map.height-1, max(0, pos.y + delta_y));
-                entity_moved.insert(entity, EntityMoved{}).expect("Unable to insert marker");
+                pos.x = min(map.width - 1, max(0, pos.x + delta_x));
+                pos.y = min(map.height - 1, max(0, pos.y + delta_y));
+                entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert marker");
 
                 viewshed.dirty = true;
                 let mut ppos = ecs.write_resource::<Point>();
@@ -52,8 +54,10 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
             } else {
                 let target = combat_stats.get(*potential_target);
                 if let Some(_target) = target {
-                    wants_to_encounter.insert(entity, WantsToEncounter { monster: *potential_target }).expect("Add target failed");
-                    return
+                    wants_to_encounter
+                        .insert(entity, WantsToEncounter { monster: *potential_target })
+                        .expect("Add target failed");
+                    return;
                 }
             }
 
