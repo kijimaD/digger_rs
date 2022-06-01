@@ -49,6 +49,9 @@ pub struct Viewshed {
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Monster {}
 
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Bystander {}
+
 #[derive(Component, Debug, ConvertSaveload, Clone)]
 pub struct Name {
     pub name: String,
@@ -171,6 +174,17 @@ pub struct DefenseBonus {
     pub defense: i32,
 }
 
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct BlocksVisibility {}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Door {
+    pub open: bool,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct EntityMoved {}
+
 // Serialization helper code. We need to implement ConvertSaveLoad for each type that contains an
 // Entity.
 
@@ -180,12 +194,4 @@ pub struct SerializeMe;
 #[derive(Component, Serialize, Deserialize, Clone)]
 pub struct SerializationHelper {
     pub map: super::map::Map,
-}
-
-#[derive(Component, Debug, Serialize, Deserialize, Clone)]
-pub struct BlocksVisibility {}
-
-#[derive(Component, Debug, Serialize, Deserialize, Clone)]
-pub struct Door {
-    pub open: bool,
 }
