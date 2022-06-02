@@ -199,7 +199,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander"
+      "ai": "vendor"
     },
     {
       "name": "Shady Salesman",
@@ -211,7 +211,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander"
+      "ai": "vendor"
     },
     {
       "name": "Patron",
@@ -223,7 +223,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander"
+      "ai": "vendor"
     },
     {
       "name": "Priest",
@@ -235,7 +235,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander"
+      "ai": "vendor"
     },
     {
       "name": "Parishioner",
@@ -247,7 +247,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander"
+      "ai": "vendor"
     },
     {
       "name": "Blacksmith",
@@ -259,7 +259,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander"
+      "ai": "vendor"
     },
     {
       "name": "Clothier",
@@ -271,7 +271,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander"
+      "ai": "vendor"
     },
     {
       "name": "Alchemist",
@@ -283,7 +283,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander"
+      "ai": "vendor"
     },
     {
       "name": "Mom",
@@ -295,7 +295,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander"
+      "ai": "vendor"
     },
     {
       "name": "Peasant",
@@ -307,7 +307,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander"
+      "ai": "vendor"
     }
   ],
   "props": [
