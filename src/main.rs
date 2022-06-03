@@ -15,6 +15,8 @@ mod visibility_system;
 use visibility_system::VisibilitySystem;
 mod monster_ai_system;
 use monster_ai_system::MonsterAI;
+pub mod bystander_ai_system;
+use bystander_ai_system::BystanderAI;
 mod map_indexing_system;
 use map_indexing_system::MapIndexingSystem;
 mod melee_combat_system;
@@ -78,8 +80,10 @@ impl State {
     fn run_systems(&mut self) {
         let mut vis = VisibilitySystem {};
         vis.run_now(&self.ecs);
-        let mut mob = MonsterAI {};
-        mob.run_now(&self.ecs);
+        let mut monster = MonsterAI {};
+        monster.run_now(&self.ecs);
+        let mut bystander = BystanderAI{};
+        bystander.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem {};
         mapindex.run_now(&self.ecs);
         let mut pickup = ItemCollectionSystem {};

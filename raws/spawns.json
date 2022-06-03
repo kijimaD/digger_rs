@@ -223,7 +223,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor"
+      "ai": "bystander"
     },
     {
       "name": "Priest",
@@ -235,7 +235,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor"
+      "ai": "bystander"
     },
     {
       "name": "Parishioner",
@@ -247,7 +247,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor"
+      "ai": "bystander"
     },
     {
       "name": "Blacksmith",
@@ -295,7 +295,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor"
+      "ai": "bystander"
     },
     {
       "name": "Peasant",
@@ -307,7 +307,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor"
+      "ai": "bystander"
     }
   ],
   "props": [
