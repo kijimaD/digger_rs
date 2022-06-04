@@ -207,6 +207,9 @@
       "vision_range": 4,
       "ai": "vendor",
       "attributes": {
+      },
+      "skills": {
+        "Melee": 2
       }
     },
     {

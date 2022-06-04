@@ -4,6 +4,7 @@ use specs::error::NoError;
 use specs::prelude::*;
 use specs::saveload::{ConvertSaveload, Marker};
 use specs_derive::*;
+use std::collections::HashMap;
 
 #[derive(Component, ConvertSaveload, Clone)]
 pub struct Position {
@@ -84,6 +85,18 @@ pub struct Attributes {
     pub fitness: Attribute,
     pub quickness: Attribute,
     pub intelligence: Attribute,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, Hash)]
+pub enum Skill {
+    Melee,
+    Defense,
+    Magic,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Skills {
+    pub skills: HashMap<Skill, i32>,
 }
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]

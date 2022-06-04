@@ -1,7 +1,7 @@
 use super::{
     random_table::RandomTable, raws::*, Attribute, Attributes, BlocksTile, BlocksVisibility,
     CombatStats, Door, HungerClock, HungerState, Map, Monster, Name, Player, Position, Rect,
-    Renderable, SerializeMe, TileType, Viewshed,
+    Renderable, SerializeMe, Skill, Skills, TileType, Viewshed,
 };
 use crate::attr_bonus;
 use rltk::{RandomNumberGenerator, RGB};
@@ -11,6 +11,11 @@ use std::collections::HashMap;
 
 /// Spawns the player and returns his/her entity object.
 pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
+    let mut skills = Skills { skills: HashMap::new() };
+    skills.skills.insert(Skill::Melee, 1);
+    skills.skills.insert(Skill::Defense, 1);
+    skills.skills.insert(Skill::Magic, 1);
+
     ecs.create_entity()
         .with(Position { x: player_x, y: player_y })
         .with(Renderable {
@@ -29,6 +34,7 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             quickness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
             intelligence: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
         })
+        .with(skills)
         .marked::<SimpleMarker<SerializeMe>>()
         .build()
 }
