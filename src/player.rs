@@ -1,7 +1,7 @@
 use super::{
     gamelog::GameLog, BlocksTile, BlocksVisibility, Bystander, CombatStats, Door, EntityMoved,
     HungerClock, HungerState, Item, Map, Monster, Name, Player, Position, Renderable, RunState,
-    State, TileType, Viewshed, WantsToEncounter, WantsToPickupItem, Vendor
+    State, TileType, Vendor, Viewshed, WantsToEncounter, WantsToPickupItem,
 };
 use rltk::{Point, Rltk, VirtualKeyCode};
 use specs::prelude::*;

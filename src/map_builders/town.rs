@@ -382,7 +382,8 @@ impl TownBuilder {
         build_data: &mut BuilderMap,
         rng: &mut rltk::RandomNumberGenerator,
     ) {
-        let mut to_place: Vec<&str> = vec!["Blacksmith", "Anvil", "Water Trough", "Weapon Rack", "Armor Stand"];
+        let mut to_place: Vec<&str> =
+            vec!["Blacksmith", "Anvil", "Water Trough", "Weapon Rack", "Armor Stand"];
         self.random_building_spawn(building, build_data, rng, &mut to_place, 0);
     }
 
@@ -451,9 +452,13 @@ impl TownBuilder {
         }
     }
 
-    fn spawn_dockers(&mut self, build_data: &mut BuilderMap, rng: &mut rltk::RandomNumberGenerator) {
+    fn spawn_dockers(
+        &mut self,
+        build_data: &mut BuilderMap,
+        rng: &mut rltk::RandomNumberGenerator,
+    ) {
         for (idx, tt) in build_data.map.tiles.iter().enumerate() {
-            if *tt == TileType::Bridge && rng.roll_dice(1, 50)==1 {
+            if *tt == TileType::Bridge && rng.roll_dice(1, 50) == 1 {
                 let roll = rng.roll_dice(1, 3);
                 match roll {
                     1 => build_data.spawn_list.push((idx, "Dock Worker".to_string())),
@@ -464,9 +469,14 @@ impl TownBuilder {
         }
     }
 
-    fn spawn_townsfolk(&mut self, build_data: &mut BuilderMap, rng: &mut rltk::RandomNumberGenerator, available_building_tiles: &mut HashSet<usize>) {
+    fn spawn_townsfolk(
+        &mut self,
+        build_data: &mut BuilderMap,
+        rng: &mut rltk::RandomNumberGenerator,
+        available_building_tiles: &mut HashSet<usize>,
+    ) {
         for idx in available_building_tiles.iter() {
-            if rng.roll_dice(1, 50)==1 {
+            if rng.roll_dice(1, 50) == 1 {
                 let roll = rng.roll_dice(1, 4);
                 match roll {
                     1 => build_data.spawn_list.push((*idx, "Peasant".to_string())),

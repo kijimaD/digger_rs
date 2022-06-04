@@ -82,7 +82,7 @@ impl State {
         vis.run_now(&self.ecs);
         let mut monster = MonsterAI {};
         monster.run_now(&self.ecs);
-        let mut bystander = BystanderAI{};
+        let mut bystander = BystanderAI {};
         bystander.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem {};
         mapindex.run_now(&self.ecs);
