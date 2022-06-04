@@ -31,6 +31,7 @@ mod inventory_system;
 mod spawner;
 use inventory_system::{ItemCollectionSystem, ItemDropSystem, ItemRemoveSystem, ItemUseSystem};
 pub mod camera;
+mod gamesystem;
 mod hunger_system;
 pub mod map_builders;
 mod particle_system;
@@ -38,6 +39,7 @@ pub mod random_table;
 pub mod raws;
 pub mod rex_assets;
 pub mod saveload_system;
+pub use gamesystem::*;
 #[macro_use]
 extern crate lazy_static;
 
@@ -566,6 +568,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Name>();
     gs.ecs.register::<BlocksTile>();
     gs.ecs.register::<CombatStats>();
+    gs.ecs.register::<Attributes>();
     gs.ecs.register::<WantsToMelee>();
     gs.ecs.register::<WantsToEncounter>();
     gs.ecs.register::<Battle>();

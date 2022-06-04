@@ -1,8 +1,9 @@
 use super::{
-    random_table::RandomTable, raws::*, BlocksTile, BlocksVisibility, CombatStats, Door,
-    HungerClock, HungerState, Map, Monster, Name, Player, Position, Rect, Renderable, SerializeMe,
-    TileType, Viewshed,
+    random_table::RandomTable, raws::*, Attribute, Attributes, BlocksTile, BlocksVisibility,
+    CombatStats, Door, HungerClock, HungerState, Map, Monster, Name, Player, Position, Rect,
+    Renderable, SerializeMe, TileType, Viewshed,
 };
+use crate::attr_bonus;
 use rltk::{RandomNumberGenerator, RGB};
 use specs::prelude::*;
 use specs::saveload::{MarkedBuilder, SimpleMarker};
@@ -22,6 +23,12 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
         .with(Viewshed { visible_tiles: Vec::new(), range: 8, dirty: true })
         .with(Name { name: "Player".to_string() })
         .with(HungerClock { state: HungerState::WellFed, duration: 20 })
+        .with(Attributes {
+            might: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            fitness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            quickness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            intelligence: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+        })
         .marked::<SimpleMarker<SerializeMe>>()
         .build()
 }
