@@ -94,6 +94,20 @@ pub enum Skill {
     Magic,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Pool {
+    pub max: i32,
+    pub current: i32,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Pools {
+    pub hit_points: Pool,
+    pub mana: Pool,
+    pub xp: i32,
+    pub level: i32,
+}
+
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Skills {
     pub skills: HashMap<Skill, i32>,

@@ -570,6 +570,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<CombatStats>();
     gs.ecs.register::<Attributes>();
     gs.ecs.register::<Skills>();
+    gs.ecs.register::<Pools>();
     gs.ecs.register::<WantsToMelee>();
     gs.ecs.register::<WantsToEncounter>();
     gs.ecs.register::<Battle>();

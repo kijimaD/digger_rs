@@ -1,7 +1,7 @@
 use super::Raws;
-use crate::attr_bonus;
 use crate::components::*;
 use crate::random_table::RandomTable;
+use crate::{attr_bonus, mana_at_level, npc_hp};
 use specs::prelude::*;
 use std::collections::{HashMap, HashSet};
 
@@ -172,6 +172,8 @@ pub fn spawn_named_mob(
             dirty: true,
         });
 
+        let mut mob_fitness = 11;
+        let mut mob_int = 11;
         // set default value
         let mut attr = Attributes {
             might: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
@@ -184,6 +186,7 @@ pub fn spawn_named_mob(
         }
         if let Some(fitness) = mob_template.attributes.fitness {
             attr.fitness = Attribute { base: fitness, modifiers: 0, bonus: attr_bonus(fitness) };
+            mob_fitness = fitness;
         }
         if let Some(quickness) = mob_template.attributes.quickness {
             attr.quickness =
@@ -192,8 +195,21 @@ pub fn spawn_named_mob(
         if let Some(intelligence) = mob_template.attributes.intelligence {
             attr.intelligence =
                 Attribute { base: intelligence, modifiers: 0, bonus: attr_bonus(intelligence) };
+            mob_int = intelligence;
         }
         eb = eb.with(attr);
+
+        let mob_level = if mob_template.level.is_some() { mob_template.level.unwrap() } else { 1 };
+        let mob_hp = npc_hp(mob_fitness, mob_level);
+        let mob_mana = mana_at_level(mob_int, mob_level);
+
+        let pools = Pools {
+            level: mob_level,
+            xp: 0,
+            hit_points: Pool { current: mob_hp, max: mob_hp },
+            mana: Pool { current: mob_mana, max: mob_mana },
+        };
+        eb = eb.with(pools);
 
         let mut skills = Skills { skills: HashMap::new() };
         skills.skills.insert(Skill::Melee, 1);
