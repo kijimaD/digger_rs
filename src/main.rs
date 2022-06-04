@@ -315,11 +315,11 @@ impl GameState for State {
                 let result = gui::battle_target(self, ctx);
                 let entities = self.ecs.entities();
                 let player = self.ecs.read_storage::<Player>();
-                let stats = self.ecs.write_storage::<CombatStats>();
+                let pools = self.ecs.write_storage::<Pools>();
                 let mut wants_to_melee = self.ecs.write_storage::<WantsToMelee>();
 
                 // TODO: 複数キャラのコマンドに対応してない
-                for (entity, _player, _stats) in (&entities, &player, &stats).join() {
+                for (entity, _player, _pools) in (&entities, &player, &pools).join() {
                     match result.0 {
                         gui::BattleTargetingResult::Cancel => newrunstate = RunState::BattleCommand,
                         gui::BattleTargetingResult::NoResponse => {}
@@ -516,11 +516,6 @@ impl State {
         gamelog
             .entries
             .push("You descend to the next level, and take a moment to heal.".to_string());
-        let mut player_health_store = self.ecs.write_storage::<CombatStats>();
-        let player_health = player_health_store.get_mut(*player_entity);
-        if let Some(player_health) = player_health {
-            player_health.hp = i32::max(player_health.hp, player_health.max_hp / 2);
-        }
     }
 
     fn game_over_cleanup(&mut self) {
@@ -567,7 +562,6 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Monster>();
     gs.ecs.register::<Name>();
     gs.ecs.register::<BlocksTile>();
-    gs.ecs.register::<CombatStats>();
     gs.ecs.register::<Attributes>();
     gs.ecs.register::<Skills>();
     gs.ecs.register::<Pools>();

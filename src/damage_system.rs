@@ -1,19 +1,18 @@
 use super::{
-    gamelog::BattleLog, Battle, CombatStats, Map, Monster, Name, Player, Position, RunState,
-    SufferDamage,
+    gamelog::BattleLog, Battle, Map, Monster, Name, Player, Pools, Position, RunState, SufferDamage,
 };
 use specs::prelude::*;
 
 pub struct DamageSystem {}
 
 impl<'a> System<'a> for DamageSystem {
-    type SystemData = (WriteStorage<'a, CombatStats>, WriteStorage<'a, SufferDamage>);
+    type SystemData = (WriteStorage<'a, Pools>, WriteStorage<'a, SufferDamage>);
 
     fn run(&mut self, data: Self::SystemData) {
-        let (mut stats, mut damage) = data;
+        let (mut pools, mut damage) = data;
 
-        for (mut stats, damage) in (&mut stats, &damage).join() {
-            stats.hp -= damage.amount.iter().sum::<i32>();
+        for (mut pools, damage) in (&mut pools, &damage).join() {
+            pools.hit_points.current -= damage.amount.iter().sum::<i32>();
         }
 
         damage.clear();
@@ -25,13 +24,13 @@ pub fn delete_the_dead(ecs: &mut World) {
     let mut maybe_win = false;
     // Using a scope to make the borrow checker happy
     {
-        let combat_stats = ecs.read_storage::<CombatStats>();
+        let pools = ecs.read_storage::<Pools>();
         let players = ecs.read_storage::<Player>();
         let names = ecs.read_storage::<Name>();
         let entities = ecs.entities();
         let mut log = ecs.write_resource::<BattleLog>();
-        for (entity, stats) in (&entities, &combat_stats).join() {
-            if stats.hp < 1 {
+        for (entity, pools) in (&entities, &pools).join() {
+            if pools.hit_points.current < 1 {
                 let player = players.get(entity);
                 match player {
                     None => {
@@ -68,7 +67,7 @@ fn check_battle_win(ecs: &mut World) {
     let mut dead_map_entity: Vec<Entity> = Vec::new();
     {
         let entities = ecs.entities();
-        let combat_stats = ecs.read_storage::<CombatStats>();
+        let pools = ecs.read_storage::<Pools>();
         let monster = ecs.read_storage::<Monster>();
         let mut log = ecs.write_resource::<BattleLog>();
         let positions = ecs.read_storage::<Position>();
@@ -76,7 +75,7 @@ fn check_battle_win(ecs: &mut World) {
 
         // 攻撃の結果敵が残ってないときは*勝利*
         // 攻撃してなくて敵が残ってないときは*逃走*
-        if (&entities, &combat_stats, &monster).join().count() == 0 {
+        if (&entities, &pools, &monster).join().count() == 0 {
             let battle_ecs = ecs.read_storage::<Battle>();
 
             for battle in (&battle_ecs).join() {

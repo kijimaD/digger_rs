@@ -1,6 +1,6 @@
 use super::{
-    camera, gamelog::BattleLog, gamelog::GameLog, Battle, CombatStats, Consumable, Equipped,
-    HungerClock, HungerState, InBackpack, Map, Monster, Name, Player, Position, RunState, State,
+    camera, gamelog::BattleLog, gamelog::GameLog, Battle, Consumable, Equipped, HungerClock,
+    HungerState, InBackpack, Map, Monster, Name, Player, Pools, Position, RunState, State,
 };
 use rltk::{Point, RandomNumberGenerator, Rltk, VirtualKeyCode, RGB};
 use specs::prelude::*;
@@ -8,21 +8,21 @@ use specs::prelude::*;
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     ctx.draw_box(0, 43, 79, 6, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
 
-    let combat_stats = ecs.read_storage::<CombatStats>();
+    let pools = ecs.read_storage::<Pools>();
     let players = ecs.read_storage::<Player>();
     let hunger = ecs.read_storage::<HungerClock>();
 
     // プレイヤーのHP
-    for (_player, stats) in (&players, &combat_stats).join() {
-        let health = format!(" HP: {} / {} ", stats.hp, stats.max_hp);
+    for (_player, pools) in (&players, &pools).join() {
+        let health = format!(" HP: {} / {} ", pools.hit_points.current, pools.hit_points.current);
         ctx.print_color(12, 43, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), &health);
 
         ctx.draw_bar_horizontal(
             28,
             43,
             51,
-            stats.hp,
-            stats.max_hp,
+            pools.hit_points.current,
+            pools.hit_points.max,
             RGB::named(rltk::RED),
             RGB::named(rltk::BLACK),
         );
@@ -262,16 +262,16 @@ pub fn show_item_targeting(
     show_inventory(gs, ctx);
 
     let entities = gs.ecs.entities();
-    let combat_stats = gs.ecs.read_storage::<CombatStats>();
+    let pools = gs.ecs.read_storage::<Pools>();
     let name = gs.ecs.read_storage::<Name>();
     let player = gs.ecs.read_storage::<Player>();
 
-    let count = (&combat_stats, &player).join().count();
+    let count = (&pools, &player).join().count();
     let mut y = (25 - (count / 2)) as i32;
     let mut j = 0;
     let mut targets: Vec<Entity> = Vec::new();
 
-    for (entity, _stats, name) in (&entities, &combat_stats, &name).join() {
+    for (entity, _pools, name) in (&entities, &pools, &name).join() {
         ctx.set(17, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437('('));
         ctx.set(
             18,
@@ -621,13 +621,13 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
     }
 
     // 敵一覧
-    let name = ecs.read_storage::<Name>();
-    let stats = ecs.read_storage::<CombatStats>();
-    let monster = ecs.read_storage::<Monster>();
+    let names = ecs.read_storage::<Name>();
+    let pools = ecs.read_storage::<Pools>();
+    let monsters = ecs.read_storage::<Monster>();
 
     let mut i = 1;
-    for (name, stat, _monster) in (&name, &stats, &monster).join() {
-        ctx.print((80 * i) / (1 + stats.count()), 20, format!("[{}]({})", name.name, stat.hp));
+    for (name, pools, _monster) in (&names, &pools, &monsters).join() {
+        ctx.print((80 * i) / (1 + monsters.count()), 20, format!("[{}]({})", name.name, pools.hit_points.current));
         i += 1;
     }
 }
@@ -676,10 +676,10 @@ fn remove_battle(ecs: &mut World) {
     let mut dead: Vec<Entity> = Vec::new();
     {
         let entities = ecs.entities();
-        let stats = ecs.write_storage::<CombatStats>();
+        let pools = ecs.write_storage::<Pools>();
         let monster = ecs.read_storage::<Monster>();
 
-        for (entity, _stats, _monster) in (&entities, &stats, &monster).join() {
+        for (entity, _pools, _monster) in (&entities, &pools, &monster).join() {
             dead.push(entity)
         }
     }
@@ -707,15 +707,15 @@ pub enum BattleTargetingResult {
 
 pub fn battle_target(gs: &mut State, ctx: &mut Rltk) -> (BattleTargetingResult, Option<Entity>) {
     let entities = gs.ecs.entities();
-    let stats = gs.ecs.write_storage::<CombatStats>();
+    let pools = gs.ecs.write_storage::<Pools>();
     let monster = gs.ecs.read_storage::<Monster>();
 
     let mut x = 1;
     let mut j = 0;
 
     let mut monsters: Vec<Entity> = Vec::new();
-    for (entity, _stats, _monster) in (&entities, &stats, &monster).join() {
-        let base = 2 + (80 * x) / (1 + stats.count());
+    for (entity, _pools, _monster) in (&entities, &pools, &monster).join() {
+        let base = 2 + (80 * x) / (1 + pools.count());
         ctx.set(
             base + 0,
             22,
