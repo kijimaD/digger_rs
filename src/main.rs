@@ -15,6 +15,8 @@ mod visibility_system;
 use visibility_system::VisibilitySystem;
 mod monster_ai_system;
 use monster_ai_system::MonsterAI;
+pub mod bystander_ai_system;
+use bystander_ai_system::BystanderAI;
 mod map_indexing_system;
 use map_indexing_system::MapIndexingSystem;
 mod melee_combat_system;
@@ -78,8 +80,10 @@ impl State {
     fn run_systems(&mut self) {
         let mut vis = VisibilitySystem {};
         vis.run_now(&self.ecs);
-        let mut mob = MonsterAI {};
-        mob.run_now(&self.ecs);
+        let mut monster = MonsterAI {};
+        monster.run_now(&self.ecs);
+        let mut bystander = BystanderAI {};
+        bystander.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem {};
         mapindex.run_now(&self.ecs);
         let mut pickup = ItemCollectionSystem {};
@@ -557,6 +561,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Player>();
     gs.ecs.register::<Viewshed>();
     gs.ecs.register::<Bystander>();
+    gs.ecs.register::<Vendor>();
     gs.ecs.register::<Monster>();
     gs.ecs.register::<Name>();
     gs.ecs.register::<BlocksTile>();
@@ -586,6 +591,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<BlocksVisibility>();
     gs.ecs.register::<Door>();
     gs.ecs.register::<EntityMoved>();
+    gs.ecs.register::<Quips>();
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
 
     raws::load_raws();
