@@ -1,5 +1,5 @@
 use specs::prelude::*;
-use super::{Viewshed, Bystander, Map, Position, RunState, EntityMoved};
+use super::{Viewshed, Bystander, Map, Position, RunState, EntityMoved, Point, gamelog::GameLog, Quips, Name};
 
 pub struct BystanderAI {}
 
@@ -12,14 +12,32 @@ impl<'a> System<'a> for BystanderAI {
                         ReadStorage<'a, Bystander>,
                         WriteStorage<'a, Position>,
                         WriteStorage<'a, EntityMoved>,
-                        WriteExpect<'a, rltk::RandomNumberGenerator>);
+                        WriteExpect<'a, rltk::RandomNumberGenerator>,
+                        WriteExpect<'a, Point>,
+                        WriteExpect<'a, GameLog>,
+                        WriteStorage<'a, Quips>,
+                        ReadStorage<'a, Name>);
 
     fn run(&mut self, data: Self::SystemData) {
-        let (mut map, runstate, entities, mut viewshed, bystander, mut position, mut entity_moved, mut rng) = data;
+        let (mut map, runstate, entities, mut viewshed, bystander, mut position, mut entity_moved,
+             mut rng, player_pos, mut gamelog, mut quips, names) = data;
 
         if *runstate != RunState::MonsterTurn{ return; }
 
         for (entity, mut viewshed, _bystander, mut pos) in (&entities, &mut viewshed, &bystander, &mut position).join() {
+            // Possibly quip
+            let quip = quips.get_mut(entity);
+            if let Some(quip) = quip {
+                if !quip.available.is_empty() && viewshed.visible_tiles.contains(&player_pos) && rng.roll_dice(1,6)==1 {
+                    let name = names.get(entity);
+                    let quip_index = if quip.available.len() == 1 { 0 } else { (rng.roll_dice(1, quip.available.len() as i32)-1) as usize };
+                    gamelog.entries.push(
+                        format!("{} says \"{}\"", name.unwrap().name, quip.available[quip_index])
+                    );
+                    quip.available.remove(quip_index);
+                }
+            }
+
             let mut x = pos.x;
             let mut y = pos.y;
             let move_roll = rng.roll_dice(1, 5);

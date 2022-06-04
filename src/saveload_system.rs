@@ -74,7 +74,8 @@ pub fn save_game(ecs: &mut World) {
             ParticleLifetime,
             ProvidesFood,
             Door,
-            BlocksVisibility
+            BlocksVisibility,
+            Quips
         );
     }
 
@@ -156,7 +157,8 @@ pub fn load_game(ecs: &mut World) {
             ParticleLifetime,
             ProvidesFood,
             Door,
-            BlocksVisibility
+            BlocksVisibility,
+            Quips
         );
     }
 
