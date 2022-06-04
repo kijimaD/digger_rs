@@ -1,7 +1,7 @@
 use super::{
-    components, gamelog::BattleLog, particle_system::ParticleBuilder, Battle, DefenseBonus,
-    Equipped, HungerClock, HungerState, MeleePowerBonus, Name, Pools, Position, RunState,
-    SufferDamage, WantsToEncounter, WantsToMelee, Attributes
+    gamelog::BattleLog, particle_system::ParticleBuilder, Attributes, Battle,
+    DefenseBonus, Equipped, HungerClock, HungerState, MeleePowerBonus, Name, Pools, Position,
+    RunState, SufferDamage, WantsToEncounter, WantsToMelee,
 };
 use rltk::RandomNumberGenerator;
 use specs::prelude::*;
@@ -55,10 +55,12 @@ impl<'a> System<'a> for MeleeCombatSystem {
             mut particle_builder,
             positions,
             hunger_clock,
-            pools
+            pools,
         ) = data;
 
-        for (entity, wants_melee, name, attacker_pools, attacker_attributes) in (&entities, &wants_melee, &names, &pools, &attributes).join() {
+        for (entity, wants_melee, name, attacker_pools, attacker_attributes) in
+            (&entities, &wants_melee, &names, &pools, &attributes).join()
+        {
             if attacker_pools.hit_points.current > 0 {
                 let mut offensive_bonus = 0;
                 for (_item_entity, power_bonus, equipped_by) in
@@ -106,7 +108,8 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     let mut rng = RandomNumberGenerator::new();
                     let damage = i32::max(
                         0,
-                        (attacker_attributes.might.bonus + offensive_bonus) - (target_attributes.might.bonus + defensive_bonus),
+                        (attacker_attributes.might.bonus + offensive_bonus)
+                            - (target_attributes.might.bonus + defensive_bonus),
                     ) + rng.range(1, 5);
 
                     if damage == 0 {

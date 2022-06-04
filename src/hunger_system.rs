@@ -23,7 +23,7 @@ impl<'a> System<'a> for HungerSystem {
             runstate,
             mut inflict_damage,
             mut log,
-            mut pools,
+            pools,
         ) = data;
 
         for (entity, mut clock) in (&entities, &mut hunger_clock).join() {

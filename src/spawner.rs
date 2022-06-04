@@ -1,5 +1,5 @@
 use super::{
-    random_table::RandomTable, raws::*, Attribute, Attributes, BlocksTile, BlocksVisibility, Door,
+    random_table::RandomTable, raws::*, Attribute, Attributes,
     HungerClock, HungerState, Map, Monster, Name, Player, Pool, Pools, Position, Rect, Renderable,
     SerializeMe, Skill, Skills, TileType, Viewshed,
 };
@@ -43,7 +43,10 @@ pub fn battle_player(ecs: &mut World) {
     ecs.create_entity()
         .with(Player {})
         .with(Pools {
-            hit_points: Pool { current: player_hp_at_level(111, 1), max: player_hp_at_level(11, 1) },
+            hit_points: Pool {
+                current: player_hp_at_level(111, 1),
+                max: player_hp_at_level(11, 1),
+            },
             mana: Pool { current: mana_at_level(11, 1), max: mana_at_level(11, 1) },
             xp: 0,
             level: 1,

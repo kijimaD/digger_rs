@@ -627,7 +627,11 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
 
     let mut i = 1;
     for (name, pools, _monster) in (&names, &pools, &monsters).join() {
-        ctx.print((80 * i) / (1 + monsters.count()), 20, format!("[{}]({})", name.name, pools.hit_points.current));
+        ctx.print(
+            (80 * i) / (1 + monsters.count()),
+            20,
+            format!("[{}]({})", name.name, pools.hit_points.current),
+        );
         i += 1;
     }
 }
