@@ -44,7 +44,7 @@ pub use gamesystem::*;
 #[macro_use]
 extern crate lazy_static;
 
-const SHOW_MAPGEN_VISUALIZER: bool = true;
+const SHOW_MAPGEN_VISUALIZER: bool = false;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState {
@@ -450,6 +450,11 @@ impl GameState for State {
             *runwriter = newrunstate;
         }
         damage_system::delete_the_dead(&mut self.ecs);
+
+        if encounter_system::is_encounter(&mut self.ecs) {
+            spawner::battle_monster(&mut self.ecs, "orcA");
+            spawner::battle_monster(&mut self.ecs, "orcB");
+        }
         encounter_system::invoke_battle(&mut self.ecs);
     }
 }

@@ -663,7 +663,7 @@ pub fn battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResult {
                 let num = rng.range(0, 2);
                 if num == 0 {
                     // 逃走成功
-                    remove_battle(ecs);
+                    run_away_battle(ecs);
                     return BattleCommandResult::RunAway;
                 } else {
                     // 逃走失敗
@@ -677,32 +677,23 @@ pub fn battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResult {
     }
 }
 
-// 逃走後の処理。戦闘用entityを削除する
-fn remove_battle(ecs: &mut World) {
-    let mut dead: Vec<Entity> = Vec::new();
-    {
-        let entities = ecs.entities();
-        let pools = ecs.write_storage::<Pools>();
-        let combatants = ecs.read_storage::<Combatant>();
+// 逃走。
+// 敵シンボルは消さずに、戦闘用エンティティだけ削除する
+fn run_away_battle(ecs: &mut World) {
+    let mut combatants = ecs.write_storage::<Combatant>();
+    let mut monsters = ecs.read_storage::<Monster>();
+    let entities = ecs.entities();
 
-        for (entity, _pools, _combatant) in (&entities, &pools, &combatants).join() {
-            dead.push(entity)
-        }
+    for (entity, _combatant, _monster) in (&entities, &combatants, &monsters).join() {
+        entities.delete(entity).expect("Delete failed")
     }
 
-    for dead in dead {
-        ecs.delete_entity(dead).expect("Unable to delete");
-    }
+    // battle削除
+    let mut battle = ecs.write_storage::<Battle>();
+    battle.clear();
 
-    {
-        let mut log = ecs.write_resource::<BattleLog>();
-        log.entries.push(format!("Run away!"));
-    }
-
-    {
-        let mut battle = ecs.write_storage::<Battle>();
-        battle.clear();
-    }
+    let mut log = ecs.write_resource::<BattleLog>();
+    log.entries.push(format!("Run away!"));
 }
 
 pub enum BattleTargetingResult {

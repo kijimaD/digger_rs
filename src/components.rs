@@ -115,9 +115,9 @@ pub struct WantsToEncounter {
     pub monster: Entity,
 }
 
-#[derive(Component, Debug, ConvertSaveload, Clone)]
+#[derive(Component, Debug, Clone)]
 pub struct Battle {
-    pub monster: Entity,
+    pub monsters: Vec<Entity>,
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]

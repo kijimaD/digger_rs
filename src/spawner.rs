@@ -3,7 +3,7 @@ use super::{
     Map, Monster, Name, Player, Pool, Pools, Position, Rect, Renderable, SerializeMe, Skill,
     Skills, TileType, Viewshed,
 };
-use crate::{attr_bonus, mana_at_level, npc_hp, player_hp_at_level};
+use crate::{attr_bonus, mana_at_level, player_hp_at_level};
 use rltk::{RandomNumberGenerator, RGB};
 use specs::prelude::*;
 use specs::saveload::{MarkedBuilder, SimpleMarker};
@@ -139,10 +139,28 @@ pub fn spawn_entity(ecs: &mut World, spawn: &(&usize, &String)) {
     rltk::console::log(format!("WARNING: We dont't know how to spawn [{}]", spawn.1));
 }
 
-fn battle_monster<S: ToString>(ecs: &mut World, name: S) {
+pub fn battle_monster<S: ToString>(ecs: &mut World, name: S) {
+    let mut skills = Skills { skills: HashMap::new() };
+    skills.skills.insert(Skill::Melee, 1);
+    skills.skills.insert(Skill::Defense, 1);
+    skills.skills.insert(Skill::Magic, 1);
+
     ecs.create_entity()
         .with(Monster {})
         .with(Combatant {})
         .with(Name { name: name.to_string() })
+        .with(Attributes {
+            might: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            fitness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            quickness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            intelligence: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+        })
+        .with(Pools {
+            hit_points: Pool { current: player_hp_at_level(1, 1), max: player_hp_at_level(1, 1) },
+            mana: Pool { current: mana_at_level(11, 1), max: mana_at_level(11, 1) },
+            xp: 0,
+            level: 1,
+        })
+        .with(skills)
         .build();
 }
