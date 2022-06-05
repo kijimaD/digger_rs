@@ -25,6 +25,7 @@ mod damage_system;
 use damage_system::DamageSystem;
 mod battle_action_system;
 use battle_action_system::BattleActionSystem;
+mod encounter_system;
 mod gamelog;
 mod gui;
 mod inventory_system;
@@ -450,7 +451,7 @@ impl GameState for State {
             *runwriter = newrunstate;
         }
         damage_system::delete_the_dead(&mut self.ecs);
-        melee_combat_system::invoke_battle(&mut self.ecs);
+        encounter_system::invoke_battle(&mut self.ecs);
     }
 }
 
