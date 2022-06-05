@@ -24,19 +24,6 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             bg: RGB::named(rltk::BLACK),
             render_order: 0,
         })
-        .with(Player {})
-        .with(Viewshed { visible_tiles: Vec::new(), range: 8, dirty: true })
-        .with(Name { name: "Player".to_string() })
-        .with(HungerClock { state: HungerState::WellFed, duration: 20 })
-        .with(skills)
-        .marked::<SimpleMarker<SerializeMe>>()
-        .build()
-}
-
-pub fn battle_player(ecs: &mut World) {
-    ecs.create_entity()
-        .with(Player {})
-        .with(Combatant {})
         .with(Attributes {
             might: Attribute { base: 1100, modifiers: 0, bonus: attr_bonus(11) },
             fitness: Attribute { base: 1100, modifiers: 0, bonus: attr_bonus(11) },
@@ -52,8 +39,13 @@ pub fn battle_player(ecs: &mut World) {
             xp: 0,
             level: 1,
         })
+        .with(Player {})
+        .with(Viewshed { visible_tiles: Vec::new(), range: 8, dirty: true })
         .with(Name { name: "Player".to_string() })
-        .build();
+        .with(HungerClock { state: HungerState::WellFed, duration: 20 })
+        .with(skills)
+        .marked::<SimpleMarker<SerializeMe>>()
+        .build()
 }
 
 const MAX_MONSTERS: i32 = 4;
@@ -147,31 +139,10 @@ pub fn spawn_entity(ecs: &mut World, spawn: &(&usize, &String)) {
     rltk::console::log(format!("WARNING: We dont't know how to spawn [{}]", spawn.1));
 }
 
-pub fn b_orc(ecs: &mut World) {
-    battle_monster(ecs, "Orc");
-}
-
-#[allow(dead_code)]
-pub fn b_goblin(ecs: &mut World) {
-    battle_monster(ecs, "Goblin");
-}
-
 fn battle_monster<S: ToString>(ecs: &mut World, name: S) {
     ecs.create_entity()
         .with(Monster {})
         .with(Combatant {})
         .with(Name { name: name.to_string() })
-        .with(Attributes {
-            might: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-            fitness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-            quickness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-            intelligence: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-        })
-        .with(Pools {
-            hit_points: Pool { current: npc_hp(11, 1), max: npc_hp(11, 1) },
-            mana: Pool { current: mana_at_level(11, 1), max: mana_at_level(11, 1) },
-            xp: 0,
-            level: 1,
-        })
         .build();
 }

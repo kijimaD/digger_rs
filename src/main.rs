@@ -239,7 +239,6 @@ impl GameState for State {
                 newrunstate = RunState::AwaitingInput;
             }
             RunState::BattleEncounter => {
-                spawner::b_orc(&mut self.ecs);
                 newrunstate = RunState::BattleAwaiting;
             }
             RunState::BattleCommand => {
@@ -603,9 +602,6 @@ fn main() -> rltk::BError {
 
     gs.ecs.insert(player_entity);
     gs.ecs.insert(RunState::MapGeneration {});
-    let battle_player_entity = spawner::battle_player(&mut gs.ecs);
-    gs.ecs.insert(battle_player_entity);
-
     gs.ecs.insert(gamelog::GameLog { entries: vec!["Enter the dungeon...".to_string()] });
     gs.ecs.insert(gamelog::BattleLog { entries: vec!["".to_string()] });
     gs.ecs.insert(particle_system::ParticleBuilder::new());

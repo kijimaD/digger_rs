@@ -28,10 +28,11 @@ pub fn delete_the_dead(ecs: &mut World) {
         let pools = ecs.read_storage::<Pools>();
         let players = ecs.read_storage::<Player>();
         let names = ecs.read_storage::<Name>();
+        let combatant = ecs.read_storage::<Combatant>();
 
         let entities = ecs.entities();
         let mut log = ecs.write_resource::<BattleLog>();
-        for (entity, pools) in (&entities, &pools).join() {
+        for (entity, pools, _combatant) in (&entities, &pools, &combatant).join() {
             if pools.hit_points.current < 1 {
                 let player = players.get(entity);
                 match player {
@@ -52,7 +53,7 @@ pub fn delete_the_dead(ecs: &mut World) {
         }
     }
 
-    // HPが0になった戦闘entityの削除
+    // HPが0になったentityの削除
     for victim in dead {
         ecs.delete_entity(victim).expect("Unable to delete");
     }
