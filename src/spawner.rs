@@ -1,7 +1,7 @@
 use super::{
-    random_table::RandomTable, raws::*, Attribute, Attributes,
-    HungerClock, HungerState, Map, Monster, Name, Player, Pool, Pools, Position, Rect, Renderable,
-    SerializeMe, Skill, Skills, TileType, Viewshed,
+    random_table::RandomTable, raws::*, Attribute, Attributes, Combatant, HungerClock, HungerState,
+    Map, Monster, Name, Player, Pool, Pools, Position, Rect, Renderable, SerializeMe, Skill,
+    Skills, TileType, Viewshed,
 };
 use crate::{attr_bonus, mana_at_level, npc_hp, player_hp_at_level};
 use rltk::{RandomNumberGenerator, RGB};
@@ -28,12 +28,6 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
         .with(Viewshed { visible_tiles: Vec::new(), range: 8, dirty: true })
         .with(Name { name: "Player".to_string() })
         .with(HungerClock { state: HungerState::WellFed, duration: 20 })
-        .with(Attributes {
-            might: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-            fitness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-            quickness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-            intelligence: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-        })
         .with(skills)
         .marked::<SimpleMarker<SerializeMe>>()
         .build()
@@ -42,10 +36,17 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
 pub fn battle_player(ecs: &mut World) {
     ecs.create_entity()
         .with(Player {})
+        .with(Combatant {})
+        .with(Attributes {
+            might: Attribute { base: 1100, modifiers: 0, bonus: attr_bonus(11) },
+            fitness: Attribute { base: 1100, modifiers: 0, bonus: attr_bonus(11) },
+            quickness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            intelligence: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+        })
         .with(Pools {
             hit_points: Pool {
-                current: player_hp_at_level(111, 1),
-                max: player_hp_at_level(11, 1),
+                current: player_hp_at_level(1100, 1),
+                max: player_hp_at_level(1100, 1),
             },
             mana: Pool { current: mana_at_level(11, 1), max: mana_at_level(11, 1) },
             xp: 0,
@@ -158,7 +159,14 @@ pub fn b_goblin(ecs: &mut World) {
 fn battle_monster<S: ToString>(ecs: &mut World, name: S) {
     ecs.create_entity()
         .with(Monster {})
+        .with(Combatant {})
         .with(Name { name: name.to_string() })
+        .with(Attributes {
+            might: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            fitness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            quickness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            intelligence: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+        })
         .with(Pools {
             hit_points: Pool { current: npc_hp(11, 1), max: npc_hp(11, 1) },
             mana: Pool { current: mana_at_level(11, 1), max: mana_at_level(11, 1) },

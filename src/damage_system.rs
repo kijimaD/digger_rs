@@ -1,5 +1,6 @@
 use super::{
-    gamelog::BattleLog, Battle, Map, Monster, Name, Player, Pools, Position, RunState, SufferDamage,
+    gamelog::BattleLog, Battle, Combatant, Map, Monster, Name, Player, Pools, Position, RunState,
+    SufferDamage,
 };
 use specs::prelude::*;
 
@@ -27,6 +28,7 @@ pub fn delete_the_dead(ecs: &mut World) {
         let pools = ecs.read_storage::<Pools>();
         let players = ecs.read_storage::<Player>();
         let names = ecs.read_storage::<Name>();
+
         let entities = ecs.entities();
         let mut log = ecs.write_resource::<BattleLog>();
         for (entity, pools) in (&entities, &pools).join() {
@@ -69,13 +71,14 @@ fn check_battle_win(ecs: &mut World) {
         let entities = ecs.entities();
         let pools = ecs.read_storage::<Pools>();
         let monster = ecs.read_storage::<Monster>();
+        let combatant = ecs.read_storage::<Combatant>();
         let mut log = ecs.write_resource::<BattleLog>();
         let positions = ecs.read_storage::<Position>();
         let mut map = ecs.write_resource::<Map>();
 
         // 攻撃の結果敵が残ってないときは*勝利*
         // 攻撃してなくて敵が残ってないときは*逃走*
-        if (&entities, &pools, &monster).join().count() == 0 {
+        if (&entities, &pools, &monster, &combatant).join().count() == 0 {
             let battle_ecs = ecs.read_storage::<Battle>();
 
             for battle in (&battle_ecs).join() {

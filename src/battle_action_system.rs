@@ -1,5 +1,5 @@
 // 戦闘用entityごとに、wants_to_meleeを生成する
-use super::{Monster, Player, Pools, WantsToMelee};
+use super::{Combatant, Monster, Player, Pools, WantsToMelee};
 use specs::prelude::*;
 
 pub struct BattleActionSystem {}
@@ -14,13 +14,17 @@ impl<'a> System<'a> for BattleActionSystem {
         ReadStorage<'a, Pools>,
         ReadStorage<'a, Player>,
         ReadStorage<'a, Monster>,
+        ReadStorage<'a, Combatant>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, _player_entity, mut wants_to_melee, pools, player, monster) = data;
+        let (entities, _player_entity, mut wants_to_melee, pools, player, monster, combatant) =
+            data;
 
         // monster -> player
-        for (m_entity, _pools, _monster) in (&entities, &pools, &monster).join() {
+        for (m_entity, _pools, _monster, _combatant) in
+            (&entities, &pools, &monster, &combatant).join()
+        {
             for (p_entity, _pools, _player) in (&entities, &pools, &player).join().take(1) {
                 wants_to_melee
                     .insert(

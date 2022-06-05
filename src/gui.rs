@@ -1,6 +1,7 @@
 use super::{
-    camera, gamelog::BattleLog, gamelog::GameLog, Battle, Consumable, Equipped, HungerClock,
-    HungerState, InBackpack, Map, Monster, Name, Player, Pools, Position, RunState, State,
+    camera, gamelog::BattleLog, gamelog::GameLog, Battle, Combatant, Consumable, Equipped,
+    HungerClock, HungerState, InBackpack, Map, Monster, Name, Player, Pools, Position, RunState,
+    State,
 };
 use rltk::{Point, RandomNumberGenerator, Rltk, VirtualKeyCode, RGB};
 use specs::prelude::*;
@@ -624,11 +625,12 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
     let names = ecs.read_storage::<Name>();
     let pools = ecs.read_storage::<Pools>();
     let monsters = ecs.read_storage::<Monster>();
+    let combatants = ecs.read_storage::<Combatant>();
 
     let mut i = 1;
-    for (name, pools, _monster) in (&names, &pools, &monsters).join() {
+    for (name, pools, _combatant, _monster) in (&names, &pools, &combatants, &monsters).join() {
         ctx.print(
-            (80 * i) / (1 + monsters.count()),
+            (80 * i) / (1 + combatants.count()),
             20,
             format!("[{}]({})", name.name, pools.hit_points.current),
         );
@@ -681,9 +683,9 @@ fn remove_battle(ecs: &mut World) {
     {
         let entities = ecs.entities();
         let pools = ecs.write_storage::<Pools>();
-        let monster = ecs.read_storage::<Monster>();
+        let combatants = ecs.read_storage::<Combatant>();
 
-        for (entity, _pools, _monster) in (&entities, &pools, &monster).join() {
+        for (entity, _pools, _combatant) in (&entities, &pools, &combatants).join() {
             dead.push(entity)
         }
     }
@@ -712,13 +714,15 @@ pub enum BattleTargetingResult {
 pub fn battle_target(gs: &mut State, ctx: &mut Rltk) -> (BattleTargetingResult, Option<Entity>) {
     let entities = gs.ecs.entities();
     let pools = gs.ecs.write_storage::<Pools>();
-    let monster = gs.ecs.read_storage::<Monster>();
+    let monsters = gs.ecs.read_storage::<Monster>();
+    let combatants = gs.ecs.read_storage::<Combatant>();
 
     let mut x = 1;
     let mut j = 0;
 
-    let mut monsters: Vec<Entity> = Vec::new();
-    for (entity, _pools, _monster) in (&entities, &pools, &monster).join() {
+    let mut targets: Vec<Entity> = Vec::new();
+    for (entity, _pools, _combatant, _monster) in (&entities, &pools, &combatants, &monsters).join()
+    {
         let base = 2 + (80 * x) / (1 + pools.count());
         ctx.set(
             base + 0,
@@ -742,7 +746,7 @@ pub fn battle_target(gs: &mut State, ctx: &mut Rltk) -> (BattleTargetingResult, 
             rltk::to_cp437(')'),
         );
 
-        monsters.push(entity);
+        targets.push(entity);
         x += 1;
         j += 1;
     }
@@ -753,8 +757,8 @@ pub fn battle_target(gs: &mut State, ctx: &mut Rltk) -> (BattleTargetingResult, 
             VirtualKeyCode::Escape => (BattleTargetingResult::Cancel, None),
             _ => {
                 let selection = rltk::letter_to_option(key);
-                if selection > -1 && selection < monsters.len() as i32 {
-                    return (BattleTargetingResult::Selected, Some(monsters[selection as usize]));
+                if selection > -1 && selection < targets.len() as i32 {
+                    return (BattleTargetingResult::Selected, Some(targets[selection as usize]));
                 }
                 (BattleTargetingResult::NoResponse, None)
             }

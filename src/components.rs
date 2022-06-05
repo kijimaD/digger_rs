@@ -120,6 +120,9 @@ pub struct Battle {
     pub monster: Entity,
 }
 
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Combatant {}
+
 #[derive(Component, Debug, ConvertSaveload, Clone)]
 pub struct SufferDamage {
     pub amount: Vec<i32>,
