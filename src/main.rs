@@ -25,12 +25,14 @@ mod damage_system;
 use damage_system::DamageSystem;
 mod battle_action_system;
 use battle_action_system::BattleActionSystem;
+mod encounter_system;
 mod gamelog;
 mod gui;
 mod inventory_system;
 mod spawner;
 use inventory_system::{ItemCollectionSystem, ItemDropSystem, ItemRemoveSystem, ItemUseSystem};
 pub mod camera;
+mod gamesystem;
 mod hunger_system;
 pub mod map_builders;
 mod particle_system;
@@ -38,10 +40,11 @@ pub mod random_table;
 pub mod raws;
 pub mod rex_assets;
 pub mod saveload_system;
+pub use gamesystem::*;
 #[macro_use]
 extern crate lazy_static;
 
-const SHOW_MAPGEN_VISUALIZER: bool = true;
+const SHOW_MAPGEN_VISUALIZER: bool = false;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState {
@@ -236,7 +239,6 @@ impl GameState for State {
                 newrunstate = RunState::AwaitingInput;
             }
             RunState::BattleEncounter => {
-                spawner::b_orc(&mut self.ecs);
                 newrunstate = RunState::BattleAwaiting;
             }
             RunState::BattleCommand => {
@@ -313,11 +315,11 @@ impl GameState for State {
                 let result = gui::battle_target(self, ctx);
                 let entities = self.ecs.entities();
                 let player = self.ecs.read_storage::<Player>();
-                let stats = self.ecs.write_storage::<CombatStats>();
+                let pools = self.ecs.write_storage::<Pools>();
                 let mut wants_to_melee = self.ecs.write_storage::<WantsToMelee>();
 
                 // TODO: 複数キャラのコマンドに対応してない
-                for (entity, _player, _stats) in (&entities, &player, &stats).join() {
+                for (entity, _player, _pools) in (&entities, &player, &pools).join() {
                     match result.0 {
                         gui::BattleTargetingResult::Cancel => newrunstate = RunState::BattleCommand,
                         gui::BattleTargetingResult::NoResponse => {}
@@ -448,7 +450,12 @@ impl GameState for State {
             *runwriter = newrunstate;
         }
         damage_system::delete_the_dead(&mut self.ecs);
-        melee_combat_system::invoke_battle(&mut self.ecs);
+
+        if encounter_system::is_encounter(&mut self.ecs) {
+            spawner::battle_monster(&mut self.ecs, "orcA");
+            spawner::battle_monster(&mut self.ecs, "orcB");
+        }
+        encounter_system::invoke_battle(&mut self.ecs);
     }
 }
 
@@ -509,16 +516,10 @@ impl State {
         self.generate_world_map(current_depth + 1);
 
         // Notify the player and give them some health
-        let player_entity = self.ecs.fetch::<Entity>();
         let mut gamelog = self.ecs.fetch_mut::<gamelog::GameLog>();
         gamelog
             .entries
             .push("You descend to the next level, and take a moment to heal.".to_string());
-        let mut player_health_store = self.ecs.write_storage::<CombatStats>();
-        let player_health = player_health_store.get_mut(*player_entity);
-        if let Some(player_health) = player_health {
-            player_health.hp = i32::max(player_health.hp, player_health.max_hp / 2);
-        }
     }
 
     fn game_over_cleanup(&mut self) {
@@ -565,10 +566,13 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Monster>();
     gs.ecs.register::<Name>();
     gs.ecs.register::<BlocksTile>();
-    gs.ecs.register::<CombatStats>();
+    gs.ecs.register::<Attributes>();
+    gs.ecs.register::<Skills>();
+    gs.ecs.register::<Pools>();
     gs.ecs.register::<WantsToMelee>();
     gs.ecs.register::<WantsToEncounter>();
     gs.ecs.register::<Battle>();
+    gs.ecs.register::<Combatant>();
     gs.ecs.register::<SufferDamage>();
     gs.ecs.register::<Item>();
     gs.ecs.register::<ProvidesHealing>();
@@ -603,9 +607,6 @@ fn main() -> rltk::BError {
 
     gs.ecs.insert(player_entity);
     gs.ecs.insert(RunState::MapGeneration {});
-    let battle_player_entity = spawner::battle_player(&mut gs.ecs);
-    gs.ecs.insert(battle_player_entity);
-
     gs.ecs.insert(gamelog::GameLog { entries: vec!["Enter the dungeon...".to_string()] });
     gs.ecs.insert(gamelog::BattleLog { entries: vec!["".to_string()] });
     gs.ecs.insert(particle_system::ParticleBuilder::new());

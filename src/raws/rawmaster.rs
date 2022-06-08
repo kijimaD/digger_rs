@@ -1,6 +1,7 @@
 use super::Raws;
 use crate::components::*;
 use crate::random_table::RandomTable;
+use crate::{attr_bonus, mana_at_level, npc_hp};
 use specs::prelude::*;
 use std::collections::{HashMap, HashSet};
 

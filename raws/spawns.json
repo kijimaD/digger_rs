@@ -163,7 +163,9 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "melee"
+      "ai": "melee",
+      "attributes": {
+      }
     },
     {
       "name": "Goblin",
@@ -175,7 +177,9 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "melee"
+      "ai": "melee",
+      "attributes": {
+      }
     },
     {
       "name": "Kobold",
@@ -187,7 +191,9 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "melee"
+      "ai": "melee",
+      "attributes": {
+      }
     },
     {
       "name": "Barkeep",
@@ -199,7 +205,12 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor"
+      "ai": "vendor",
+      "attributes": {
+      },
+      "skills": {
+        "Melee": 2
+      }
     },
     {
       "name": "Shady Salesman",
@@ -211,7 +222,9 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor"
+      "ai": "vendor",
+      "attributes": {
+      }
     },
     {
       "name": "Patron",
@@ -228,7 +241,9 @@
         "Quiet down, it's too early!",
         "Oh my, I drank too much.",
         "Still saving the world, eh?"
-      ]
+      ],
+      "attributes": {
+      }
     },
     {
       "name": "Priest",
@@ -240,7 +255,9 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander"
+      "ai": "bystander",
+      "attributes": {
+      }
     },
     {
       "name": "Parishioner",
@@ -252,7 +269,9 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander"
+      "ai": "bystander",
+      "attributes": {
+      }
     },
     {
       "name": "Blacksmith",
@@ -264,7 +283,9 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor"
+      "ai": "vendor",
+      "attributes": {
+      }
     },
     {
       "name": "Clothier",
@@ -276,7 +297,9 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor"
+      "ai": "vendor",
+      "attributes": {
+      }
     },
     {
       "name": "Alchemist",
@@ -288,7 +311,9 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor"
+      "ai": "vendor",
+      "attributes": {
+      }
     },
     {
       "name": "Mom",
@@ -300,7 +325,9 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander"
+      "ai": "bystander",
+      "attributes": {
+      }
     },
     {
       "name": "Peasant",
@@ -312,7 +339,9 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander"
+      "ai": "bystander",
+      "attributes": {
+      }
     },
     {
       "name": "Dock Worker",
@@ -323,19 +352,15 @@
         "order": 1
       },
       "blocks_tile": true,
-      "stats": {
-        "max_hp": 16,
-        "hp": 16,
-        "defense": 1,
-        "power": 4
-      },
       "vision_range": 4,
       "ai": "bystander",
       "quips": [
         "Lovely day, eh?",
         "Nice weather",
         "Hello"
-      ]
+      ],
+      "attributes": {
+      }
     },
     {
       "name": "Fisher",
@@ -346,19 +371,15 @@
         "order": 1
       },
       "blocks_tile": true,
-      "stats": {
-        "max_hp": 16,
-        "hp": 16,
-        "defense": 1,
-        "power": 4
-      },
       "vision_range": 4,
       "ai": "bystander",
       "quips": [
         "They're biting today!",
         "I caught something, but it wasn't a fish!",
         "Looks like rain"
-      ]
+      ],
+      "attributes": {
+      }
     },
     {
       "name": "Wannabe Pirate",
@@ -369,19 +390,15 @@
         "order": 1
       },
       "blocks_tile": true,
-      "stats": {
-        "max_hp": 16,
-        "hp": 16,
-        "defense": 1,
-        "power": 4
-      },
       "vision_range": 4,
       "ai": "bystander",
       "quips": [
         "Arrr",
         "Grog!",
         "Booze!"
-      ]
+      ],
+      "attributes": {
+      }
     },
     {
       "name": "Drunk",
@@ -392,19 +409,15 @@
         "order": 1
       },
       "blocks_tile": true,
-      "stats": {
-        "max_hp": 16,
-        "hp": 16,
-        "defense": 1,
-        "power": 4
-      },
       "vision_range": 4,
       "ai": "bystander",
       "quips": [
         "Hic",
         "Need... more... booze!",
         "Spare a copper?"
-      ]
+      ],
+      "attributes": {
+      }
     }
   ],
   "props": [

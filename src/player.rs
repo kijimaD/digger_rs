@@ -1,7 +1,7 @@
 use super::{
-    gamelog::GameLog, BlocksTile, BlocksVisibility, Bystander, CombatStats, Door, EntityMoved,
-    HungerClock, HungerState, Item, Map, Monster, Name, Player, Position, Renderable, RunState,
-    State, TileType, Vendor, Viewshed, WantsToEncounter, WantsToPickupItem,
+    gamelog::GameLog, BlocksTile, BlocksVisibility, Bystander, Door, EntityMoved, HungerClock,
+    HungerState, Item, Map, Monster, Name, Player, Pools, Position, Renderable, RunState, State,
+    TileType, Vendor, Viewshed, WantsToEncounter, WantsToPickupItem,
 };
 use rltk::{Point, Rltk, VirtualKeyCode};
 use specs::prelude::*;
@@ -12,7 +12,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let players = ecs.read_storage::<Player>();
     let mut viewsheds = ecs.write_storage::<Viewshed>();
     let entities = ecs.entities();
-    let combat_stats = ecs.read_storage::<CombatStats>();
+    let pools = ecs.read_storage::<Pools>();
     let map = ecs.fetch::<Map>();
     let mut wants_to_encounter = ecs.write_storage::<WantsToEncounter>();
     let mut entity_moved = ecs.write_storage::<EntityMoved>();
@@ -55,7 +55,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
                 ppos.x = pos.x;
                 ppos.y = pos.y;
             } else {
-                let target = combat_stats.get(*potential_target);
+                let target = pools.get(*potential_target);
                 if let Some(_target) = target {
                     wants_to_encounter
                         .insert(entity, WantsToEncounter { monster: *potential_target })
@@ -197,11 +197,11 @@ fn skip_turn(ecs: &mut World) -> RunState {
 
     let entities = ecs.entities();
     let player = ecs.read_storage::<Player>();
-    let mut stats = ecs.write_storage::<CombatStats>();
+    let mut pools = ecs.write_storage::<Pools>();
 
     if can_heal {
-        for (_entity, _player, stats) in (&entities, &player, &mut stats).join() {
-            stats.hp = i32::min(stats.hp + 1, stats.max_hp);
+        for (_entity, _player, pools) in (&entities, &player, &mut pools).join() {
+            pools.hit_points.current = i32::min(pools.hit_points.current + 1, pools.hit_points.max);
         }
     }
 

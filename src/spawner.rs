@@ -1,8 +1,9 @@
 use super::{
-    random_table::RandomTable, raws::*, BlocksTile, BlocksVisibility, CombatStats, Door,
-    HungerClock, HungerState, Map, Monster, Name, Player, Position, Rect, Renderable, SerializeMe,
-    TileType, Viewshed,
+    random_table::RandomTable, raws::*, Attribute, Attributes, Combatant, HungerClock, HungerState,
+    Map, Monster, Name, Player, Pool, Pools, Position, Rect, Renderable, SerializeMe, Skill,
+    Skills, TileType, Viewshed,
 };
+use crate::{attr_bonus, mana_at_level, player_hp_at_level};
 use rltk::{RandomNumberGenerator, RGB};
 use specs::prelude::*;
 use specs::saveload::{MarkedBuilder, SimpleMarker};
@@ -10,6 +11,11 @@ use std::collections::HashMap;
 
 /// Spawns the player and returns his/her entity object.
 pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
+    let mut skills = Skills { skills: HashMap::new() };
+    skills.skills.insert(Skill::Melee, 1);
+    skills.skills.insert(Skill::Defense, 1);
+    skills.skills.insert(Skill::Magic, 1);
+
     ecs.create_entity()
         .with(Position { x: player_x, y: player_y })
         .with(Renderable {
@@ -18,20 +24,28 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             bg: RGB::named(rltk::BLACK),
             render_order: 0,
         })
+        .with(Attributes {
+            might: Attribute { base: 1100, modifiers: 0, bonus: attr_bonus(11) },
+            fitness: Attribute { base: 1100, modifiers: 0, bonus: attr_bonus(11) },
+            quickness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            intelligence: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+        })
+        .with(Pools {
+            hit_points: Pool {
+                current: player_hp_at_level(1100, 1),
+                max: player_hp_at_level(1100, 1),
+            },
+            mana: Pool { current: mana_at_level(11, 1), max: mana_at_level(11, 1) },
+            xp: 0,
+            level: 1,
+        })
         .with(Player {})
         .with(Viewshed { visible_tiles: Vec::new(), range: 8, dirty: true })
         .with(Name { name: "Player".to_string() })
         .with(HungerClock { state: HungerState::WellFed, duration: 20 })
+        .with(skills)
         .marked::<SimpleMarker<SerializeMe>>()
         .build()
-}
-
-pub fn battle_player(ecs: &mut World) {
-    ecs.create_entity()
-        .with(Player {})
-        .with(CombatStats { max_hp: 100, hp: 100, defense: 2, power: 50 })
-        .with(Name { name: "Player".to_string() })
-        .build();
 }
 
 const MAX_MONSTERS: i32 = 4;
@@ -125,19 +139,28 @@ pub fn spawn_entity(ecs: &mut World, spawn: &(&usize, &String)) {
     rltk::console::log(format!("WARNING: We dont't know how to spawn [{}]", spawn.1));
 }
 
-pub fn b_orc(ecs: &mut World) {
-    battle_monster(ecs, "Orc");
-}
+pub fn battle_monster<S: ToString>(ecs: &mut World, name: S) {
+    let mut skills = Skills { skills: HashMap::new() };
+    skills.skills.insert(Skill::Melee, 1);
+    skills.skills.insert(Skill::Defense, 1);
+    skills.skills.insert(Skill::Magic, 1);
 
-#[allow(dead_code)]
-pub fn b_goblin(ecs: &mut World) {
-    battle_monster(ecs, "Goblin");
-}
-
-fn battle_monster<S: ToString>(ecs: &mut World, name: S) {
     ecs.create_entity()
         .with(Monster {})
+        .with(Combatant {})
         .with(Name { name: name.to_string() })
-        .with(CombatStats { max_hp: 16, hp: 16, defense: 1, power: 4 })
+        .with(Attributes {
+            might: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            fitness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            quickness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            intelligence: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+        })
+        .with(Pools {
+            hit_points: Pool { current: player_hp_at_level(1, 1), max: player_hp_at_level(1, 1) },
+            mana: Pool { current: mana_at_level(11, 1), max: mana_at_level(11, 1) },
+            xp: 0,
+            level: 1,
+        })
+        .with(skills)
         .build();
 }

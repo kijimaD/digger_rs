@@ -1,6 +1,6 @@
 use super::{
-    gamelog::GameLog, CombatStats, Consumable, Equippable, Equipped, HungerClock, HungerState,
-    InBackpack, InflictsDamage, Name, Position, ProvidesFood, ProvidesHealing, SufferDamage,
+    gamelog::GameLog, Consumable, Equippable, Equipped, HungerClock, HungerState, InBackpack,
+    InflictsDamage, Name, Pools, Position, ProvidesFood, ProvidesHealing, SufferDamage,
     WantsToDropItem, WantsToPickupItem, WantsToRemoveItem, WantsToUseItem,
 };
 use specs::prelude::*;
@@ -52,7 +52,7 @@ impl<'a> System<'a> for ItemUseSystem {
         ReadStorage<'a, Consumable>,
         ReadStorage<'a, ProvidesHealing>,
         ReadStorage<'a, InflictsDamage>,
-        WriteStorage<'a, CombatStats>,
+        WriteStorage<'a, Pools>,
         WriteStorage<'a, SufferDamage>,
         ReadStorage<'a, Equippable>,
         ReadStorage<'a, ProvidesFood>,
@@ -72,7 +72,7 @@ impl<'a> System<'a> for ItemUseSystem {
             consumables,
             healing,
             _inflict_damage,
-            mut combat_stats,
+            mut pools,
             _suffer_damage,
             equippable,
             provides_food,
@@ -134,9 +134,12 @@ impl<'a> System<'a> for ItemUseSystem {
                 Some(healer) => {
                     used_item = false;
                     for _target in party_targets.iter() {
-                        let stats = combat_stats.get_mut(useitem.target);
-                        if let Some(stats) = stats {
-                            stats.hp = i32::min(stats.max_hp, stats.hp + healer.heal_amount);
+                        let pools = pools.get_mut(useitem.target);
+                        if let Some(pools) = pools {
+                            pools.hit_points.current = i32::min(
+                                pools.hit_points.max,
+                                pools.hit_points.current + healer.heal_amount,
+                            );
                             gamelog.entries.push(format!(
                                 "You use the {}, healing {} hp.",
                                 names.get(useitem.item).unwrap().name,
