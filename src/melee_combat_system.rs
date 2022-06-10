@@ -1,6 +1,7 @@
 use super::{
-    gamelog::BattleLog, particle_system::ParticleBuilder, skill_bonus, Attributes, HungerClock,
-    HungerState, Name, Pools, Position, Skill, Skills, SufferDamage, WantsToMelee,
+    gamelog::BattleLog, particle_system::ParticleBuilder, skill_bonus, Attributes, Equipped,
+    HungerClock, HungerState, MeleeWeapon, Name, Pools, Position, Skill, Skills, SufferDamage,
+    WantsToMelee, Wearable,
 };
 use specs::prelude::*;
 
@@ -28,6 +29,9 @@ impl<'a> System<'a> for MeleeCombatSystem {
         ReadStorage<'a, HungerClock>,
         ReadStorage<'a, Pools>,
         WriteExpect<'a, rltk::RandomNumberGenerator>,
+        ReadStorage<'a, Equipped>,
+        ReadStorage<'a, MeleeWeapon>,
+        ReadStorage<'a, Wearable>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -44,6 +48,9 @@ impl<'a> System<'a> for MeleeCombatSystem {
             hunger_clock,
             pools,
             mut rng,
+            equipped_items,
+            meleeweapons,
+            wearables,
         ) = data;
 
         for (entity, wants_melee, name, attacker_attributes, attacker_skills, attacker_pools) in
@@ -75,7 +82,18 @@ impl<'a> System<'a> for MeleeCombatSystem {
                 let base_armor_class = 10;
                 let armor_quickness_bonus = target_attributes.quickness.bonus;
                 let armor_skill_bonus = skill_bonus(Skill::Defense, &*target_skills);
-                let armor_item_bonus = 0; // TODO: Once armor supports this
+
+                let mut armor_item_bonus_f = 0.0;
+                for (wielded, armor) in (&equipped_items, &wearables).join() {
+                    if wielded.owner == wants_melee.target {
+                        armor_item_bonus_f += armor.armor_class;
+                    }
+                }
+                let base_armor_class = 10;
+                let armor_quickness_bonus = target_attributes.quickness.bonus;
+                let armor_skill_bonus = skill_bonus(Skill::Defense, &*target_skills);
+                let armor_item_bonus = armor_item_bonus_f as i32;
+
                 let armor_class =
                     base_armor_class + armor_quickness_bonus + armor_skill_bonus + armor_item_bonus;
 
