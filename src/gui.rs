@@ -15,7 +15,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
 
     // プレイヤーのHP
     for (_player, pools) in (&players, &pools).join() {
-        let health = format!(" HP: {} / {} ", pools.hit_points.current, pools.hit_points.current);
+        let health = format!(" HP: {} / {} ", pools.hit_points.current, pools.hit_points.max);
         ctx.print_color(12, 43, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), &health);
 
         ctx.draw_bar_horizontal(

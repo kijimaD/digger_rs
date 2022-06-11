@@ -92,6 +92,48 @@
       }
     },
     {
+      "name": "Dried Sausage",
+      "renderable": {
+        "glyph": "%",
+        "fg": "#00FF00",
+        "bg": "#000000",
+        "order": 2
+      },
+      "consumable": {
+        "effects": {
+          "food": ""
+        }
+      }
+    },
+    {
+      "name": "Beer",
+      "renderable": {
+        "glyph": "!",
+        "fg": "#FF00FF",
+        "bg": "#000000",
+        "order": 2
+      },
+      "consumable": {
+        "effects": {
+          "provides_healing": "4"
+        }
+      }
+    },
+    {
+      "name": "Rusty Longsword",
+      "renderable": {
+        "glyph": "/",
+        "fg": "#BB77BB",
+        "bg": "#000000",
+        "order": 2
+      },
+      "weapon": {
+        "attribute": "Might",
+        "base_damage": "1d8-1",
+        "hit_bonus": -1
+      }
+    },
+    {
       "name": "Dagger",
       "renderable": {
         "glyph": "/",
@@ -100,7 +142,9 @@
         "order": 2
       },
       "weapon": {
-        "power_bonus": 2
+        "attribute": "Quickness",
+        "base_damage": "1d4",
+        "hit_bonus": 0
       }
     },
     {
@@ -112,7 +156,9 @@
         "order": 2
       },
       "weapon": {
-        "power_bonus": 4
+          "attribute" : "Might",
+          "base_damage" : "1d8",
+          "hit_bonus" : 0
       }
     },
     {
@@ -124,7 +170,9 @@
         "order": 2
       },
       "weapon": {
-        "power_bonus": 5
+          "attribute" : "Might",
+          "base_damage" : "1d8+1",
+          "hit_bonus" : 0
       }
     },
     {
@@ -135,9 +183,10 @@
         "bg": "#000000",
         "order": 2
       },
-      "shield": {
-        "defense_bonus": 1
-      }
+        "wearable" : {
+            "slot" : "Shield",
+            "armor_class" : 1.0
+        }
     },
     {
       "name": "Tower Shield",
@@ -147,8 +196,61 @@
         "bg": "#000000",
         "order": 2
       },
-      "shield": {
-        "defense_bonus": 3
+        "wearable" : {
+            "slot" : "Shield",
+            "armor_class" : 2.0
+        }
+    },
+    {
+      "name": "Stained Tunic",
+      "renderable": {
+        "glyph": "{",
+        "fg": "#00FF00",
+        "bg": "#000000",
+        "order": 2
+      },
+      "wearable": {
+        "slot": "Torso",
+        "armor_class": 0.1
+      }
+    },
+    {
+      "name": "Torn Trousers",
+      "renderable": {
+        "glyph": "[",
+        "fg": "#00FFFF",
+        "bg": "#000000",
+        "order": 2
+      },
+      "wearable": {
+        "slot": "Legs",
+        "armor_class": 0.1
+      }
+    },
+    {
+      "name": "Old Boots",
+      "renderable": {
+        "glyph": "{",
+        "fg": "#FF9999",
+        "bg": "#000000",
+        "order": 2
+      },
+      "wearable": {
+        "slot": "Legs",
+        "armor_class": 0.1
+      }
+    },
+    {
+      "name": "Slippers",
+      "renderable": {
+        "glyph": "[",
+        "fg": "#FF9999",
+        "bg": "#000000",
+        "order": 2
+      },
+      "wearable": {
+        "slot": "Legs",
+        "armor_class": 0.1
       }
     }
   ],
@@ -163,9 +265,7 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "melee",
-      "attributes": {
-      }
+      "ai": "melee"
     },
     {
       "name": "Goblin",
@@ -177,9 +277,7 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "melee",
-      "attributes": {
-      }
+      "ai": "melee"
     },
     {
       "name": "Kobold",
@@ -191,9 +289,7 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "melee",
-      "attributes": {
-      }
+      "ai": "melee"
     },
     {
       "name": "Barkeep",
@@ -206,11 +302,10 @@
       "blocks_tile": true,
       "vision_range": 4,
       "ai": "vendor",
-      "attributes": {
-      },
       "skills": {
         "Melee": 2
-      }
+      },
+        "equipped": [ "Cloth Tunic", "Slippers" ]
     },
     {
       "name": "Shady Salesman",
@@ -222,9 +317,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor",
-      "attributes": {
-      }
+      "ai": "vendor"
     },
     {
       "name": "Patron",
@@ -241,9 +334,7 @@
         "Quiet down, it's too early!",
         "Oh my, I drank too much.",
         "Still saving the world, eh?"
-      ],
-      "attributes": {
-      }
+      ]
     },
     {
       "name": "Priest",
@@ -255,9 +346,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander",
-      "attributes": {
-      }
+      "ai": "bystander"
     },
     {
       "name": "Parishioner",
@@ -269,9 +358,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander",
-      "attributes": {
-      }
+      "ai": "bystander"
     },
     {
       "name": "Blacksmith",
@@ -283,9 +370,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor",
-      "attributes": {
-      }
+      "ai": "vendor"
     },
     {
       "name": "Clothier",
@@ -297,9 +382,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor",
-      "attributes": {
-      }
+      "ai": "vendor"
     },
     {
       "name": "Alchemist",
@@ -311,9 +394,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor",
-      "attributes": {
-      }
+      "ai": "vendor"
     },
     {
       "name": "Mom",
@@ -325,9 +406,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander",
-      "attributes": {
-      }
+      "ai": "bystander"
     },
     {
       "name": "Peasant",
@@ -339,9 +418,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander",
-      "attributes": {
-      }
+      "ai": "bystander"
     },
     {
       "name": "Dock Worker",
@@ -358,9 +435,7 @@
         "Lovely day, eh?",
         "Nice weather",
         "Hello"
-      ],
-      "attributes": {
-      }
+      ]
     },
     {
       "name": "Fisher",
@@ -377,9 +452,7 @@
         "They're biting today!",
         "I caught something, but it wasn't a fish!",
         "Looks like rain"
-      ],
-      "attributes": {
-      }
+      ]
     },
     {
       "name": "Wannabe Pirate",
@@ -396,9 +469,7 @@
         "Arrr",
         "Grog!",
         "Booze!"
-      ],
-      "attributes": {
-      }
+      ]
     },
     {
       "name": "Drunk",
@@ -415,9 +486,7 @@
         "Hic",
         "Need... more... booze!",
         "Spare a copper?"
-      ],
-      "attributes": {
-      }
+      ]
     }
   ],
   "props": [

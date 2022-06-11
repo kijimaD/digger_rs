@@ -569,6 +569,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Attributes>();
     gs.ecs.register::<Skills>();
     gs.ecs.register::<Pools>();
+    gs.ecs.register::<NaturalAttackDefense>();
     gs.ecs.register::<WantsToMelee>();
     gs.ecs.register::<WantsToEncounter>();
     gs.ecs.register::<Battle>();
@@ -586,8 +587,8 @@ fn main() -> rltk::BError {
     gs.ecs.register::<SerializationHelper>();
     gs.ecs.register::<Equippable>();
     gs.ecs.register::<Equipped>();
-    gs.ecs.register::<MeleePowerBonus>();
-    gs.ecs.register::<DefenseBonus>();
+    gs.ecs.register::<MeleeWeapon>();
+    gs.ecs.register::<Wearable>();
     gs.ecs.register::<HungerClock>();
     gs.ecs.register::<ProvidesFood>();
     gs.ecs.register::<WantsToRemoveItem>();
