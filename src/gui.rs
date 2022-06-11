@@ -1,7 +1,7 @@
 use super::{
-    camera, gamelog::BattleLog, gamelog::GameLog, Battle, Combatant, Consumable, Equipped,
-    HungerClock, HungerState, InBackpack, Map, Monster, Name, Player, Pools, Position, RunState,
-    State,
+    camera, gamelog::BattleLog, gamelog::GameLog, Attribute, Attributes, Battle, Combatant,
+    Consumable, Equipped, HungerClock, HungerState, InBackpack, Map, Monster, Name, Player, Pools,
+    Position, RunState, State,
 };
 use rltk::{Point, RandomNumberGenerator, Rltk, VirtualKeyCode, RGB};
 use specs::prelude::*;
@@ -34,6 +34,53 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     ctx.set(x_pos + name_length as i32, 0, box_gray, black, to_cp437('├'));
     ctx.print_color(x_pos + 1, 0, white, black, &map.name);
     std::mem::drop(map);
+
+    // Draw stats
+    let player_entity = ecs.fetch::<Entity>();
+    let pools = ecs.read_storage::<Pools>();
+    let player_pools = pools.get(*player_entity).unwrap();
+    let health =
+        format!("Health:{}/{}", player_pools.hit_points.current, player_pools.hit_points.max);
+    let mana = format!("Mana:{}/{}", player_pools.mana.current, player_pools.mana.max);
+    ctx.print_color(50, 1, white, black, &health);
+    ctx.print_color(50, 2, white, black, &mana);
+    ctx.draw_bar_horizontal(
+        64,
+        1,
+        14,
+        player_pools.hit_points.current,
+        player_pools.hit_points.max,
+        RGB::named(rltk::RED),
+        RGB::named(rltk::BLACK),
+    );
+    ctx.draw_bar_horizontal(
+        64,
+        2,
+        14,
+        player_pools.mana.current,
+        player_pools.mana.max,
+        RGB::named(rltk::BLUE),
+        RGB::named(rltk::BLACK),
+    );
+
+    // Attributes
+    let attributes = ecs.read_storage::<Attributes>();
+    let attr = attributes.get(*player_entity).unwrap();
+    draw_attribute("Might:", &attr.might, 4, ctx);
+    draw_attribute("Quickness:", &attr.quickness, 5, ctx);
+    draw_attribute("Fitness:", &attr.fitness, 6, ctx);
+    draw_attribute("Intelligence:", &attr.intelligence, 7, ctx);
+
+    // Equipped
+    let mut y = 9;
+    let equipped = ecs.read_storage::<Equipped>();
+    let name = ecs.read_storage::<Name>();
+    for (equipped_by, item_name) in (&equipped, &name).join() {
+        if equipped_by.owner == *player_entity {
+            ctx.print_color(50, y, white, black, &item_name.name);
+            y += 1;
+        }
+    }
 }
 
 pub fn draw_hollow_box(
@@ -59,6 +106,24 @@ pub fn draw_hollow_box(
     for y in sy + 1..sy + height {
         console.set(sx, y, fg, bg, to_cp437('│'));
         console.set(sx + width, y, fg, bg, to_cp437('│'));
+    }
+}
+
+fn draw_attribute(name: &str, attribute: &Attribute, y: i32, ctx: &mut Rltk) {
+    let black = RGB::named(rltk::BLACK);
+    let attr_gray: RGB = RGB::from_hex("#CCCCCC").expect("Oops");
+    ctx.print_color(50, y, attr_gray, black, name);
+    let color: RGB = if attribute.modifiers < 0 {
+        RGB::from_f32(1.0, 0.0, 0.0)
+    } else if attribute.modifiers == 0 {
+        RGB::named(rltk::WHITE)
+    } else {
+        RGB::from_f32(0.0, 1.0, 0.0)
+    };
+    ctx.print_color(67, y, color, black, &format!("{}", attribute.base + attribute.modifiers));
+    ctx.print_color(73, y, color, black, &format!("{}", attribute.bonus));
+    if attribute.bonus > 0 {
+        ctx.set(72, y, color, black, rltk::to_cp437('+'));
     }
 }
 
@@ -449,7 +514,9 @@ pub fn remove_item_menu(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Opti
 
     let mut equippable: Vec<Entity> = Vec::new();
     let mut j = 0;
-    for (entity, _pack, name) in (&entities, &backpack, &names).join().filter(|item| item.1.owner == *player_entity ) {
+    for (entity, _pack, name) in
+        (&entities, &backpack, &names).join().filter(|item| item.1.owner == *player_entity)
+    {
         ctx.set(17, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437('('));
         ctx.set(
             18,
