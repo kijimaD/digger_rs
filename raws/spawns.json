@@ -252,9 +252,7 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "melee",
-      "attributes": {
-      }
+      "ai": "melee"
     },
     {
       "name": "Goblin",
@@ -266,9 +264,7 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "melee",
-      "attributes": {
-      }
+      "ai": "melee"
     },
     {
       "name": "Kobold",
@@ -280,9 +276,7 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "melee",
-      "attributes": {
-      }
+      "ai": "melee"
     },
     {
       "name": "Barkeep",
@@ -295,11 +289,10 @@
       "blocks_tile": true,
       "vision_range": 4,
       "ai": "vendor",
-      "attributes": {
-      },
       "skills": {
         "Melee": 2
-      }
+      },
+        "equipped": [ "Cloth Tunic", "Slippers" ]
     },
     {
       "name": "Shady Salesman",
@@ -311,9 +304,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor",
-      "attributes": {
-      }
+      "ai": "vendor"
     },
     {
       "name": "Patron",
@@ -330,9 +321,7 @@
         "Quiet down, it's too early!",
         "Oh my, I drank too much.",
         "Still saving the world, eh?"
-      ],
-      "attributes": {
-      }
+      ]
     },
     {
       "name": "Priest",
@@ -344,9 +333,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander",
-      "attributes": {
-      }
+      "ai": "bystander"
     },
     {
       "name": "Parishioner",
@@ -358,9 +345,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander",
-      "attributes": {
-      }
+      "ai": "bystander"
     },
     {
       "name": "Blacksmith",
@@ -372,9 +357,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor",
-      "attributes": {
-      }
+      "ai": "vendor"
     },
     {
       "name": "Clothier",
@@ -386,9 +369,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor",
-      "attributes": {
-      }
+      "ai": "vendor"
     },
     {
       "name": "Alchemist",
@@ -400,9 +381,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor",
-      "attributes": {
-      }
+      "ai": "vendor"
     },
     {
       "name": "Mom",
@@ -414,9 +393,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander",
-      "attributes": {
-      }
+      "ai": "bystander"
     },
     {
       "name": "Peasant",
@@ -428,9 +405,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander",
-      "attributes": {
-      }
+      "ai": "bystander"
     },
     {
       "name": "Dock Worker",
@@ -447,9 +422,7 @@
         "Lovely day, eh?",
         "Nice weather",
         "Hello"
-      ],
-      "attributes": {
-      }
+      ]
     },
     {
       "name": "Fisher",
@@ -466,9 +439,7 @@
         "They're biting today!",
         "I caught something, but it wasn't a fish!",
         "Looks like rain"
-      ],
-      "attributes": {
-      }
+      ]
     },
     {
       "name": "Wannabe Pirate",
@@ -485,9 +456,7 @@
         "Arrr",
         "Grog!",
         "Booze!"
-      ],
-      "attributes": {
-      }
+      ]
     },
     {
       "name": "Drunk",
@@ -504,9 +473,7 @@
         "Hic",
         "Need... more... booze!",
         "Spare a copper?"
-      ],
-      "attributes": {
-      }
+      ]
     }
   ],
   "props": [
