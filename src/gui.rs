@@ -10,7 +10,9 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     use rltk::to_cp437;
     let box_gray: RGB = RGB::from_hex("#999999").expect("Oops");
     let black = RGB::named(rltk::BLACK);
+    let white = RGB::named(rltk::WHITE);
 
+    // separators
     draw_hollow_box(ctx, 0, 0, 79, 59, box_gray, black); // Overall box
     draw_hollow_box(ctx, 0, 0, 49, 45, box_gray, black); // Map box
     draw_hollow_box(ctx, 0, 45, 79, 14, box_gray, black); // Log box
@@ -23,6 +25,15 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     ctx.set(49, 45, box_gray, black, to_cp437('┴'));
     ctx.set(79, 8, box_gray, black, to_cp437('┤'));
     ctx.set(79, 45, box_gray, black, to_cp437('┤'));
+
+    // Draw the town name
+    let map = ecs.fetch::<Map>();
+    let name_length = map.name.len() + 1;
+    let x_pos = (22 - (name_length / 2)) as i32;
+    ctx.set(x_pos, 0, box_gray, black, to_cp437('┤'));
+    ctx.set(x_pos + name_length as i32, 0, box_gray, black, to_cp437('├'));
+    ctx.print_color(x_pos + 1, 0, white, black, &map.name);
+    std::mem::drop(map);
 }
 
 pub fn draw_hollow_box(
@@ -32,7 +43,7 @@ pub fn draw_hollow_box(
     width: i32,
     height: i32,
     fg: RGB,
-    bg: RGB
+    bg: RGB,
 ) {
     use rltk::to_cp437;
 
