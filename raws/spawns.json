@@ -239,6 +239,19 @@
         "slot": "Legs",
         "armor_class": 0.1
       }
+    },
+    {
+      "name": "Slippers",
+      "renderable": {
+        "glyph": "[",
+        "fg": "#FF9999",
+        "bg": "#000000",
+        "order": 2
+      },
+      "wearable": {
+        "slot": "Legs",
+        "armor_class": 0.1
+      }
     }
   ],
   "mobs": [
