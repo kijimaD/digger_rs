@@ -113,6 +113,23 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
             ctx.print_color(50, 44, RGB::named(rltk::RED), RGB::named(rltk::BLACK), "Starving")
         }
     }
+
+    // Log
+    let log = ecs.fetch::<GameLog>();
+    let mut y = 58;
+    for s in log.entries.iter().rev().take(1) {
+        ctx.print_color(2, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), s);
+        y -= 1;
+    }
+    for s in log.entries.iter().rev().skip(1) {
+        if y > 45 {
+            ctx.print_color(2, y, RGB::named(rltk::GRAY), RGB::named(rltk::BLACK), s)
+        }
+        y -= 1;
+    }
+
+    // Tooltip
+    draw_tooltips(ecs, ctx);
 }
 
 pub fn draw_hollow_box(
