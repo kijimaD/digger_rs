@@ -10,7 +10,8 @@ pub struct Mob {
     pub vision_range: i32,
     pub ai: String,
     pub quips: Option<Vec<String>>,
-    pub equipped: Option<Vec<String>>,  // TODO: move to battle entity
+    pub equipped: Option<Vec<String>>, // TODO: move to battle entity
+    pub natural: Option<MobNatural>, // TODO: move to battle entity
 }
 
 #[derive(Deserialize, Debug)]
@@ -19,4 +20,17 @@ pub struct MobAttributes {
     pub fitness: Option<i32>,
     pub quickness: Option<i32>,
     pub intelligence: Option<i32>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct MobNatural {
+    pub armor_class: Option<i32>,
+    pub attacks: Option<Vec<NaturalAttack>>,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct NaturalAttack {
+    pub name: String,
+    pub hit_bonus: i32,
+    pub damage: String,
 }

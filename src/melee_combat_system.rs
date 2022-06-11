@@ -1,7 +1,7 @@
 use super::{
-    gamelog::BattleLog, particle_system::ParticleBuilder, skill_bonus, Attributes, Equipped,
-    HungerClock, HungerState, MeleeWeapon, Name, Pools, Position, Skill, Skills, SufferDamage,
-    WantsToMelee, Wearable,
+    gamelog::BattleLog, particle_system::ParticleBuilder, skill_bonus, Attributes, EquipmentSlot,
+    Equipped, HungerClock, HungerState, MeleeWeapon, Name, NaturalAttackDefense, Pools, Position,
+    Skill, Skills, SufferDamage, WantsToMelee, WeaponAttribute, Wearable,
 };
 use specs::prelude::*;
 
@@ -32,6 +32,7 @@ impl<'a> System<'a> for MeleeCombatSystem {
         ReadStorage<'a, Equipped>,
         ReadStorage<'a, MeleeWeapon>,
         ReadStorage<'a, Wearable>,
+        ReadStorage<'a, NaturalAttackDefense>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -51,6 +52,7 @@ impl<'a> System<'a> for MeleeCombatSystem {
             equipped_items,
             meleeweapons,
             wearables,
+            natural,
         ) = data;
 
         for (entity, wants_melee, name, attacker_attributes, attacker_skills, attacker_pools) in
@@ -62,6 +64,34 @@ impl<'a> System<'a> for MeleeCombatSystem {
             let target_skills = skills.get(wants_melee.target).unwrap();
             if attacker_pools.hit_points.current > 0 && target_pools.hit_points.current > 0 {
                 let target_name = names.get(wants_melee.target).unwrap();
+
+                let mut weapon_info = MeleeWeapon {
+                    attribute: WeaponAttribute::Might,
+                    hit_bonus: 0,
+                    damage_n_dice: 1,
+                    damage_die_type: 4,
+                    damage_bonus: 0,
+                };
+
+                if let Some(nat) = natural.get(entity) {
+                    if !nat.attacks.is_empty() {
+                        let attack_index = if nat.attacks.len() == 1 {
+                            0
+                        } else {
+                            rng.roll_dice(1, nat.attacks.len() as i32) as usize - 1
+                        };
+                        weapon_info.hit_bonus = nat.attacks[attack_index].hit_bonus;
+                        weapon_info.damage_n_dice = nat.attacks[attack_index].damage_n_dice;
+                        weapon_info.damage_die_type = nat.attacks[attack_index].damage_die_type;
+                        weapon_info.damage_bonus = nat.attacks[attack_index].damage_bonus;
+                    }
+                }
+
+                for (wielded, melee) in (&equipped_items, &meleeweapons).join() {
+                    if wielded.owner == entity && wielded.slot == EquipmentSlot::Melee {
+                        weapon_info = melee.clone();
+                    }
+                }
 
                 let natural_roll = rng.roll_dice(1, 20);
                 let attribute_hit_bonus = attacker_attributes.might.bonus;
@@ -79,7 +109,10 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     + weapon_hit_bonus
                     + status_hit_bonus;
 
-                let base_armor_class = 10;
+                let base_armor_class = match natural.get(wants_melee.target) {
+                    None => 10,
+                    Some(nat) => nat.armor_class.unwrap_or(10),
+                };
                 let armor_quickness_bonus = target_attributes.quickness.bonus;
                 let armor_skill_bonus = skill_bonus(Skill::Defense, &*target_skills);
 

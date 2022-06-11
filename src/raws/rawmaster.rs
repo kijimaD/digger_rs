@@ -229,11 +229,31 @@ pub fn spawn_named_mob(
         // Are they wielding anything?
         if let Some(wielding) = &mob_template.equipped {
             for tag in wielding.iter() {
-                spawn_named_entity(raws, ecs, tag, SpawnType::Equipped{ by: new_mob });
+                spawn_named_entity(raws, ecs, tag, SpawnType::Equipped { by: new_mob });
             }
         }
 
         return Some(new_mob);
+
+        // natural attack
+        if let Some(na) = &mob_template.natural {
+            let mut nature =
+                NaturalAttackDefense { armor_class: na.armor_class, attacks: Vec::new() };
+            if let Some(attacks) = &na.attacks {
+                for nattack in attacks.iter() {
+                    let (n, d, b) = parse_dice_string(&nattack.damage);
+                    let attack = NaturalAttack {
+                        name: nattack.name.clone(),
+                        hit_bonus: nattack.hit_bonus,
+                        damage_n_dice: n,
+                        damage_die_type: d,
+                        damage_bonus: b,
+                    };
+                    nature.attacks.push(attack);
+                }
+            }
+            eb = eb.with(nature);
+        }
     }
     None
 }
