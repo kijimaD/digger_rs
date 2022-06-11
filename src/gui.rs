@@ -81,6 +81,38 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
             y += 1;
         }
     }
+
+    // Consumables
+    y += 1;
+    let green = RGB::from_f32(0.0, 1.0, 0.0);
+    let yellow = RGB::named(rltk::YELLOW);
+    let consumables = ecs.read_storage::<Consumable>();
+    let backpack = ecs.read_storage::<InBackpack>();
+    let mut index = 1;
+    for (carried_by, _consumable, item_name) in (&backpack, &consumables, &name).join() {
+        if carried_by.owner == *player_entity && index < 10 {
+            ctx.print_color(50, y, yellow, black, &format!("↑{}", index));
+            ctx.print_color(53, y, green, black, &item_name.name);
+            y += 1;
+            index += 1;
+        }
+    }
+
+    // Status
+    let hunger = ecs.read_storage::<HungerClock>();
+    let hc = hunger.get(*player_entity).unwrap();
+    match hc.state {
+        HungerState::WellFed => {
+            ctx.print_color(50, 44, RGB::named(rltk::GREEN), RGB::named(rltk::BLACK), "Well Fed")
+        }
+        HungerState::Normal => {}
+        HungerState::Hungry => {
+            ctx.print_color(50, 44, RGB::named(rltk::ORANGE), RGB::named(rltk::BLACK), "Hungry")
+        }
+        HungerState::Starving => {
+            ctx.print_color(50, 44, RGB::named(rltk::RED), RGB::named(rltk::BLACK), "Starving")
+        }
+    }
 }
 
 pub fn draw_hollow_box(
