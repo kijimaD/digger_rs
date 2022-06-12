@@ -114,7 +114,6 @@ fn check_battle_win(ecs: &mut World) {
             }
 
             if let Some(table) = loot_tables.get(*victim) {
-                println!("this is dead");
                 let drop_finder = crate::raws::get_item_drop(
                     &crate::raws::RAWS.lock().unwrap(),
                     &mut rng,

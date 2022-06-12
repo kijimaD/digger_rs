@@ -72,6 +72,12 @@
       "weight": 14,
       "min_depth": 2,
       "max_depth": 3
+    },
+    {
+      "name": "Bandit",
+      "weight": 9,
+      "min_depth": 2,
+      "max_depth": 3
     }
   ],
   "loot_tables": [
@@ -382,8 +388,28 @@
         "Melee": 2
       },
       "equipped": [
-        "Cloth Tunic",
+        "Stained Tunic",
         "Slippers"
+      ]
+    },
+    {
+      "name": "Bandit",
+      "renderable": {
+        "glyph": "☻",
+        "fg": "#FF0000",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "vision_range": 4,
+      "ai": "melee",
+      "quips": [
+        "Stand and deliver!",
+        "Alright, hand it over"
+      ],
+      "equipped": [
+        "Stained Tunic",
+        "Shield"
       ]
     },
     {
