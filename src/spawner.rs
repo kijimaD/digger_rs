@@ -26,13 +26,13 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             render_order: 0,
         })
         .with(Attributes {
-            might: Attribute { base: 22, modifiers: 0, bonus: attr_bonus(11) },
+            might: Attribute { base: 111, modifiers: 0, bonus: attr_bonus(11) },
             fitness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
             quickness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
             intelligence: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
         })
         .with(Pools {
-            hit_points: Pool { current: player_hp_at_level(22, 1), max: player_hp_at_level(22, 1) },
+            hit_points: Pool { current: player_hp_at_level(111, 1), max: player_hp_at_level(111, 1) },
             mana: Pool { current: mana_at_level(11, 1), max: mana_at_level(11, 1) },
             xp: 0,
             level: 1,

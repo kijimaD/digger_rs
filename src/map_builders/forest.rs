@@ -95,5 +95,29 @@ impl YellowBrickRoad {
             self.paint_road(build_data, x, y + 1);
         }
         build_data.take_snapshot();
+
+        // Place exit
+        // 石灰岩の洞窟は、水の作用によって形成される
+        let exit_dir = rng.roll_dice(1, 2);
+        let (seed_x, seed_y, stream_startx, stream_starty) = if exit_dir == 1 {
+            (build_data.map.width-1, 1, 0, build_data.height-1)
+        } else {
+            (build_data.map.width-1, build_data.height-1, 1, build_data.height-1)
+        };
+
+        let (stairs_x, stairs_y) = self.find_exit(build_data, seed_x, seed_y);
+        let stairs_idx = build_data.map.xy_idx(stairs_x, stairs_y);
+        build_data.take_snapshot();
+
+        let (stream_x, stream_y) = self.find_exit(build_data, stream_startx, stream_starty);
+        let stream_idx = build_data.map.xy_idx(stream_x, stream_y) as usize;
+        let stream = rltk::a_star_search(stairs_idx, stream_idx, &mut build_data.map);
+        for tile in stream.steps.iter() {
+            if build_data.map.tiles[*tile as usize] == TileType::Floor {
+                build_data.map.tiles[*tile as usize] = TileType::ShallowWater;
+            }
+        }
+        build_data.map.tiles[stairs_idx] = TileType::DownStairs;
+        build_data.take_snapshot();
     }
 }
