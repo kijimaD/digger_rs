@@ -453,7 +453,6 @@ impl GameState for State {
 
         if encounter_system::is_encounter(&mut self.ecs) {
             spawner::battle_monster(&mut self.ecs, "orcA");
-            spawner::battle_monster(&mut self.ecs, "orcB");
         }
         encounter_system::invoke_battle(&mut self.ecs);
     }
@@ -581,6 +580,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<InflictsDamage>();
     gs.ecs.register::<Consumable>();
     gs.ecs.register::<InBackpack>();
+    gs.ecs.register::<LootTable>();
     gs.ecs.register::<WantsToPickupItem>();
     gs.ecs.register::<WantsToUseItem>();
     gs.ecs.register::<WantsToDropItem>();

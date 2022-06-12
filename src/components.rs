@@ -175,6 +175,11 @@ pub struct InBackpack {
     pub owner: Entity,
 }
 
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct LootTable {
+    pub table: String,
+}
+
 #[derive(Component, Debug, ConvertSaveload, Clone)]
 pub struct WantsToPickupItem {
     pub collected_by: Entity,

@@ -100,9 +100,9 @@ impl YellowBrickRoad {
         // 石灰岩の洞窟は、水の作用によって形成される
         let exit_dir = rng.roll_dice(1, 2);
         let (seed_x, seed_y, stream_startx, stream_starty) = if exit_dir == 1 {
-            (build_data.map.width-1, 1, 0, build_data.height-1)
+            (build_data.map.width - 1, 1, 0, build_data.height - 1)
         } else {
-            (build_data.map.width-1, build_data.height-1, 1, build_data.height-1)
+            (build_data.map.width - 1, build_data.height - 1, 1, build_data.height - 1)
         };
 
         let (stairs_x, stairs_y) = self.find_exit(build_data, seed_x, seed_y);

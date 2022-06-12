@@ -74,6 +74,21 @@
       "max_depth": 3
     }
   ],
+  "loot_tables": [
+    {
+      "name": "Animal",
+      "drops": [
+        {
+          "name": "Hide",
+          "weight": 10
+        },
+        {
+          "name": "Meat",
+          "weight": 10
+        }
+      ]
+    }
+  ],
   "items": [
     {
       "name": "Health Potion",
@@ -264,6 +279,29 @@
         "slot": "Legs",
         "armor_class": 0.1
       }
+    },
+    {
+      "name": "Meat",
+      "renderable": {
+        "glyph": "%",
+        "fg": "#00FF00",
+        "bg": "#000000",
+        "order": 2
+      },
+      "consumable": {
+        "effects": {
+          "food": ""
+        }
+      }
+    },
+    {
+      "name": "Hide",
+      "renderable": {
+        "glyph": "ß",
+        "fg": "#A52A2A",
+        "bg": "#000000",
+        "order": 2
+      }
     }
   ],
   "mobs": [
@@ -313,7 +351,8 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "melee"
+      "ai": "melee",
+      "loot_table": "Animal"
     },
     {
       "name": "Deer",
@@ -325,7 +364,8 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "bystander"
+      "ai": "melee",
+      "loot_table": "Animal"
     },
     {
       "name": "Barkeep",

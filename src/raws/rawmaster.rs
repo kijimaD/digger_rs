@@ -39,6 +39,7 @@ pub struct RawMaster {
     item_index: HashMap<String, usize>,
     mob_index: HashMap<String, usize>,
     prop_index: HashMap<String, usize>,
+    loot_index: HashMap<String, usize>,
 }
 
 impl RawMaster {
@@ -49,10 +50,12 @@ impl RawMaster {
                 mobs: Vec::new(),
                 props: Vec::new(),
                 spawn_table: Vec::new(),
+                loot_tables: Vec::new(),
             },
             item_index: HashMap::new(),
             mob_index: HashMap::new(),
             prop_index: HashMap::new(),
+            loot_index: HashMap::new(),
         }
     }
 
@@ -95,6 +98,10 @@ impl RawMaster {
                     spawn.name
                 ));
             }
+        }
+
+        for (i, loot) in self.raws.loot_tables.iter().enumerate() {
+            self.loot_index.insert(loot.name.clone(), i);
         }
     }
 }
@@ -224,17 +231,6 @@ pub fn spawn_named_mob(
             dirty: true,
         });
 
-        let new_mob = eb.build();
-
-        // Are they wielding anything?
-        if let Some(wielding) = &mob_template.equipped {
-            for tag in wielding.iter() {
-                spawn_named_entity(raws, ecs, tag, SpawnType::Equipped { by: new_mob });
-            }
-        }
-
-        return Some(new_mob);
-
         // natural attack
         if let Some(na) = &mob_template.natural {
             let mut nature =
@@ -254,6 +250,22 @@ pub fn spawn_named_mob(
             }
             eb = eb.with(nature);
         }
+
+        // loot item
+        if let Some(loot) = &mob_template.loot_table {
+            eb = eb.with(LootTable { table: loot.clone() });
+        }
+
+        let new_mob = eb.build();
+
+        // Are they wielding anything?
+        if let Some(wielding) = &mob_template.equipped {
+            for tag in wielding.iter() {
+                spawn_named_entity(raws, ecs, tag, SpawnType::Equipped { by: new_mob });
+            }
+        }
+
+        return Some(new_mob);
     }
     None
 }
@@ -377,4 +389,21 @@ pub fn string_to_slot(slot: &str) -> EquipmentSlot {
             EquipmentSlot::Melee
         }
     }
+}
+
+pub fn get_item_drop(
+    raws: &RawMaster,
+    rng: &mut rltk::RandomNumberGenerator,
+    table: &str,
+) -> Option<String> {
+    if raws.loot_index.contains_key(table) {
+        let mut rt = RandomTable::new();
+        let available_options = &raws.raws.loot_tables[raws.loot_index[table]];
+        for item in available_options.drops.iter() {
+            rt = rt.add(item.name.clone(), item.weight);
+        }
+        return Some(rt.roll(rng));
+    }
+
+    None
 }

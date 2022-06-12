@@ -32,7 +32,10 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             intelligence: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
         })
         .with(Pools {
-            hit_points: Pool { current: player_hp_at_level(111, 1), max: player_hp_at_level(111, 1) },
+            hit_points: Pool {
+                current: player_hp_at_level(111, 1),
+                max: player_hp_at_level(111, 1),
+            },
             mana: Pool { current: mana_at_level(11, 1), max: mana_at_level(11, 1) },
             xp: 0,
             level: 1,
