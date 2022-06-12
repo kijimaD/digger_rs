@@ -370,7 +370,7 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "melee",
+      "ai": "herbivore",
       "loot_table": "Animal"
     },
     {

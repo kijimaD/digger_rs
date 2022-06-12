@@ -220,6 +220,7 @@ pub fn spawn_named_mob(
             "melee" => eb = eb.with(Monster {}),
             "bystander" => eb = eb.with(Bystander {}),
             "vendor" => eb = eb.with(Vendor {}),
+            "herbivore" => eb = eb.with(Herbivore {}),
             _ => {}
         }
         if mob_template.blocks_tile {
