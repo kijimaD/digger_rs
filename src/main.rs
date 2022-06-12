@@ -546,7 +546,8 @@ impl State {
 
 fn main() -> rltk::BError {
     use rltk::RltkBuilder;
-    let mut context = RltkBuilder::simple80x50().with_title("Battle Digger Clone").build()?;
+    let mut context =
+        RltkBuilder::simple(80, 60).unwrap().with_title("Battle Digger Clone").build()?;
     context.with_post_scanlines(true);
     let mut gs = State {
         ecs: World::new(),
@@ -601,7 +602,7 @@ fn main() -> rltk::BError {
 
     raws::load_raws();
 
-    gs.ecs.insert(Map::new(1, 64, 64));
+    gs.ecs.insert(Map::new(1, 64, 64, "New Map"));
     gs.ecs.insert(Point::new(0, 0));
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
     let player_entity = spawner::player(&mut gs.ecs, 0, 0);
