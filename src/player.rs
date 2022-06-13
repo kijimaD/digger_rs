@@ -54,14 +54,6 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
                 let mut ppos = ecs.write_resource::<Point>();
                 ppos.x = pos.x;
                 ppos.y = pos.y;
-            } else {
-                let target = pools.get(*potential_target);
-                if let Some(_target) = target {
-                    wants_to_encounter
-                        .insert(entity, WantsToEncounter { monster: *potential_target })
-                        .expect("Add target failed");
-                    return;
-                }
             }
 
             let door = doors.get_mut(*potential_target);
