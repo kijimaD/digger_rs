@@ -4,6 +4,8 @@ use specs::prelude::*;
 use std::collections::HashSet;
 mod tiletype;
 pub use tiletype::{tile_cost, tile_opaque, tile_walkable, TileType};
+mod themes;
+pub use themes::*;
 
 #[derive(Default, Serialize, Deserialize, Clone)]
 pub struct Map {

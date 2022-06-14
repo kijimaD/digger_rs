@@ -12,6 +12,7 @@ pub struct Mob {
     pub quips: Option<Vec<String>>,
     pub equipped: Option<Vec<String>>, // TODO: move to battle entity
     pub natural: Option<MobNatural>,   // TODO: move to battle entity
+    pub loot_table: Option<String>,
 }
 
 #[derive(Deserialize, Debug)]

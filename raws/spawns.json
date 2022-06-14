@@ -3,20 +3,20 @@
     {
       "name": "Goblin",
       "weight": 10,
-      "min_depth": 0,
+      "min_depth": 3,
       "max_depth": 100
     },
     {
       "name": "Orc",
       "weight": 1,
-      "min_depth": 0,
+      "min_depth": 3,
       "max_depth": 100,
       "add_map_depth_to_weight": true
     },
     {
       "name": "Kobold",
       "weight": 15,
-      "min_depth": 0,
+      "min_depth": 3,
       "max_depth": 3
     },
     {
@@ -40,7 +40,7 @@
     {
       "name": "Longsword",
       "weight": 1,
-      "min_depth": 1,
+      "min_depth": 3,
       "max_depth": 100
     },
     {
@@ -52,7 +52,7 @@
     {
       "name": "Tower Shield",
       "weight": 1,
-      "min_depth": 1,
+      "min_depth": 3,
       "max_depth": 100
     },
     {
@@ -60,6 +60,39 @@
       "weight": 10,
       "min_depth": 0,
       "max_depth": 100
+    },
+    {
+      "name": "Rat",
+      "weight": 15,
+      "min_depth": 2,
+      "max_depth": 3
+    },
+    {
+      "name": "Deer",
+      "weight": 14,
+      "min_depth": 2,
+      "max_depth": 3
+    },
+    {
+      "name": "Bandit",
+      "weight": 9,
+      "min_depth": 2,
+      "max_depth": 3
+    }
+  ],
+  "loot_tables": [
+    {
+      "name": "Animal",
+      "drops": [
+        {
+          "name": "Hide",
+          "weight": 10
+        },
+        {
+          "name": "Meat",
+          "weight": 10
+        }
+      ]
     }
   ],
   "items": [
@@ -156,9 +189,9 @@
         "order": 2
       },
       "weapon": {
-          "attribute" : "Might",
-          "base_damage" : "1d8",
-          "hit_bonus" : 0
+        "attribute": "Might",
+        "base_damage": "1d8",
+        "hit_bonus": 0
       }
     },
     {
@@ -170,9 +203,9 @@
         "order": 2
       },
       "weapon": {
-          "attribute" : "Might",
-          "base_damage" : "1d8+1",
-          "hit_bonus" : 0
+        "attribute": "Might",
+        "base_damage": "1d8+1",
+        "hit_bonus": 0
       }
     },
     {
@@ -183,10 +216,10 @@
         "bg": "#000000",
         "order": 2
       },
-        "wearable" : {
-            "slot" : "Shield",
-            "armor_class" : 1.0
-        }
+      "wearable": {
+        "slot": "Shield",
+        "armor_class": 1.0
+      }
     },
     {
       "name": "Tower Shield",
@@ -196,10 +229,10 @@
         "bg": "#000000",
         "order": 2
       },
-        "wearable" : {
-            "slot" : "Shield",
-            "armor_class" : 2.0
-        }
+      "wearable": {
+        "slot": "Shield",
+        "armor_class": 2.0
+      }
     },
     {
       "name": "Stained Tunic",
@@ -252,6 +285,29 @@
         "slot": "Legs",
         "armor_class": 0.1
       }
+    },
+    {
+      "name": "Meat",
+      "renderable": {
+        "glyph": "%",
+        "fg": "#00FF00",
+        "bg": "#000000",
+        "order": 2
+      },
+      "consumable": {
+        "effects": {
+          "food": ""
+        }
+      }
+    },
+    {
+      "name": "Hide",
+      "renderable": {
+        "glyph": "ß",
+        "fg": "#A52A2A",
+        "bg": "#000000",
+        "order": 2
+      }
     }
   ],
   "mobs": [
@@ -292,6 +348,32 @@
       "ai": "melee"
     },
     {
+      "name": "Rat",
+      "renderable": {
+        "glyph": "r",
+        "fg": "#FF0000",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "vision_range": 8,
+      "ai": "melee",
+      "loot_table": "Animal"
+    },
+    {
+      "name": "Deer",
+      "renderable": {
+        "glyph": "d",
+        "fg": "#FFFF00",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "vision_range": 8,
+      "ai": "herbivore",
+      "loot_table": "Animal"
+    },
+    {
       "name": "Barkeep",
       "renderable": {
         "glyph": "☺",
@@ -305,7 +387,30 @@
       "skills": {
         "Melee": 2
       },
-        "equipped": [ "Cloth Tunic", "Slippers" ]
+      "equipped": [
+        "Stained Tunic",
+        "Slippers"
+      ]
+    },
+    {
+      "name": "Bandit",
+      "renderable": {
+        "glyph": "☻",
+        "fg": "#FF0000",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "vision_range": 4,
+      "ai": "melee",
+      "quips": [
+        "Stand and deliver!",
+        "Alright, hand it over"
+      ],
+      "equipped": [
+        "Stained Tunic",
+        "Shield"
+      ]
     },
     {
       "name": "Shady Salesman",

@@ -41,6 +41,7 @@ pub mod raws;
 pub mod rex_assets;
 pub mod saveload_system;
 pub use gamesystem::*;
+pub mod animal_ai_system;
 #[macro_use]
 extern crate lazy_static;
 
@@ -87,6 +88,8 @@ impl State {
         monster.run_now(&self.ecs);
         let mut bystander = BystanderAI {};
         bystander.run_now(&self.ecs);
+        let mut animal = animal_ai_system::AnimalAI {};
+        animal.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem {};
         mapindex.run_now(&self.ecs);
         let mut pickup = ItemCollectionSystem {};
@@ -453,7 +456,6 @@ impl GameState for State {
 
         if encounter_system::is_encounter(&mut self.ecs) {
             spawner::battle_monster(&mut self.ecs, "orcA");
-            spawner::battle_monster(&mut self.ecs, "orcB");
         }
         encounter_system::invoke_battle(&mut self.ecs);
     }
@@ -565,6 +567,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Bystander>();
     gs.ecs.register::<Vendor>();
     gs.ecs.register::<Monster>();
+    gs.ecs.register::<Herbivore>();
     gs.ecs.register::<Name>();
     gs.ecs.register::<BlocksTile>();
     gs.ecs.register::<Attributes>();
@@ -581,6 +584,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<InflictsDamage>();
     gs.ecs.register::<Consumable>();
     gs.ecs.register::<InBackpack>();
+    gs.ecs.register::<LootTable>();
     gs.ecs.register::<WantsToPickupItem>();
     gs.ecs.register::<WantsToUseItem>();
     gs.ecs.register::<WantsToDropItem>();

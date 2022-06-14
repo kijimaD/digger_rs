@@ -51,6 +51,9 @@ pub struct Viewshed {
 pub struct Monster {}
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Herbivore {}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Bystander {}
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
@@ -173,6 +176,11 @@ pub struct ProvidesHealing {
 #[derive(Component, Debug, ConvertSaveload, Clone)]
 pub struct InBackpack {
     pub owner: Entity,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct LootTable {
+    pub table: String,
 }
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]
