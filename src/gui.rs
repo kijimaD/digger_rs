@@ -98,7 +98,21 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         }
     }
 
-    // Status
+    // XP bar
+    let xp = format!("Level:  {}", player_pools.level);
+    ctx.print_color(50, 3, white, black, &xp);
+    let xp_level_start = (player_pools.level - 1) * 1000;
+    ctx.draw_bar_horizontal(
+        64,
+        3,
+        14,
+        player_pools.xp - xp_level_start,
+        1000,
+        RGB::named(rltk::GOLD),
+        RGB::named(rltk::BLACK),
+    );
+
+    // Hunger State
     let hunger = ecs.read_storage::<HungerClock>();
     let hc = hunger.get(*player_entity).unwrap();
     match hc.state {
