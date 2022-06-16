@@ -13,7 +13,9 @@ impl<'a> System<'a> for DamageSystem {
         let (mut pools, mut damage) = data;
 
         for (mut pools, damage) in (&mut pools, &damage).join() {
-            pools.hit_points.current -= damage.amount.iter().sum::<i32>();
+            for dmg in damage.amount.iter() {
+                pools.hit_points.current -= dmg.0;
+            }
         }
 
         damage.clear();

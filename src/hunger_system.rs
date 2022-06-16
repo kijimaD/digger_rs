@@ -74,7 +74,7 @@ impl<'a> System<'a> for HungerSystem {
                                 log.entries.push("Your hunger pangs are getting painful! You suffer 1 hp damage.".to_string());
                             }
                             for (entity, _pools) in (&entities, &pools).join() {
-                                SufferDamage::new_damage(&mut inflict_damage, entity, 1);
+                                SufferDamage::new_damage(&mut inflict_damage, entity, 1, true);
                             }
                         }
                     }
