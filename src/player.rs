@@ -129,6 +129,19 @@ pub fn try_next_level(ecs: &mut World) -> bool {
     }
 }
 
+pub fn try_previous_level(ecs: &mut World) -> bool {
+    let player_pos = ecs.fetch::<Point>();
+    let map = ecs.fetch::<Map>();
+    let player_idx = map.xy_idx(player_pos.x, player_pos.y);
+    if map.tiles[player_idx] == TileType::UpStairs {
+        true
+    } else {
+        let mut gamelog = ecs.fetch_mut::<GameLog>();
+        gamelog.entries.push("There is no way up from here.".to_string());
+        false
+    }
+}
+
 fn get_item(ecs: &mut World) {
     let player_pos = ecs.fetch::<Point>();
     let player_entity = ecs.fetch::<Entity>();
@@ -270,10 +283,17 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
             // Save and Quit
             VirtualKeyCode::Escape => return RunState::SaveGame,
 
-            // Level changes
+            // Level up
             VirtualKeyCode::Period => {
                 if try_next_level(&mut gs.ecs) {
                     return RunState::NextLevel;
+                }
+            }
+
+            // Level down
+            VirtualKeyCode::Comma => {
+                if try_previous_level(&mut gs.ecs) {
+                    return RunState::PreviousLevel;
                 }
             }
 
