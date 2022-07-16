@@ -410,7 +410,11 @@
       "equipped": [
         "Stained Tunic",
         "Shield"
-      ]
+      ],
+      "light": {
+        "range": 4,
+        "color": "#550000"
+      }
     },
     {
       "name": "Shady Salesman",

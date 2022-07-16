@@ -257,6 +257,13 @@ pub fn spawn_named_mob(
             eb = eb.with(LootTable { table: loot.clone() });
         }
 
+        if let Some(light) = &mob_template.light {
+            eb = eb.with(LightSource {
+                range: light.range,
+                color: rltk::RGB::from_hex(&light.color).expect("Bad color"),
+            });
+        }
+
         let new_mob = eb.build();
 
         // Are they wielding anything?
