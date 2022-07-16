@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 pub enum TileType {
     Wall,
     Floor,
+    UpStairs,
     DownStairs,
     Road,
     Grass,
@@ -17,6 +18,7 @@ pub enum TileType {
 pub fn tile_walkable(tt: TileType) -> bool {
     match tt {
         TileType::Floor
+        | TileType::UpStairs
         | TileType::DownStairs
         | TileType::Road
         | TileType::Grass

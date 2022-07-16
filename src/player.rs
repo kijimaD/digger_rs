@@ -1,20 +1,20 @@
 use super::{
-    gamelog::GameLog, BlocksTile, BlocksVisibility, Bystander, Door, EntityMoved, HungerClock,
-    HungerState, Item, Map, Monster, Name, Player, Pools, Position, Renderable, RunState, State,
-    TileType, Vendor, Viewshed, WantsToEncounter, WantsToPickupItem,
+    gamelog::GameLog, Attributes, BlocksTile, BlocksVisibility, Bystander, Door, EntityMoved,
+    HungerClock, HungerState, Item, Map, Monster, Name, Player, Pools, Position, Renderable,
+    RunState, State, TileType, Vendor, Viewshed, WantsToEncounter, WantsToMelee, WantsToPickupItem,
 };
 use rltk::{Point, Rltk, VirtualKeyCode};
 use specs::prelude::*;
 use std::cmp::{max, min};
 
-pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
+pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState {
     let mut positions = ecs.write_storage::<Position>();
     let players = ecs.read_storage::<Player>();
     let mut viewsheds = ecs.write_storage::<Viewshed>();
     let entities = ecs.entities();
-    let pools = ecs.read_storage::<Pools>();
+    let combat_stats = ecs.read_storage::<Attributes>();
     let map = ecs.fetch::<Map>();
-    let mut wants_to_encounter = ecs.write_storage::<WantsToEncounter>();
+    let mut wants_to_melee = ecs.write_storage::<WantsToMelee>();
     let mut entity_moved = ecs.write_storage::<EntityMoved>();
     let mut doors = ecs.write_storage::<Door>();
     let mut blocks_visibility = ecs.write_storage::<BlocksVisibility>();
@@ -22,6 +22,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     let mut renderables = ecs.write_storage::<Renderable>();
     let bystanders = ecs.read_storage::<Bystander>();
     let vendors = ecs.read_storage::<Vendor>();
+    let mut result = RunState::AwaitingInput;
 
     let mut swap_entities: Vec<(Entity, i32, i32)> = Vec::new();
 
@@ -33,7 +34,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
             || pos.y + delta_y < 1
             || pos.y + delta_y > map.height - 1
         {
-            return;
+            return RunState::AwaitingInput;
         }
         let destination_idx = map.xy_idx(pos.x + delta_x, pos.y + delta_y);
 
@@ -54,8 +55,16 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
                 let mut ppos = ecs.write_resource::<Point>();
                 ppos.x = pos.x;
                 ppos.y = pos.y;
+                result = RunState::PlayerTurn;
+            } else {
+                let target = combat_stats.get(*potential_target);
+                if let Some(_target) = target {
+                    wants_to_melee
+                        .insert(entity, WantsToMelee { target: *potential_target })
+                        .expect("Add target failed");
+                    return RunState::PlayerTurn;
+                }
             }
-
             let door = doors.get_mut(*potential_target);
             if let Some(door) = door {
                 door.open = true;
@@ -64,17 +73,25 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
                 let glyph = renderables.get_mut(*potential_target).unwrap();
                 glyph.glyph = rltk::to_cp437('/');
                 viewshed.dirty = true;
+                result = RunState::PlayerTurn;
             }
         }
 
         if !map.blocked[destination_idx] {
             pos.x = min(map.width - 1, max(0, pos.x + delta_x));
             pos.y = min(map.height - 1, max(0, pos.y + delta_y));
+            entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert marker");
 
             viewshed.dirty = true;
             let mut ppos = ecs.write_resource::<Point>();
             ppos.x = pos.x;
             ppos.y = pos.y;
+            result = RunState::PlayerTurn;
+            match map.tiles[destination_idx] {
+                TileType::DownStairs => result = RunState::NextLevel,
+                TileType::UpStairs => result = RunState::PreviousLevel,
+                _ => {}
+            }
         }
     }
 
@@ -114,6 +131,8 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) {
     if map.tiles[player_idx] == TileType::DownStairs {
         gamelog.entries.push(format!("downstairs."))
     }
+
+    result
 }
 
 pub fn try_next_level(ecs: &mut World) -> bool {
@@ -125,6 +144,19 @@ pub fn try_next_level(ecs: &mut World) -> bool {
     } else {
         let mut gamelog = ecs.fetch_mut::<GameLog>();
         gamelog.entries.push("There is no way down from here.".to_string());
+        false
+    }
+}
+
+pub fn try_previous_level(ecs: &mut World) -> bool {
+    let player_pos = ecs.fetch::<Point>();
+    let map = ecs.fetch::<Map>();
+    let player_idx = map.xy_idx(player_pos.x, player_pos.y);
+    if map.tiles[player_idx] == TileType::UpStairs {
+        true
+    } else {
+        let mut gamelog = ecs.fetch_mut::<GameLog>();
+        gamelog.entries.push("There is no way up from here.".to_string());
         false
     }
 }
@@ -228,38 +260,38 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
             VirtualKeyCode::Left
             | VirtualKeyCode::Numpad4
             | VirtualKeyCode::A
-            | VirtualKeyCode::H => try_move_player(-1, 0, &mut gs.ecs),
+            | VirtualKeyCode::H => return try_move_player(-1, 0, &mut gs.ecs),
 
             VirtualKeyCode::Right
             | VirtualKeyCode::Numpad6
             | VirtualKeyCode::D
-            | VirtualKeyCode::L => try_move_player(1, 0, &mut gs.ecs),
+            | VirtualKeyCode::L => return try_move_player(1, 0, &mut gs.ecs),
 
             VirtualKeyCode::Up
             | VirtualKeyCode::Numpad8
             | VirtualKeyCode::W
-            | VirtualKeyCode::K => try_move_player(0, -1, &mut gs.ecs),
+            | VirtualKeyCode::K => return try_move_player(0, -1, &mut gs.ecs),
 
             VirtualKeyCode::Down
             | VirtualKeyCode::Numpad2
             | VirtualKeyCode::S
-            | VirtualKeyCode::J => try_move_player(0, 1, &mut gs.ecs),
+            | VirtualKeyCode::J => return try_move_player(0, 1, &mut gs.ecs),
 
             // Diagonals
             VirtualKeyCode::Numpad9 | VirtualKeyCode::E | VirtualKeyCode::Y => {
-                try_move_player(1, -1, &mut gs.ecs)
+                return try_move_player(1, -1, &mut gs.ecs)
             }
 
             VirtualKeyCode::Numpad7 | VirtualKeyCode::Q | VirtualKeyCode::U => {
-                try_move_player(-1, -1, &mut gs.ecs)
+                return try_move_player(-1, -1, &mut gs.ecs)
             }
 
             VirtualKeyCode::Numpad3 | VirtualKeyCode::X | VirtualKeyCode::N => {
-                try_move_player(1, 1, &mut gs.ecs)
+                return try_move_player(1, 1, &mut gs.ecs)
             }
 
             VirtualKeyCode::Numpad1 | VirtualKeyCode::Z | VirtualKeyCode::B => {
-                try_move_player(-1, 1, &mut gs.ecs)
+                return try_move_player(-1, 1, &mut gs.ecs)
             }
 
             // Picking up items
@@ -270,10 +302,17 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
             // Save and Quit
             VirtualKeyCode::Escape => return RunState::SaveGame,
 
-            // Level changes
+            // Level up
             VirtualKeyCode::Period => {
                 if try_next_level(&mut gs.ecs) {
                     return RunState::NextLevel;
+                }
+            }
+
+            // Level down
+            VirtualKeyCode::Comma => {
+                if try_previous_level(&mut gs.ecs) {
+                    return RunState::PreviousLevel;
                 }
             }
 

@@ -1,6 +1,9 @@
 build:
 	cargo run
 
+run_docker:
+	docker run --rm -it -v $(shell pwd):/rust rust /bin/sh -c "cd rust && cargo build" && ./target/debug/digger_rs
+
 docker:
 	docker run --rm -it -v $(shell pwd):/rust rust
 
