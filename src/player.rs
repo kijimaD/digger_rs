@@ -10,11 +10,13 @@ use std::cmp::{max, min};
 pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState {
     let mut positions = ecs.write_storage::<Position>();
     let players = ecs.read_storage::<Player>();
+    let monsters = ecs.read_storage::<Monster>();
     let mut viewsheds = ecs.write_storage::<Viewshed>();
     let entities = ecs.entities();
     let combat_stats = ecs.read_storage::<Attributes>();
     let map = ecs.fetch::<Map>();
     let mut wants_to_melee = ecs.write_storage::<WantsToMelee>();
+    let mut wants_to_encounter = ecs.write_storage::<WantsToEncounter>();
     let mut entity_moved = ecs.write_storage::<EntityMoved>();
     let mut doors = ecs.write_storage::<Door>();
     let mut blocks_visibility = ecs.write_storage::<BlocksVisibility>();
@@ -91,6 +93,23 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
                 TileType::DownStairs => result = RunState::NextLevel,
                 TileType::UpStairs => result = RunState::PreviousLevel,
                 _ => {}
+            }
+        }
+    }
+
+    // エンカウント
+    {
+        let player_pos = ecs.read_resource::<Point>();
+        for (entity, _viewshed, _monster, pos) in
+            (&entities, &mut viewsheds, &monsters, &mut positions).join()
+        {
+
+            let distance =
+                rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), *player_pos);
+            if distance < 1.5 {
+                wants_to_encounter
+                    .insert(entity, WantsToEncounter { monster: entity })
+                    .expect("Unable to insert encounter");
             }
         }
     }

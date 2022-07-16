@@ -423,6 +423,7 @@ impl GameState for State {
             let mut runwriter = self.ecs.write_resource::<RunState>();
             *runwriter = newrunstate;
         }
+        // FIXME: 勝利しても、1ターン残る
         damage_system::delete_the_dead(&mut self.ecs);
 
         if encounter_system::is_encounter(&mut self.ecs) {
