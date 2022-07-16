@@ -42,6 +42,8 @@ pub mod rex_assets;
 pub mod saveload_system;
 pub use gamesystem::*;
 pub mod animal_ai_system;
+mod lighting_system;
+
 #[macro_use]
 extern crate lazy_static;
 
@@ -108,6 +110,8 @@ impl State {
         particles.run_now(&self.ecs);
         let mut damage = DamageSystem {};
         damage.run_now(&self.ecs);
+        let mut lighting = lighting_system::LightingSystem {};
+        lighting.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -590,6 +594,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<ParticleLifetime>();
     gs.ecs.register::<BlocksVisibility>();
     gs.ecs.register::<Door>();
+    gs.ecs.register::<LightSource>();
     gs.ecs.register::<EntityMoved>();
     gs.ecs.register::<Quips>();
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());
