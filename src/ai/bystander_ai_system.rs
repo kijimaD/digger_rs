@@ -1,4 +1,4 @@
-use super::{
+use crate::{
     gamelog::GameLog, Bystander, EntityMoved, Map, Name, Point, Position, Quips, RunState, Viewshed,
 };
 use specs::prelude::*;

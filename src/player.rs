@@ -321,7 +321,7 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
             VirtualKeyCode::Escape => return RunState::SaveGame,
 
             // Cheating!
-            VirtualKeyCode::Backslash => return RunState::ShowCheatMenu,
+            VirtualKeyCode::Backslash | VirtualKeyCode::Slash => return RunState::ShowCheatMenu,
 
             // Level up
             VirtualKeyCode::Period => {
