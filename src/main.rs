@@ -123,16 +123,6 @@ impl State {
 
         self.ecs.maintain();
     }
-
-    fn generate_world_map(&mut self, new_depth: i32) {
-        self.mapgen_index = 0;
-        self.mapgen_timer = 0.0;
-        self.mapgen_history.clear();
-        let map_building_info = map::level_transition(&mut self.ecs, new_depth);
-        if let Some(history) = map_building_info {
-            self.mapgen_history = history;
-        }
-    }
 }
 
 impl GameState for State {
@@ -418,11 +408,12 @@ impl GameState for State {
                     RunState::MainMenu { menu_selection: gui::MainMenuSelection::LoadGame };
             }
             RunState::NextLevel => {
-                self.goto_next_level();
+                self.goto_level(1);
+                self.mapgen_next_state = Some(RunState::PreRun);
                 newrunstate = RunState::PreRun;
             }
             RunState::PreviousLevel => {
-                self.goto_previous_level();
+                self.goto_level(-1);
                 self.mapgen_next_state = Some(RunState::PreRun);
                 newrunstate = RunState::MapGeneration;
             }
@@ -482,46 +473,14 @@ impl State {
         to_delete
     }
 
-    fn goto_next_level(&mut self) {
-        // Delete entities that aren't the player or his/her equipment
-        let to_delete = self.entities_to_remove_on_level_change();
-        for target in to_delete {
-            self.ecs.delete_entity(target).expect("Unable to delete entity");
-        }
+    fn goto_level(&mut self, offset: i32) {
+        freeze_level_entities(&mut self.ecs);
 
-        // Build a new map and place the player
-        let current_depth;
-        {
-            let worldmap_resource = self.ecs.fetch::<Map>();
-            current_depth = worldmap_resource.depth;
-        }
-        self.generate_world_map(current_depth + 1);
+        let current_depth = self.ecs.fetch::<Map>().depth;
+        self.generate_world_map(current_depth + offset, offset);
 
-        // Notify the player and give them some health
         let mut gamelog = self.ecs.fetch_mut::<gamelog::GameLog>();
-        gamelog
-            .entries
-            .push("You descend to the next level, and take a moment to heal.".to_string());
-    }
-
-    fn goto_previous_level(&mut self) {
-        // Delete entities that aren't the player or his/her equipment
-        let to_delete = self.entities_to_remove_on_level_change();
-        for target in to_delete {
-            self.ecs.delete_entity(target).expect("Unable to delete entity");
-        }
-
-        // Build a new map and place the player
-        let current_depth;
-        {
-            let worldmap_resource = self.ecs.fetch::<Map>();
-            current_depth = worldmap_resource.depth;
-        }
-        self.generate_world_map(current_depth - 1);
-
-        // Notify the player and give them some health
-        let mut gamelog = self.ecs.fetch_mut::<gamelog::GameLog>();
-        gamelog.entries.push("You ascend to the previous level.".to_string());
+        gamelog.entries.push("You change level.".to_string());
     }
 
     fn game_over_cleanup(&mut self) {
@@ -545,7 +504,19 @@ impl State {
         self.ecs.insert(map::MasterDungeonMap::new());
 
         // Build a new map and place the player
-        self.generate_world_map(1);
+        self.generate_world_map(1, 0);
+    }
+
+    fn generate_world_map(&mut self, new_depth: i32, offset: i32) {
+        self.mapgen_index = 0;
+        self.mapgen_timer = 0.0;
+        self.mapgen_history.clear();
+        let map_building_info = map::level_transition(&mut self.ecs, new_depth, offset);
+        if let Some(history) = map_building_info {
+            self.mapgen_history = history
+        } else {
+            map::thaw_level_entities(&mut self.ecs);
+        }
     }
 }
 
@@ -564,6 +535,7 @@ fn main() -> rltk::BError {
         mapgen_timer: 0.0,
     };
     gs.ecs.register::<Position>();
+    gs.ecs.register::<OtherLevelPosition>();
     gs.ecs.register::<Renderable>();
     gs.ecs.register::<Player>();
     gs.ecs.register::<Viewshed>();
@@ -622,7 +594,7 @@ fn main() -> rltk::BError {
     gs.ecs.insert(particle_system::ParticleBuilder::new());
     gs.ecs.insert(rex_assets::RexAssets::new());
 
-    gs.generate_world_map(1);
+    gs.generate_world_map(1, 0);
 
     rltk::main_loop(context, gs)
 }
