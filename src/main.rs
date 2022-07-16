@@ -71,6 +71,7 @@ pub enum RunState {
     ShowRemoveItem,
     GameOver,
     MapGeneration,
+    ShowCheatMenu,
 }
 
 pub struct State {
@@ -416,6 +417,18 @@ impl GameState for State {
                 self.goto_level(-1);
                 self.mapgen_next_state = Some(RunState::PreRun);
                 newrunstate = RunState::MapGeneration;
+            }
+            RunState::ShowCheatMenu => {
+                let result = gui::show_cheat_mode(self, ctx);
+                match result {
+                    gui::CheatMenuResult::Cancel => newrunstate = RunState::AwaitingInput,
+                    gui::CheatMenuResult::NoResponse => {}
+                    gui::CheatMenuResult::TeleportToExit => {
+                        self.goto_level(1);
+                        self.mapgen_next_state = Some(RunState::PreRun);
+                        newrunstate = RunState::MapGeneration;
+                    }
+                }
             }
         }
 
