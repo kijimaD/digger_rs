@@ -103,7 +103,6 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
         for (entity, _viewshed, _monster, pos) in
             (&entities, &mut viewsheds, &monsters, &mut positions).join()
         {
-
             let distance =
                 rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), *player_pos);
             if distance < 1.5 {
