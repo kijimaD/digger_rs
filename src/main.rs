@@ -42,6 +42,8 @@ pub mod rex_assets;
 pub mod saveload_system;
 pub use gamesystem::*;
 pub mod animal_ai_system;
+mod lighting_system;
+
 #[macro_use]
 extern crate lazy_static;
 
@@ -71,6 +73,7 @@ pub enum RunState {
     ShowRemoveItem,
     GameOver,
     MapGeneration,
+    ShowCheatMenu,
 }
 
 pub struct State {
@@ -107,6 +110,8 @@ impl State {
         particles.run_now(&self.ecs);
         let mut damage = DamageSystem {};
         damage.run_now(&self.ecs);
+        let mut lighting = lighting_system::LightingSystem {};
+        lighting.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -417,12 +422,25 @@ impl GameState for State {
                 self.mapgen_next_state = Some(RunState::PreRun);
                 newrunstate = RunState::MapGeneration;
             }
+            RunState::ShowCheatMenu => {
+                let result = gui::show_cheat_mode(self, ctx);
+                match result {
+                    gui::CheatMenuResult::Cancel => newrunstate = RunState::AwaitingInput,
+                    gui::CheatMenuResult::NoResponse => {}
+                    gui::CheatMenuResult::TeleportToExit => {
+                        self.goto_level(1);
+                        self.mapgen_next_state = Some(RunState::PreRun);
+                        newrunstate = RunState::MapGeneration;
+                    }
+                }
+            }
         }
 
         {
             let mut runwriter = self.ecs.write_resource::<RunState>();
             *runwriter = newrunstate;
         }
+        // FIXME: 勝利しても、1ターン残る
         damage_system::delete_the_dead(&mut self.ecs);
 
         if encounter_system::is_encounter(&mut self.ecs) {
@@ -576,6 +594,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<ParticleLifetime>();
     gs.ecs.register::<BlocksVisibility>();
     gs.ecs.register::<Door>();
+    gs.ecs.register::<LightSource>();
     gs.ecs.register::<EntityMoved>();
     gs.ecs.register::<Quips>();
     gs.ecs.insert(SimpleMarkerAllocator::<SerializeMe>::new());

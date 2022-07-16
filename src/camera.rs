@@ -3,7 +3,7 @@ use crate::map::tile_glyph;
 use rltk::{Point, Rltk, RGB};
 use specs::prelude::*;
 
-const SHOW_BOUNDARIES: bool = true;
+const SHOW_BOUNDARIES: bool = false;
 
 pub fn render_camera(ecs: &World, ctx: &mut Rltk) {
     let map = ecs.fetch::<Map>();
