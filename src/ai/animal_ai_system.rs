@@ -1,6 +1,5 @@
 use crate::{
-    particle_system::ParticleBuilder, EntityMoved, Herbivore, Item, Map, MyTurn, Position,
-    RunState, Viewshed, WantsToEncounter, WantsToMelee,
+    EntityMoved, Herbivore, Item, Map, MyTurn, Position, RunState, Viewshed, WantsToMelee,
 };
 use rltk::Point;
 use specs::prelude::*;
@@ -11,15 +10,10 @@ impl<'a> System<'a> for AnimalAI {
     #[allow(clippy::type_complexity)]
     type SystemData = (
         WriteExpect<'a, Map>,
-        ReadExpect<'a, Point>,
-        ReadExpect<'a, Entity>,
-        ReadExpect<'a, RunState>,
         Entities<'a>,
         WriteStorage<'a, Viewshed>,
         ReadStorage<'a, Herbivore>,
         ReadStorage<'a, Item>,
-        WriteStorage<'a, WantsToMelee>,
-        WriteStorage<'a, WantsToEncounter>,
         WriteStorage<'a, EntityMoved>,
         WriteStorage<'a, Position>,
         ReadStorage<'a, MyTurn>,
@@ -28,15 +22,10 @@ impl<'a> System<'a> for AnimalAI {
     fn run(&mut self, data: Self::SystemData) {
         let (
             mut map,
-            player_pos,
-            player_entity,
-            runstate,
             entities,
             mut viewshed,
             herbivore,
             item,
-            mut wants_to_melee,
-            mut wants_to_encounter,
             mut entity_moved,
             mut position,
             turns,
@@ -46,14 +35,6 @@ impl<'a> System<'a> for AnimalAI {
         for (entity, mut viewshed, _herbivore, mut pos, _turn) in
             (&entities, &mut viewshed, &herbivore, &mut position, &turns).join()
         {
-            let distance =
-                rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), *player_pos);
-            if distance < 1.5 {
-                wants_to_encounter
-                    .insert(entity, WantsToEncounter { monster: entity })
-                    .expect("Unable to insert encounter");
-            }
-
             let mut run_away_from: Vec<usize> = Vec::new();
             for other_tile in viewshed.visible_tiles.iter() {
                 let view_idx = map.xy_idx(other_tile.x, other_tile.y);

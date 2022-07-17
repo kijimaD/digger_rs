@@ -43,6 +43,16 @@ pub struct Faction {
     pub name: String,
 }
 
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct WantsToApproach {
+    pub idx: i32,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct WantsToFlee {
+    pub indices: Vec<usize>,
+}
+
 #[derive(Serialize, Deserialize, Copy, Clone, PartialEq)]
 pub enum HungerState {
     WellFed,

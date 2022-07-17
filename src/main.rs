@@ -84,9 +84,11 @@ impl State {
         let mut vis = VisibilitySystem {};
         vis.run_now(&self.ecs);
         let mut initiative = ai::InitiativeSystem {};
+        initiative.run_now(&self.ecs);
+        let mut visible = ai::VisibleAI {};
+        visible.run_now(&self.ecs);
         let mut adjacent = ai::AdjacentAI {};
         adjacent.run_now(&self.ecs);
-        initiative.run_now(&self.ecs);
         let mut monster = ai::MonsterAI {};
         monster.run_now(&self.ecs);
         let mut bystander = ai::BystanderAI {};
@@ -558,6 +560,8 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Renderable>();
     gs.ecs.register::<Player>();
     gs.ecs.register::<Faction>();
+    gs.ecs.register::<WantsToApproach>();
+    gs.ecs.register::<WantsToFlee>();
     gs.ecs.register::<Viewshed>();
     gs.ecs.register::<Bystander>();
     gs.ecs.register::<Vendor>();
