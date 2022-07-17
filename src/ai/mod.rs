@@ -8,3 +8,5 @@ mod initiative_system;
 pub use initiative_system::InitiativeSystem;
 mod quipping;
 pub use quipping::QuipSystem;
+mod adjacent_ai_system;
+pub use adjacent_ai_system::AdjacentAI;

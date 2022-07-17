@@ -109,7 +109,7 @@ impl RawMaster {
 
         for faction in self.raws.faction_table.iter() {
             let mut reactions: HashMap<String, Reaction> = HashMap::new();
-            for other in faction.response.iter() {
+            for other in faction.responses.iter() {
                 reactions.insert(
                     other.0.clone(),
                     match other.1.as_str() {
@@ -286,7 +286,7 @@ pub fn spawn_named_mob(
         if let Some(faction) = &mob_template.faction {
             eb = eb.with(Faction { name: faction.clone() });
         } else {
-            eb = eb.with(Faction { name: "Mindless".to_string() })
+            eb = eb.with(Faction { name: "Townsfolk".to_string() })
         }
 
         let new_mob = eb.build();

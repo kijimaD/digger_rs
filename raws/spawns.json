@@ -321,7 +321,8 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "melee"
+      "ai": "melee",
+      "faction": "Carnivores"
     },
     {
       "name": "Goblin",
@@ -333,7 +334,8 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "melee"
+      "ai": "melee",
+      "faction": "Carnivores"
     },
     {
       "name": "Kobold",
@@ -345,7 +347,8 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "melee"
+      "ai": "melee",
+      "faction": "Carnivores"
     },
     {
       "name": "Rat",
@@ -358,7 +361,8 @@
       "blocks_tile": true,
       "vision_range": 8,
       "ai": "melee",
-      "loot_table": "Animal"
+      "loot_table": "Animal",
+      "faction": "Carnivores"
     },
     {
       "name": "Deer",
@@ -371,7 +375,8 @@
       "blocks_tile": true,
       "vision_range": 8,
       "ai": "herbivore",
-      "loot_table": "Animal"
+      "loot_table": "Animal",
+      "faction": "Herbivores"
     },
     {
       "name": "Barkeep",
@@ -390,7 +395,8 @@
       "equipped": [
         "Stained Tunic",
         "Slippers"
-      ]
+      ],
+      "faction": "Townsfolk"
     },
     {
       "name": "Bandit",
@@ -414,7 +420,8 @@
       "light": {
         "range": 4,
         "color": "#550000"
-      }
+      },
+      "faction": "Bandits"
     },
     {
       "name": "Shady Salesman",
@@ -426,7 +433,8 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor"
+      "ai": "vendor",
+      "faction": "Townsfolk"
     },
     {
       "name": "Patron",
@@ -443,7 +451,8 @@
         "Quiet down, it's too early!",
         "Oh my, I drank too much.",
         "Still saving the world, eh?"
-      ]
+      ],
+      "faction": "Townsfolk"
     },
     {
       "name": "Priest",
@@ -455,7 +464,8 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander"
+      "ai": "bystander",
+      "faction": "Townsfolk"
     },
     {
       "name": "Parishioner",
@@ -467,7 +477,8 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander"
+      "ai": "bystander",
+      "faction": "Townsfolk"
     },
     {
       "name": "Blacksmith",
@@ -479,7 +490,8 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor"
+      "ai": "vendor",
+      "faction": "Townsfolk"
     },
     {
       "name": "Clothier",
@@ -491,7 +503,8 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor"
+      "ai": "vendor",
+      "faction": "Townsfolk"
     },
     {
       "name": "Alchemist",
@@ -503,7 +516,8 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor"
+      "ai": "vendor",
+      "faction": "Townsfolk"
     },
     {
       "name": "Mom",
@@ -515,7 +529,8 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander"
+      "ai": "bystander",
+      "faction": "Townsfolk"
     },
     {
       "name": "Peasant",
@@ -527,7 +542,8 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander"
+      "ai": "bystander",
+      "faction": "Townsfolk"
     },
     {
       "name": "Dock Worker",
@@ -544,7 +560,8 @@
         "Lovely day, eh?",
         "Nice weather",
         "Hello"
-      ]
+      ],
+      "faction": "Townsfolk"
     },
     {
       "name": "Fisher",
@@ -561,7 +578,8 @@
         "They're biting today!",
         "I caught something, but it wasn't a fish!",
         "Looks like rain"
-      ]
+      ],
+      "faction": "Townsfolk"
     },
     {
       "name": "Wannabe Pirate",
@@ -578,7 +596,8 @@
         "Arrr",
         "Grog!",
         "Booze!"
-      ]
+      ],
+      "faction": "Townsfolk"
     },
     {
       "name": "Drunk",
@@ -595,7 +614,8 @@
         "Hic",
         "Need... more... booze!",
         "Spare a copper?"
-      ]
+      ],
+      "faction": "Townsfolk"
     }
   ],
   "props": [
@@ -752,5 +772,44 @@
       "hidden": false
     }
   ],
-  "faction_table": []
+  "faction_table": [
+    {
+      "name": "Player",
+      "responses": {}
+    },
+    {
+      "name": "Townsfolk",
+      "responses": {
+        "Default": "ignore"
+      }
+    },
+    {
+      "name": "Bandits",
+      "responses": {
+        "Default": "attack",
+        "Bandits": "ignore"
+      }
+    },
+    {
+      "name": "Cave Goblins",
+      "responses": {
+        "Default": "attack",
+        "Cave Goblins": "ignore"
+      }
+    },
+    {
+      "name": "Carnivores",
+      "responses": {
+        "Default": "attack",
+        "Carnivores": "ignore"
+      }
+    },
+    {
+      "name": "Herbivores",
+      "responses": {
+        "Default": "flee",
+        "Herbivores": "ignore"
+      }
+    }
+  ]
 }

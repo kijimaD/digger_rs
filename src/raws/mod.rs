@@ -13,7 +13,7 @@ use std::sync::Mutex;
 mod loot_structs;
 use loot_structs::*;
 mod faction_structs;
-use faction_structs::*;
+pub use faction_structs::*;
 
 rltk::embedded_resource!(RAW_FILE, "../../raws/spawns.json");
 

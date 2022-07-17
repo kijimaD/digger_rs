@@ -84,6 +84,8 @@ impl State {
         let mut vis = VisibilitySystem {};
         vis.run_now(&self.ecs);
         let mut initiative = ai::InitiativeSystem {};
+        let mut adjacent = ai::AdjacentAI {};
+        adjacent.run_now(&self.ecs);
         initiative.run_now(&self.ecs);
         let mut monster = ai::MonsterAI {};
         monster.run_now(&self.ecs);

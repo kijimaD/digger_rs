@@ -39,11 +39,7 @@ impl<'a> System<'a> for MonsterAI {
             if can_act {
                 let distance =
                     rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), *player_pos);
-                if distance < 1.5 {
-                    wants_to_encounter
-                        .insert(entity, WantsToEncounter { monster: entity })
-                        .expect("Unable to insert encounter");
-                } else if viewshed.visible_tiles.contains(&*player_pos) {
+                if viewshed.visible_tiles.contains(&*player_pos) {
                     // Path to the player
                     let path = rltk::a_star_search(
                         map.xy_idx(pos.x, pos.y),
