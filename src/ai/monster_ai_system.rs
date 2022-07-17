@@ -24,29 +24,29 @@ impl<'a> System<'a> for MonsterAI {
         for (entity, mut viewshed, _monster, mut pos, turn) in
             (&entities, &mut viewshed, &monster, &mut position, &turns).join()
         {
-            let can_act = true;
+            // let can_act = true;
 
-            if can_act {
-                let distance =
-                    rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), *player_pos);
-                if viewshed.visible_tiles.contains(&*player_pos) {
-                    // Path to the player
-                    let path = rltk::a_star_search(
-                        map.xy_idx(pos.x, pos.y),
-                        map.xy_idx(player_pos.x, player_pos.y),
-                        &*map,
-                    );
-                    if path.success && path.steps.len() > 1 {
-                        let mut idx = map.xy_idx(pos.x, pos.y);
-                        map.blocked[idx] = false;
-                        pos.x = path.steps[1] as i32 % map.width;
-                        pos.y = path.steps[1] as i32 / map.width;
-                        idx = map.xy_idx(pos.x, pos.y);
-                        map.blocked[idx] = true;
-                        viewshed.dirty = true;
-                    }
-                }
-            }
+            // if can_act {
+            //     let distance =
+            //         rltk::DistanceAlg::Pythagoras.distance2d(Point::new(pos.x, pos.y), *player_pos);
+            //     if viewshed.visible_tiles.contains(&*player_pos) {
+            //         // Path to the player
+            //         let path = rltk::a_star_search(
+            //             map.xy_idx(pos.x, pos.y),
+            //             map.xy_idx(player_pos.x, player_pos.y),
+            //             &*map,
+            //         );
+            //         if path.success && path.steps.len() > 1 {
+            //             let mut idx = map.xy_idx(pos.x, pos.y);
+            //             map.blocked[idx] = false;
+            //             pos.x = path.steps[1] as i32 % map.width;
+            //             pos.y = path.steps[1] as i32 / map.width;
+            //             idx = map.xy_idx(pos.x, pos.y);
+            //             map.blocked[idx] = true;
+            //             viewshed.dirty = true;
+            //         }
+            //     }
+            // }
         }
     }
 }

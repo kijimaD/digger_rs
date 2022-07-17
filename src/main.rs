@@ -93,6 +93,8 @@ impl State {
         monster.run_now(&self.ecs);
         let mut bystander = ai::BystanderAI {};
         bystander.run_now(&self.ecs);
+        let mut approach = ai::ApproachAI {};
+        approach.run_now(&self.ecs);
         let mut animal = ai::AnimalAI {};
         animal.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem {};
