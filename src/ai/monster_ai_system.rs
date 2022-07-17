@@ -1,4 +1,4 @@
-use crate::{Map, Monster, Position, RunState, Viewshed, WantsToEncounter};
+use crate::{Map, Monster, MyTurn, Position, RunState, Viewshed, WantsToEncounter};
 use rltk::Point;
 use specs::prelude::*;
 
@@ -15,6 +15,7 @@ impl<'a> System<'a> for MonsterAI {
         ReadStorage<'a, Monster>,
         WriteStorage<'a, Position>,
         WriteStorage<'a, WantsToEncounter>,
+        ReadStorage<'a, MyTurn>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -27,14 +28,11 @@ impl<'a> System<'a> for MonsterAI {
             monster,
             mut position,
             mut wants_to_encounter,
+            turns,
         ) = data;
 
-        if *runstate != RunState::MonsterTurn {
-            return;
-        }
-
-        for (entity, mut viewshed, _monster, mut pos) in
-            (&entities, &mut viewshed, &monster, &mut position).join()
+        for (entity, mut viewshed, _monster, mut pos, turn) in
+            (&entities, &mut viewshed, &monster, &mut position, &turns).join()
         {
             let can_act = true;
 

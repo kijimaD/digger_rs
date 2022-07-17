@@ -57,14 +57,14 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
                 let mut ppos = ecs.write_resource::<Point>();
                 ppos.x = pos.x;
                 ppos.y = pos.y;
-                result = RunState::PlayerTurn;
+                result = RunState::Ticking;
             } else {
                 let target = combat_stats.get(*potential_target);
                 if let Some(_target) = target {
                     wants_to_melee
                         .insert(entity, WantsToMelee { target: *potential_target })
                         .expect("Add target failed");
-                    return RunState::PlayerTurn;
+                    return RunState::Ticking;
                 }
             }
             let door = doors.get_mut(*potential_target);
@@ -75,7 +75,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
                 let glyph = renderables.get_mut(*potential_target).unwrap();
                 glyph.glyph = rltk::to_cp437('/');
                 viewshed.dirty = true;
-                result = RunState::PlayerTurn;
+                result = RunState::Ticking;
             }
         }
 
@@ -88,7 +88,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
             let mut ppos = ecs.write_resource::<Point>();
             ppos.x = pos.x;
             ppos.y = pos.y;
-            result = RunState::PlayerTurn;
+            result = RunState::Ticking;
             match map.tiles[destination_idx] {
                 TileType::DownStairs => result = RunState::NextLevel,
                 TileType::UpStairs => result = RunState::PreviousLevel,
@@ -247,7 +247,7 @@ fn skip_turn(ecs: &mut World) -> RunState {
         }
     }
 
-    RunState::PlayerTurn
+    RunState::Ticking
 }
 
 pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
@@ -346,7 +346,7 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
             _ => return RunState::AwaitingInput,
         },
     }
-    RunState::PlayerTurn
+    RunState::Ticking
 }
 
 fn use_consumable_hotkey(gs: &mut State, key: i32) -> RunState {
@@ -366,5 +366,5 @@ fn use_consumable_hotkey(gs: &mut State, key: i32) -> RunState {
     if (key as usize) < carried_consumables.len() {
         return RunState::ItemTargeting { item: carried_consumables[key as usize] };
     }
-    RunState::PlayerTurn
+    RunState::Ticking
 }

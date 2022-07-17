@@ -49,8 +49,7 @@ const SHOW_MAPGEN_VISUALIZER: bool = false;
 pub enum RunState {
     AwaitingInput,
     PreRun,
-    PlayerTurn,
-    MonsterTurn,
+    Ticking,
     BattleEncounter,
     BattleCommand,
     BattleInventory,
@@ -84,6 +83,8 @@ impl State {
     fn run_systems(&mut self) {
         let mut vis = VisibilitySystem {};
         vis.run_now(&self.ecs);
+        let mut initiative = ai::InitiativeSystem {};
+        initiative.run_now(&self.ecs);
         let mut monster = ai::MonsterAI {};
         monster.run_now(&self.ecs);
         let mut bystander = ai::BystanderAI {};
@@ -197,15 +198,13 @@ impl GameState for State {
             RunState::AwaitingInput => {
                 newrunstate = player_input(self, ctx);
             }
-            RunState::PlayerTurn => {
+            RunState::Ticking => {
                 self.run_systems();
                 self.ecs.maintain();
-                newrunstate = RunState::MonsterTurn;
-            }
-            RunState::MonsterTurn => {
-                self.run_systems();
-                self.ecs.maintain();
-                newrunstate = RunState::AwaitingInput;
+                match *self.ecs.fetch::<RunState>() {
+                    RunState::AwaitingInput => newrunstate = RunState::AwaitingInput,
+                    _ => newrunstate = RunState::Ticking,
+                }
             }
             RunState::BattleEncounter => {
                 newrunstate = RunState::BattleAwaiting;
@@ -333,7 +332,7 @@ impl GameState for State {
                         intent
                             .insert(*self.ecs.fetch::<Entity>(), WantsToUseItem { item, target })
                             .expect("Unable to insert intent");
-                        newrunstate = RunState::PlayerTurn;
+                        newrunstate = RunState::Ticking;
                     }
                 }
             }
@@ -351,7 +350,7 @@ impl GameState for State {
                                 WantsToDropItem { item: item_entity },
                             )
                             .expect("Unable to insert intent");
-                        newrunstate = RunState::PlayerTurn;
+                        newrunstate = RunState::Ticking;
                     }
                 }
             }
@@ -369,7 +368,7 @@ impl GameState for State {
                                 WantsToRemoveItem { item: item_entity },
                             )
                             .expect("Unable to insert intent");
-                        newrunstate = RunState::PlayerTurn;
+                        newrunstate = RunState::Ticking;
                     }
                 }
             }
@@ -548,6 +547,8 @@ fn main() -> rltk::BError {
         mapgen_history: Vec::new(),
         mapgen_timer: 0.0,
     };
+    gs.ecs.register::<Initiative>();
+    gs.ecs.register::<MyTurn>();
     gs.ecs.register::<Position>();
     gs.ecs.register::<OtherLevelPosition>();
     gs.ecs.register::<Renderable>();

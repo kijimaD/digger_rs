@@ -215,6 +215,7 @@ pub fn spawn_named_mob(
         }
 
         eb = eb.with(Name { name: mob_template.name.clone() });
+        eb = eb.with(Initiative { current: 2 });
 
         match mob_template.ai.as_ref() {
             "melee" => eb = eb.with(Monster {}),

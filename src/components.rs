@@ -6,6 +6,14 @@ use specs::saveload::{ConvertSaveload, Marker};
 use specs_derive::*;
 use std::collections::HashMap;
 
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Initiative {
+    pub current: i32,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct MyTurn {}
+
 #[derive(Component, ConvertSaveload, Clone)]
 pub struct Position {
     pub x: i32,

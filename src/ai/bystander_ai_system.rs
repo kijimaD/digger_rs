@@ -1,5 +1,6 @@
 use crate::{
-    gamelog::GameLog, Bystander, EntityMoved, Map, Name, Point, Position, Quips, RunState, Viewshed,
+    gamelog::GameLog, Bystander, EntityMoved, Map, MyTurn, Name, Point, Position, Quips, RunState,
+    Viewshed,
 };
 use specs::prelude::*;
 
@@ -20,6 +21,7 @@ impl<'a> System<'a> for BystanderAI {
         WriteExpect<'a, GameLog>,
         WriteStorage<'a, Quips>,
         ReadStorage<'a, Name>,
+        ReadStorage<'a, MyTurn>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -36,14 +38,11 @@ impl<'a> System<'a> for BystanderAI {
             mut gamelog,
             mut quips,
             names,
+            turns,
         ) = data;
 
-        if *runstate != RunState::MonsterTurn {
-            return;
-        }
-
-        for (entity, mut viewshed, _bystander, mut pos) in
-            (&entities, &mut viewshed, &bystander, &mut position).join()
+        for (entity, mut viewshed, _bystander, mut pos, turn) in
+            (&entities, &mut viewshed, &bystander, &mut position, &turns).join()
         {
             // Possibly quip
             let quip = quips.get_mut(entity);
