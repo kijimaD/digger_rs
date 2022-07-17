@@ -38,6 +38,11 @@ pub struct Renderable {
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Player {}
 
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Faction {
+    pub name: String,
+}
+
 #[derive(Serialize, Deserialize, Copy, Clone, PartialEq)]
 pub enum HungerState {
     WellFed,

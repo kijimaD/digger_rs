@@ -12,6 +12,8 @@ use serde::Deserialize;
 use std::sync::Mutex;
 mod loot_structs;
 use loot_structs::*;
+mod faction_structs;
+use faction_structs::*;
 
 rltk::embedded_resource!(RAW_FILE, "../../raws/spawns.json");
 
@@ -26,6 +28,7 @@ pub struct Raws {
     pub props: Vec<Prop>,
     pub spawn_table: Vec<SpawnTableEntry>,
     pub loot_tables: Vec<LootTable>,
+    pub faction_table: Vec<FactionInfo>,
 }
 
 pub fn load_raws() {

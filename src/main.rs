@@ -555,6 +555,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<OtherLevelPosition>();
     gs.ecs.register::<Renderable>();
     gs.ecs.register::<Player>();
+    gs.ecs.register::<Faction>();
     gs.ecs.register::<Viewshed>();
     gs.ecs.register::<Bystander>();
     gs.ecs.register::<Vendor>();

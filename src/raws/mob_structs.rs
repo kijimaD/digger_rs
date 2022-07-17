@@ -14,6 +14,7 @@ pub struct Mob {
     pub natural: Option<MobNatural>,   // TODO: move to battle entity
     pub loot_table: Option<String>,
     pub light: Option<MobLight>,
+    pub faction: Option<String>,
 }
 
 #[derive(Deserialize, Debug)]
