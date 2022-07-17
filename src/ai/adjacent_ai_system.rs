@@ -77,11 +77,13 @@ impl<'a> System<'a> for AdjacentAI {
 
                 let mut done = false;
                 for reaction in reactions.iter() {
-                    if let Reaction::Attack = reaction.1 {
-                        wants_encounter
-                            .insert(entity, WantsToEncounter { monster: reaction.0 })
-                            .expect("Unable to insert encounter");
-                        done = true;
+                    if reaction.1 == Reaction::Attack || reaction.1 == Reaction::Flee {
+                        if reaction.0 == *player {
+                            wants_encounter
+                                .insert(entity, WantsToEncounter { monster: entity })
+                                .expect("Unable to insert encounter");
+                            done = true;
+                        }
                     }
                 }
 
