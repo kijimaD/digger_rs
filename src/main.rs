@@ -109,6 +109,8 @@ impl State {
         damage.run_now(&self.ecs);
         let mut lighting = lighting_system::LightingSystem {};
         lighting.run_now(&self.ecs);
+        let mut quipper = ai::QuipSystem {};
+        quipper.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
