@@ -235,13 +235,11 @@ pub fn spawn_named_mob(
         eb = eb.with(Name { name: mob_template.name.clone() });
         eb = eb.with(Initiative { current: 2 });
 
-        match mob_template.ai.as_ref() {
-            "melee" => eb = eb.with(Monster {}),
-            "bystander" => eb = eb.with(Bystander {}),
-            "vendor" => eb = eb.with(Vendor {}),
-            "herbivore" => eb = eb.with(Herbivore {}),
-            _ => {}
+        match mob_template.movement.as_ref() {
+            "random" => eb = eb.with(MoveMode { mode: Movement::Random }),
+            _ => eb = eb.with(MoveMode { mode: Movement::Static }),
         }
+
         if mob_template.blocks_tile {
             eb = eb.with(BlocksTile {});
         }

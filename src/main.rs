@@ -89,12 +89,12 @@ impl State {
         visible.run_now(&self.ecs);
         let mut adjacent = ai::AdjacentAI {};
         adjacent.run_now(&self.ecs);
-        let mut bystander = ai::BystanderAI {};
-        bystander.run_now(&self.ecs);
         let mut approach = ai::ApproachAI {};
         approach.run_now(&self.ecs);
-        let mut flee = ai::FleeAI{};
+        let mut flee = ai::FleeAI {};
         flee.run_now(&self.ecs);
+        let mut defaultmove = ai::DefaultMoveAI {};
+        defaultmove.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem {};
         mapindex.run_now(&self.ecs);
         let mut pickup = ItemCollectionSystem {};
@@ -562,6 +562,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Faction>();
     gs.ecs.register::<WantsToApproach>();
     gs.ecs.register::<WantsToFlee>();
+    gs.ecs.register::<MoveMode>();
     gs.ecs.register::<Viewshed>();
     gs.ecs.register::<Bystander>();
     gs.ecs.register::<Vendor>();

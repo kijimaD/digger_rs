@@ -8,7 +8,7 @@ pub struct Mob {
     pub renderable: Option<Renderable>,
     pub blocks_tile: bool,
     pub vision_range: i32,
-    pub ai: String,
+    pub movement: String,
     pub quips: Option<Vec<String>>,
     pub equipped: Option<Vec<String>>, // TODO: move to battle entity
     pub natural: Option<MobNatural>,   // TODO: move to battle entity

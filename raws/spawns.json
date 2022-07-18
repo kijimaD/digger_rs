@@ -321,7 +321,7 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "melee",
+      "movement": "melee",
       "faction": "Carnivores"
     },
     {
@@ -334,7 +334,7 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "melee",
+      "movement": "melee",
       "faction": "Carnivores"
     },
     {
@@ -347,7 +347,7 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "melee",
+      "movement": "melee",
       "faction": "Carnivores"
     },
     {
@@ -360,7 +360,7 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "melee",
+      "movement": "melee",
       "loot_table": "Animal",
       "faction": "Carnivores"
     },
@@ -374,7 +374,7 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "herbivore",
+      "movement": "random",
       "loot_table": "Animal",
       "faction": "Herbivores"
     },
@@ -388,7 +388,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor",
+      "movement": "static",
       "skills": {
         "Melee": 2
       },
@@ -408,7 +408,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "melee",
+      "movement": "random",
       "quips": [
         "Stand and deliver!",
         "Alright, hand it over"
@@ -433,7 +433,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor",
+      "movement": "static",
       "faction": "Townsfolk"
     },
     {
@@ -446,7 +446,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander",
+      "movement": "random",
       "quips": [
         "Quiet down, it's too early!",
         "Oh my, I drank too much.",
@@ -464,7 +464,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander",
+      "movement": "random",
       "faction": "Townsfolk"
     },
     {
@@ -477,7 +477,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander",
+      "movement": "random",
       "faction": "Townsfolk"
     },
     {
@@ -490,7 +490,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor",
+      "movement": "static",
       "faction": "Townsfolk"
     },
     {
@@ -503,7 +503,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor",
+      "movement": "static",
       "faction": "Townsfolk"
     },
     {
@@ -516,7 +516,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor",
+      "movement": "static",
       "faction": "Townsfolk"
     },
     {
@@ -529,7 +529,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander",
+      "movement": "random",
       "faction": "Townsfolk"
     },
     {
@@ -542,7 +542,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander",
+      "movement": "random",
       "faction": "Townsfolk"
     },
     {
@@ -555,7 +555,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander",
+      "movement": "random",
       "quips": [
         "Lovely day, eh?",
         "Nice weather",
@@ -573,7 +573,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander",
+      "movement": "random",
       "quips": [
         "They're biting today!",
         "I caught something, but it wasn't a fish!",
@@ -591,7 +591,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander",
+      "movement": "random",
       "quips": [
         "Arrr",
         "Grog!",
@@ -609,7 +609,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander",
+      "movement": "random",
       "quips": [
         "Hic",
         "Need... more... booze!",
