@@ -1,5 +1,5 @@
+use crate::{Chasing, EntityMoved, Map, MyTurn, Position, Viewshed};
 use specs::prelude::*;
-use crate::{ MyTurn, Chasing, Position, Map, Viewshed, EntityMoved };
 use std::collections::HashMap;
 
 pub struct ChaseAI {}
@@ -13,11 +13,19 @@ impl<'a> System<'a> for ChaseAI {
         WriteExpect<'a, Map>,
         WriteStorage<'a, Viewshed>,
         WriteStorage<'a, EntityMoved>,
-        Entities<'a>
+        Entities<'a>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (mut turns, mut chasing, mut positions, mut map, mut viewsheds, mut entity_moved, entities) = data;
+        let (
+            mut turns,
+            mut chasing,
+            mut positions,
+            mut map,
+            mut viewsheds,
+            mut entity_moved,
+            entities,
+        ) = data;
 
         let mut targets: HashMap<Entity, (i32, i32)> = HashMap::new();
         let mut end_chase: Vec<Entity> = Vec::new();
@@ -36,20 +44,22 @@ impl<'a> System<'a> for ChaseAI {
         end_chase.clear();
 
         let mut turn_done: Vec<Entity> = Vec::new();
-        for (entity, mut pos, _chase, mut viewshed, _myturn) in (&entities, &mut positions, &chasing, &mut viewsheds, &turns).join() {
+        for (entity, mut pos, _chase, mut viewshed, _myturn) in
+            (&entities, &mut positions, &chasing, &mut viewsheds, &turns).join()
+        {
             turn_done.push(entity);
             let target_pos = targets[&entity];
             let path = rltk::a_star_search(
                 map.xy_idx(pos.x, pos.y) as i32,
                 map.xy_idx(target_pos.0, target_pos.1) as i32,
-                &mut *map
+                &mut *map,
             );
-            if path.success && path.steps.len()>1 && path.steps.len() < 15 {
+            if path.success && path.steps.len() > 1 && path.steps.len() < 15 {
                 let mut idx = map.xy_idx(pos.x, pos.y);
                 map.blocked[idx] = false;
                 pos.x = path.steps[1] as i32 % map.width;
                 pos.y = path.steps[1] as i32 / map.width;
-                entity_moved.insert(entity, EntityMoved{}).expect("Unable to insert marker");
+                entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert marker");
                 idx = map.xy_idx(pos.x, pos.y);
                 map.blocked[idx] = true;
                 viewshed.dirty = true;
