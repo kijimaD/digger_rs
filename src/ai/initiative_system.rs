@@ -14,6 +14,7 @@ impl<'a> System<'a> for InitiativeSystem {
         ReadStorage<'a, Attributes>,
         WriteExpect<'a, RunState>,
         ReadExpect<'a, Entity>,
+        ReadExpect<'a, rltk::Point>,
     );
 
     /// initiativeの値に応じて、entityにturnを追加する。各ゲームシステムはturnでループを回して処理する。
@@ -27,6 +28,7 @@ impl<'a> System<'a> for InitiativeSystem {
             attributes,
             mut runstate,
             player,
+            player_pos,
         ) = data;
 
         if *runstate != RunState::Ticking {
@@ -35,11 +37,10 @@ impl<'a> System<'a> for InitiativeSystem {
 
         turns.clear();
 
-        for (entity, initiative, _pos) in (&entities, &mut initiatives, &positions).join() {
+        for (entity, initiative, pos) in (&entities, &mut initiatives, &positions).join() {
             initiative.current -= 1;
             if initiative.current < 1 {
-                // It's my turn!
-                turns.insert(entity, MyTurn {}).expect("Unable to insert turn");
+                let mut myturn = true;
 
                 // Re-roll
                 initiative.current = 6 + rng.roll_dice(1, 6);
@@ -50,6 +51,16 @@ impl<'a> System<'a> for InitiativeSystem {
 
                 if entity == *player {
                     *runstate = RunState::AwaitingInput;
+                } else {
+                    let distance = rltk::DistanceAlg::Pythagoras
+                        .distance2d(*player_pos, rltk::Point::new(pos.x, pos.y));
+                    if distance > 20.0 {
+                        myturn = false;
+                    }
+                }
+
+                if myturn {
+                    turns.insert(entity, MyTurn {}).expect("Unable to insert turn");
                 }
             }
         }

@@ -224,7 +224,7 @@ fn skip_turn(ecs: &mut World) -> RunState {
                     let reaction = crate::raws::faction_reaction(
                         &faction.name,
                         "Player",
-                        &crate::raws::RAWS.lock().unwrap()
+                        &crate::raws::RAWS.lock().unwrap(),
                     );
                     if reaction == Reaction::Attack {
                         can_heal = false;
