@@ -236,8 +236,14 @@ pub fn spawn_named_mob(
         eb = eb.with(Initiative { current: 2 });
 
         match mob_template.movement.as_ref() {
-            "random" => eb = eb.with(MoveMode { mode: Movement::Random }),
-            _ => eb = eb.with(MoveMode { mode: Movement::Static }),
+            "random" => {
+                eb = eb.with(MoveMode { mode: Movement::Random });
+                eb = eb.with(Bystander {});
+            },
+            _ => {
+                eb = eb.with(MoveMode { mode: Movement::Static });
+                eb = eb.with(Bystander {});
+            }
         }
 
         if mob_template.blocks_tile {
