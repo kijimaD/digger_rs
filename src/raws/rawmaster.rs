@@ -238,15 +238,12 @@ pub fn spawn_named_mob(
         match mob_template.movement.as_ref() {
             "random" => {
                 eb = eb.with(MoveMode { mode: Movement::Random });
-                eb = eb.with(Bystander {});
             }
             "random_waypoint" => {
                 eb = eb.with(MoveMode { mode: Movement::RandomWaypoint { path: None } });
-                eb = eb.with(Bystander {});
             }
             _ => {
                 eb = eb.with(MoveMode { mode: Movement::Static });
-                eb = eb.with(Bystander {});
             }
         }
 

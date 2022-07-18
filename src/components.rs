@@ -67,7 +67,7 @@ pub struct MoveMode {
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]
 pub struct Chasing {
-    pub target: Entity
+    pub target: Entity,
 }
 
 #[derive(Serialize, Deserialize, Copy, Clone, PartialEq)]

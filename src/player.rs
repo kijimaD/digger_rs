@@ -1,8 +1,9 @@
 use super::{
-    gamelog::GameLog, Attributes, BlocksTile, BlocksVisibility, Bystander, Door, EntityMoved,
+    gamelog::GameLog, Attributes, BlocksTile, BlocksVisibility, Door, EntityMoved, Faction,
     HungerClock, HungerState, Item, Map, Monster, Name, Player, Pools, Position, Renderable,
     RunState, State, TileType, Vendor, Viewshed, WantsToEncounter, WantsToMelee, WantsToPickupItem,
 };
+use crate::raws::Reaction;
 use rltk::{Point, Rltk, VirtualKeyCode};
 use specs::prelude::*;
 use std::cmp::{max, min};
@@ -22,8 +23,8 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
     let mut blocks_visibility = ecs.write_storage::<BlocksVisibility>();
     let mut blocks_movement = ecs.write_storage::<BlocksTile>();
     let mut renderables = ecs.write_storage::<Renderable>();
-    let bystanders = ecs.read_storage::<Bystander>();
     let vendors = ecs.read_storage::<Vendor>();
+    let factions = ecs.read_storage::<Faction>();
     let mut result = RunState::AwaitingInput;
 
     let mut swap_entities: Vec<(Entity, i32, i32)> = Vec::new();
@@ -41,14 +42,20 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
         let destination_idx = map.xy_idx(pos.x + delta_x, pos.y + delta_y);
 
         for potential_target in map.tile_content[destination_idx].iter() {
-            let bystander = bystanders.get(*potential_target);
-            let vendor = vendors.get(*potential_target);
-
-            if bystander.is_some() || vendor.is_some() {
-                // Move the bystander
+            let mut hostile = true;
+            if let Some(faction) = factions.get(*potential_target) {
+                let reaction = crate::raws::faction_reaction(
+                    &faction.name,
+                    "Player",
+                    &crate::raws::RAWS.lock().unwrap(),
+                );
+                if reaction != Reaction::Attack {
+                    hostile = false;
+                }
+            }
+            if !hostile {
                 swap_entities.push((*potential_target, pos.x, pos.y)); // monster entity, old_player(x, y),
 
-                // Move the player
                 pos.x = min(map.width - 1, max(0, pos.x + delta_x));
                 pos.y = min(map.height - 1, max(0, pos.y + delta_y));
                 entity_moved.insert(entity, EntityMoved {}).expect("Unable to insert marker");
@@ -58,15 +65,8 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
                 ppos.x = pos.x;
                 ppos.y = pos.y;
                 result = RunState::Ticking;
-            } else {
-                let target = combat_stats.get(*potential_target);
-                if let Some(_target) = target {
-                    wants_to_melee
-                        .insert(entity, WantsToMelee { target: *potential_target })
-                        .expect("Add target failed");
-                    return RunState::Ticking;
-                }
             }
+
             let door = doors.get_mut(*potential_target);
             if let Some(door) = door {
                 door.open = true;

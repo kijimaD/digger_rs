@@ -1,5 +1,5 @@
 use crate::{
-    raws::Reaction, Faction, Map, MyTurn, Position, Viewshed, WantsToApproach, WantsToFlee, Chasing
+    raws::Reaction, Chasing, Faction, Map, MyTurn, Position, Viewshed, WantsToApproach, WantsToFlee,
 };
 use specs::prelude::*;
 
@@ -55,7 +55,9 @@ impl<'a> System<'a> for VisibleAI {
                             want_approach
                                 .insert(entity, WantsToApproach { idx: reaction.0 as i32 })
                                 .expect("Unable to insert");
-                            chasing.insert(entity, Chasing{ target: reaction.2 }).expect("Unable to insert");
+                            chasing
+                                .insert(entity, Chasing { target: reaction.2 })
+                                .expect("Unable to insert");
                             done = true;
                         }
                         Reaction::Flee => {
@@ -91,7 +93,7 @@ fn evaluate(
                     &faction.name,
                     &crate::raws::RAWS.lock().unwrap(),
                 ),
-                *other_entity
+                *other_entity,
             ));
         }
     }
