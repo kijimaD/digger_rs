@@ -563,6 +563,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<WantsToApproach>();
     gs.ecs.register::<WantsToFlee>();
     gs.ecs.register::<MoveMode>();
+    gs.ecs.register::<Chasing>();
     gs.ecs.register::<Viewshed>();
     gs.ecs.register::<Bystander>();
     gs.ecs.register::<Vendor>();

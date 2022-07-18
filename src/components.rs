@@ -65,6 +65,11 @@ pub struct MoveMode {
     pub mode: Movement,
 }
 
+#[derive(Component, Debug, ConvertSaveload, Clone)]
+pub struct Chasing {
+    pub target: Entity
+}
+
 #[derive(Serialize, Deserialize, Copy, Clone, PartialEq)]
 pub enum HungerState {
     WellFed,
@@ -94,9 +99,6 @@ pub struct Monster {}
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Herbivore {}
-
-#[derive(Component, Debug, Serialize, Deserialize, Clone)]
-pub struct Bystander {}
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Vendor {}

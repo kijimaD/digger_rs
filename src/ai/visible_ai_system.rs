@@ -1,5 +1,5 @@
 use crate::{
-    raws::Reaction, Faction, Map, MyTurn, Position, Viewshed, WantsToApproach, WantsToFlee,
+    raws::Reaction, Faction, Map, MyTurn, Position, Viewshed, WantsToApproach, WantsToFlee, Chasing
 };
 use specs::prelude::*;
 
@@ -17,6 +17,7 @@ impl<'a> System<'a> for VisibleAI {
         Entities<'a>,
         ReadExpect<'a, Entity>,
         ReadStorage<'a, Viewshed>,
+        WriteStorage<'a, Chasing>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -30,6 +31,7 @@ impl<'a> System<'a> for VisibleAI {
             entities,
             player,
             viewsheds,
+            mut chasing,
         ) = data;
 
         for (entity, _turn, my_faction, pos, viewshed) in
@@ -37,7 +39,7 @@ impl<'a> System<'a> for VisibleAI {
         {
             if entity != *player {
                 let my_idx = map.xy_idx(pos.x, pos.y);
-                let mut reactions: Vec<(usize, Reaction)> = Vec::new();
+                let mut reactions: Vec<(usize, Reaction, Entity)> = Vec::new();
                 let mut flee: Vec<(usize)> = Vec::new();
                 for visible_tile in viewshed.visible_tiles.iter() {
                     let idx = map.xy_idx(visible_tile.x, visible_tile.y);
@@ -53,6 +55,7 @@ impl<'a> System<'a> for VisibleAI {
                             want_approach
                                 .insert(entity, WantsToApproach { idx: reaction.0 as i32 })
                                 .expect("Unable to insert");
+                            chasing.insert(entity, Chasing{ target: reaction.2 }).expect("Unable to insert");
                             done = true;
                         }
                         Reaction::Flee => {
@@ -77,7 +80,7 @@ fn evaluate(
     map: &Map,
     factions: &ReadStorage<Faction>,
     my_faction: &str,
-    reactions: &mut Vec<(usize, Reaction)>,
+    reactions: &mut Vec<(usize, Reaction, Entity)>,
 ) {
     for other_entity in map.tile_content[idx].iter() {
         if let Some(faction) = factions.get(*other_entity) {
@@ -88,6 +91,7 @@ fn evaluate(
                     &faction.name,
                     &crate::raws::RAWS.lock().unwrap(),
                 ),
+                *other_entity
             ));
         }
     }
