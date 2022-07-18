@@ -12,3 +12,5 @@ mod visible_ai_system;
 pub use visible_ai_system::VisibleAI;
 mod approach_ai_system;
 pub use approach_ai_system::ApproachAI;
+mod flee_ai_system;
+pub use flee_ai_system::FleeAI;
