@@ -98,9 +98,6 @@ pub struct Viewshed {
 pub struct Monster {}
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
-pub struct Herbivore {}
-
-#[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Vendor {}
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]
