@@ -321,7 +321,8 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "melee"
+      "movement": "random_waypoint",
+      "faction": "Carnivores"
     },
     {
       "name": "Goblin",
@@ -333,7 +334,8 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "melee"
+      "movement": "random_waypoint",
+      "faction": "Carnivores"
     },
     {
       "name": "Kobold",
@@ -345,7 +347,8 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "melee"
+      "movement": "random_waypoint",
+      "faction": "Carnivores"
     },
     {
       "name": "Rat",
@@ -357,40 +360,9 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "ai": "melee",
-      "loot_table": "Animal"
-    },
-    {
-      "name": "Deer",
-      "renderable": {
-        "glyph": "d",
-        "fg": "#FFFF00",
-        "bg": "#000000",
-        "order": 1
-      },
-      "blocks_tile": true,
-      "vision_range": 8,
-      "ai": "herbivore",
-      "loot_table": "Animal"
-    },
-    {
-      "name": "Barkeep",
-      "renderable": {
-        "glyph": "☺",
-        "fg": "#EE82EE",
-        "bg": "#000000",
-        "order": 1
-      },
-      "blocks_tile": true,
-      "vision_range": 4,
-      "ai": "vendor",
-      "skills": {
-        "Melee": 2
-      },
-      "equipped": [
-        "Stained Tunic",
-        "Slippers"
-      ]
+      "movement": "random_waypoint",
+      "loot_table": "Animal",
+      "faction": "Carnivores"
     },
     {
       "name": "Bandit",
@@ -402,7 +374,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "melee",
+      "movement": "random_waypoint",
       "quips": [
         "Stand and deliver!",
         "Alright, hand it over"
@@ -414,7 +386,42 @@
       "light": {
         "range": 4,
         "color": "#550000"
-      }
+      },
+      "faction": "Bandits"
+    },
+    {
+      "name": "Deer",
+      "renderable": {
+        "glyph": "d",
+        "fg": "#FFFF00",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "vision_range": 8,
+      "movement": "random",
+      "loot_table": "Animal",
+      "faction": "Herbivores"
+    },
+    {
+      "name": "Barkeep",
+      "renderable": {
+        "glyph": "☺",
+        "fg": "#EE82EE",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "vision_range": 4,
+      "movement": "random",
+      "skills": {
+        "Melee": 2
+      },
+      "equipped": [
+        "Stained Tunic",
+        "Slippers"
+      ],
+      "faction": "Townsfolk"
     },
     {
       "name": "Shady Salesman",
@@ -426,7 +433,8 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor"
+      "movement": "static",
+      "faction": "Townsfolk"
     },
     {
       "name": "Patron",
@@ -438,12 +446,13 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander",
+      "movement": "random",
       "quips": [
         "Quiet down, it's too early!",
         "Oh my, I drank too much.",
         "Still saving the world, eh?"
-      ]
+      ],
+      "faction": "Townsfolk"
     },
     {
       "name": "Priest",
@@ -455,7 +464,8 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander"
+      "movement": "random",
+      "faction": "Townsfolk"
     },
     {
       "name": "Parishioner",
@@ -467,7 +477,8 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander"
+      "movement": "random",
+      "faction": "Townsfolk"
     },
     {
       "name": "Blacksmith",
@@ -479,7 +490,8 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor"
+      "movement": "static",
+      "faction": "Townsfolk"
     },
     {
       "name": "Clothier",
@@ -491,7 +503,8 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor"
+      "movement": "static",
+      "faction": "Townsfolk"
     },
     {
       "name": "Alchemist",
@@ -503,7 +516,8 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "vendor"
+      "movement": "static",
+      "faction": "Townsfolk"
     },
     {
       "name": "Mom",
@@ -515,7 +529,8 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander"
+      "movement": "random",
+      "faction": "Townsfolk"
     },
     {
       "name": "Peasant",
@@ -527,7 +542,8 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander"
+      "movement": "random_waypoint",
+      "faction": "Townsfolk"
     },
     {
       "name": "Dock Worker",
@@ -539,12 +555,13 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander",
+      "movement": "random_waypoint",
       "quips": [
         "Lovely day, eh?",
         "Nice weather",
         "Hello"
-      ]
+      ],
+      "faction": "Townsfolk"
     },
     {
       "name": "Fisher",
@@ -556,12 +573,13 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander",
+      "movement": "random",
       "quips": [
         "They're biting today!",
         "I caught something, but it wasn't a fish!",
         "Looks like rain"
-      ]
+      ],
+      "faction": "Townsfolk"
     },
     {
       "name": "Wannabe Pirate",
@@ -573,12 +591,13 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander",
+      "movement": "random",
       "quips": [
         "Arrr",
         "Grog!",
         "Booze!"
-      ]
+      ],
+      "faction": "Townsfolk"
     },
     {
       "name": "Drunk",
@@ -590,12 +609,13 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "ai": "bystander",
+      "movement": "random",
       "quips": [
         "Hic",
         "Need... more... booze!",
         "Spare a copper?"
-      ]
+      ],
+      "faction": "Townsfolk"
     }
   ],
   "props": [
@@ -750,6 +770,46 @@
         "order": 2
       },
       "hidden": false
+    }
+  ],
+  "faction_table": [
+    {
+      "name": "Player",
+      "responses": {}
+    },
+    {
+      "name": "Townsfolk",
+      "responses": {
+        "Default": "ignore"
+      }
+    },
+    {
+      "name": "Bandits",
+      "responses": {
+        "Default": "attack",
+        "Bandits": "ignore"
+      }
+    },
+    {
+      "name": "Cave Goblins",
+      "responses": {
+        "Default": "attack",
+        "Cave Goblins": "ignore"
+      }
+    },
+    {
+      "name": "Carnivores",
+      "responses": {
+        "Default": "attack",
+        "Carnivores": "ignore"
+      }
+    },
+    {
+      "name": "Herbivores",
+      "responses": {
+        "Default": "flee",
+        "Herbivores": "ignore"
+      }
     }
   ]
 }

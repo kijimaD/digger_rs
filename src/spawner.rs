@@ -1,7 +1,7 @@
 use super::{
-    random_table::RandomTable, raws::*, Attribute, Attributes, Combatant, HungerClock, HungerState,
-    LightSource, Map, Monster, Name, Player, Pool, Pools, Position, Rect, Renderable, SerializeMe,
-    Skill, Skills, TileType, Viewshed,
+    random_table::RandomTable, raws::*, Attribute, Attributes, Combatant, Faction, HungerClock,
+    HungerState, Initiative, LightSource, Map, Monster, Name, Player, Pool, Pools, Position, Rect,
+    Renderable, SerializeMe, Skill, Skills, TileType, Viewshed,
 };
 use crate::{attr_bonus, mana_at_level, player_hp_at_level};
 use rltk::{RandomNumberGenerator, RGB};
@@ -41,6 +41,8 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             level: 1,
         })
         .with(Player {})
+        .with(Faction { name: "Player".to_string() })
+        .with(Initiative { current: 0 })
         .with(Viewshed { visible_tiles: Vec::new(), range: 8, dirty: true })
         .with(Name { name: "Player".to_string() })
         .with(HungerClock { state: HungerState::WellFed, duration: 20 })

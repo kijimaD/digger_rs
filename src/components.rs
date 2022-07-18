@@ -6,6 +6,14 @@ use specs::saveload::{ConvertSaveload, Marker};
 use specs_derive::*;
 use std::collections::HashMap;
 
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Initiative {
+    pub current: i32,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct MyTurn {}
+
 #[derive(Component, ConvertSaveload, Clone)]
 pub struct Position {
     pub x: i32,
@@ -29,6 +37,38 @@ pub struct Renderable {
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Player {}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Faction {
+    pub name: String,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct WantsToApproach {
+    pub idx: i32,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct WantsToFlee {
+    pub indices: Vec<usize>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, Hash)]
+pub enum Movement {
+    Static,
+    Random,
+    RandomWaypoint { path: Option<Vec<usize>> },
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct MoveMode {
+    pub mode: Movement,
+}
+
+#[derive(Component, Debug, ConvertSaveload, Clone)]
+pub struct Chasing {
+    pub target: Entity,
+}
 
 #[derive(Serialize, Deserialize, Copy, Clone, PartialEq)]
 pub enum HungerState {
@@ -54,14 +94,9 @@ pub struct Viewshed {
     pub dirty: bool,
 }
 
+// TODO: 削除して、代わりにfactionを使用する
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Monster {}
-
-#[derive(Component, Debug, Serialize, Deserialize, Clone)]
-pub struct Herbivore {}
-
-#[derive(Component, Debug, Serialize, Deserialize, Clone)]
-pub struct Bystander {}
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Vendor {}

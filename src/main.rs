@@ -13,10 +13,6 @@ mod rect;
 pub use rect::Rect;
 mod visibility_system;
 use visibility_system::VisibilitySystem;
-mod monster_ai_system;
-use monster_ai_system::MonsterAI;
-pub mod bystander_ai_system;
-use bystander_ai_system::BystanderAI;
 mod map_indexing_system;
 use map_indexing_system::MapIndexingSystem;
 mod melee_combat_system;
@@ -25,6 +21,7 @@ mod damage_system;
 use damage_system::DamageSystem;
 mod battle_action_system;
 use battle_action_system::BattleActionSystem;
+mod ai;
 mod encounter_system;
 mod gamelog;
 mod gui;
@@ -41,7 +38,6 @@ pub mod raws;
 pub mod rex_assets;
 pub mod saveload_system;
 pub use gamesystem::*;
-pub mod animal_ai_system;
 mod lighting_system;
 
 #[macro_use]
@@ -53,8 +49,7 @@ const SHOW_MAPGEN_VISUALIZER: bool = false;
 pub enum RunState {
     AwaitingInput,
     PreRun,
-    PlayerTurn,
-    MonsterTurn,
+    Ticking,
     BattleEncounter,
     BattleCommand,
     BattleInventory,
@@ -88,12 +83,18 @@ impl State {
     fn run_systems(&mut self) {
         let mut vis = VisibilitySystem {};
         vis.run_now(&self.ecs);
-        let mut monster = MonsterAI {};
-        monster.run_now(&self.ecs);
-        let mut bystander = BystanderAI {};
-        bystander.run_now(&self.ecs);
-        let mut animal = animal_ai_system::AnimalAI {};
-        animal.run_now(&self.ecs);
+        let mut initiative = ai::InitiativeSystem {};
+        initiative.run_now(&self.ecs);
+        let mut visible = ai::VisibleAI {};
+        visible.run_now(&self.ecs);
+        let mut adjacent = ai::AdjacentAI {};
+        adjacent.run_now(&self.ecs);
+        let mut approach = ai::ApproachAI {};
+        approach.run_now(&self.ecs);
+        let mut flee = ai::FleeAI {};
+        flee.run_now(&self.ecs);
+        let mut defaultmove = ai::DefaultMoveAI {};
+        defaultmove.run_now(&self.ecs);
         let mut mapindex = MapIndexingSystem {};
         mapindex.run_now(&self.ecs);
         let mut pickup = ItemCollectionSystem {};
@@ -112,6 +113,8 @@ impl State {
         damage.run_now(&self.ecs);
         let mut lighting = lighting_system::LightingSystem {};
         lighting.run_now(&self.ecs);
+        let mut quipper = ai::QuipSystem {};
+        quipper.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -201,15 +204,15 @@ impl GameState for State {
             RunState::AwaitingInput => {
                 newrunstate = player_input(self, ctx);
             }
-            RunState::PlayerTurn => {
-                self.run_systems();
-                self.ecs.maintain();
-                newrunstate = RunState::MonsterTurn;
-            }
-            RunState::MonsterTurn => {
-                self.run_systems();
-                self.ecs.maintain();
-                newrunstate = RunState::AwaitingInput;
+            RunState::Ticking => {
+                while newrunstate == RunState::Ticking {
+                    self.run_systems();
+                    self.ecs.maintain();
+                    match *self.ecs.fetch::<RunState>() {
+                        RunState::AwaitingInput => newrunstate = RunState::AwaitingInput,
+                        _ => newrunstate = RunState::Ticking,
+                    }
+                }
             }
             RunState::BattleEncounter => {
                 newrunstate = RunState::BattleAwaiting;
@@ -337,7 +340,7 @@ impl GameState for State {
                         intent
                             .insert(*self.ecs.fetch::<Entity>(), WantsToUseItem { item, target })
                             .expect("Unable to insert intent");
-                        newrunstate = RunState::PlayerTurn;
+                        newrunstate = RunState::Ticking;
                     }
                 }
             }
@@ -355,7 +358,7 @@ impl GameState for State {
                                 WantsToDropItem { item: item_entity },
                             )
                             .expect("Unable to insert intent");
-                        newrunstate = RunState::PlayerTurn;
+                        newrunstate = RunState::Ticking;
                     }
                 }
             }
@@ -373,7 +376,7 @@ impl GameState for State {
                                 WantsToRemoveItem { item: item_entity },
                             )
                             .expect("Unable to insert intent");
-                        newrunstate = RunState::PlayerTurn;
+                        newrunstate = RunState::Ticking;
                     }
                 }
             }
@@ -552,15 +555,20 @@ fn main() -> rltk::BError {
         mapgen_history: Vec::new(),
         mapgen_timer: 0.0,
     };
+    gs.ecs.register::<Initiative>();
+    gs.ecs.register::<MyTurn>();
     gs.ecs.register::<Position>();
     gs.ecs.register::<OtherLevelPosition>();
     gs.ecs.register::<Renderable>();
     gs.ecs.register::<Player>();
+    gs.ecs.register::<Faction>();
+    gs.ecs.register::<WantsToApproach>();
+    gs.ecs.register::<WantsToFlee>();
+    gs.ecs.register::<MoveMode>();
+    gs.ecs.register::<Chasing>();
     gs.ecs.register::<Viewshed>();
-    gs.ecs.register::<Bystander>();
     gs.ecs.register::<Vendor>();
     gs.ecs.register::<Monster>();
-    gs.ecs.register::<Herbivore>();
     gs.ecs.register::<Name>();
     gs.ecs.register::<BlocksTile>();
     gs.ecs.register::<Attributes>();
