@@ -205,11 +205,13 @@ impl GameState for State {
                 newrunstate = player_input(self, ctx);
             }
             RunState::Ticking => {
-                self.run_systems();
-                self.ecs.maintain();
-                match *self.ecs.fetch::<RunState>() {
-                    RunState::AwaitingInput => newrunstate = RunState::AwaitingInput,
-                    _ => newrunstate = RunState::Ticking,
+                while newrunstate == RunState::Ticking {
+                    self.run_systems();
+                    self.ecs.maintain();
+                    match *self.ecs.fetch::<RunState>() {
+                        RunState::AwaitingInput => newrunstate = RunState::AwaitingInput,
+                        _ => newrunstate = RunState::Ticking,
+                    }
                 }
             }
             RunState::BattleEncounter => {
