@@ -43,20 +43,17 @@ impl Map {
     }
 
     pub fn populate_blocked(&mut self) {
-        for (i, tile) in self.tiles.iter_mut().enumerate() {
-            self.blocked[i] = !tile_walkable(*tile);
-        }
+        crate::spatial::populate_blocked_from_map(self);
     }
 
     pub fn clear_content_index(&mut self) {
-        for content in self.tile_content.iter_mut() {
-            content.clear();
-        }
+        crate::spatial::clear();
     }
 
     /// Generates an empty map, consisting entirely of solid walls
     pub fn new<S: ToString>(new_depth: i32, width: i32, height: i32, name: S) -> Map {
         let map_tile_count = (width * height) as usize;
+        crate::spatial::set_size(map_tile_count);
         Map {
             tiles: vec![TileType::Wall; map_tile_count],
             width,
