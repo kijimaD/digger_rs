@@ -208,7 +208,7 @@ fn get_item(ecs: &mut World) {
 fn skip_turn(ecs: &mut World) -> RunState {
     let player_entity = ecs.fetch::<Entity>();
     let viewshed_components = ecs.read_storage::<Viewshed>();
-    let monsters = ecs.read_storage::<Monster>();
+    let factions = ecs.read_storage::<Faction>();
 
     let worldmap_resource = ecs.fetch::<Map>();
 
@@ -217,11 +217,18 @@ fn skip_turn(ecs: &mut World) -> RunState {
     for tile in viewshed.visible_tiles.iter() {
         let idx = worldmap_resource.xy_idx(tile.x, tile.y);
         for entity_id in worldmap_resource.tile_content[idx].iter() {
-            let mob = monsters.get(*entity_id);
-            match mob {
+            let faction = factions.get(*entity_id);
+            match faction {
                 None => {}
-                Some(_) => {
-                    can_heal = false;
+                Some(faction) => {
+                    let reaction = crate::raws::faction_reaction(
+                        &faction.name,
+                        "Player",
+                        &crate::raws::RAWS.lock().unwrap()
+                    );
+                    if reaction == Reaction::Attack {
+                        can_heal = false;
+                    }
                 }
             }
         }

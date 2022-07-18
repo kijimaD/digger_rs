@@ -94,6 +94,7 @@ pub struct Viewshed {
     pub dirty: bool,
 }
 
+// TODO: 削除して、代わりにfactionを使用する
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Monster {}
 
