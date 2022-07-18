@@ -1,4 +1,4 @@
-use crate::{EntityMoved, Map, MoveMode, Movement, MyTurn, Position, Viewshed};
+use crate::{map::tile_walkable, EntityMoved, Map, MoveMode, Movement, MyTurn, Position, Viewshed};
 use specs::prelude::*;
 
 pub struct DefaultMoveAI {}
@@ -7,7 +7,7 @@ impl<'a> System<'a> for DefaultMoveAI {
     #[allow(clippy::type_complexity)]
     type SystemData = (
         WriteStorage<'a, MyTurn>,
-        ReadStorage<'a, MoveMode>,
+        WriteStorage<'a, MoveMode>,
         WriteStorage<'a, Position>,
         WriteExpect<'a, Map>,
         WriteStorage<'a, Viewshed>,
@@ -19,7 +19,7 @@ impl<'a> System<'a> for DefaultMoveAI {
     fn run(&mut self, data: Self::SystemData) {
         let (
             mut turns,
-            move_mode,
+            mut move_mode,
             mut positions,
             mut map,
             mut viewsheds,
@@ -28,12 +28,12 @@ impl<'a> System<'a> for DefaultMoveAI {
             entities,
         ) = data;
         let mut turn_done: Vec<Entity> = Vec::new();
-        for (entity, mut pos, mode, mut viewshed, _myturn) in
-            (&entities, &mut positions, &move_mode, &mut viewsheds, &turns).join()
+        for (entity, mut pos, mut mode, mut viewshed, _myturn) in
+            (&entities, &mut positions, &mut move_mode, &mut viewsheds, &turns).join()
         {
             turn_done.push(entity);
 
-            match mode.mode {
+            match &mut mode.mode {
                 Movement::Static => {}
                 Movement::Random => {
                     let mut x = pos.x;
@@ -60,9 +60,43 @@ impl<'a> System<'a> for DefaultMoveAI {
                         }
                     }
                 }
+                Movement::RandomWaypoint { path } => {
+                    if let Some(path) = path {
+                        let mut idx = map.xy_idx(pos.x, pos.y);
+                        if path.len() > 1 {
+                            if !map.blocked[path[1] as usize] {
+                                map.blocked[idx] = false;
+                                pos.x = path[1] as i32 % map.width;
+                                pos.y = path[1] as i32 / map.width;
+                                entity_moved
+                                    .insert(entity, EntityMoved {})
+                                    .expect("Unable to insert marker");
+                                idx = map.xy_idx(pos.x, pos.y);
+                                map.blocked[idx] = true;
+                                viewshed.dirty = true;
+                                path.remove(0);
+                            }
+                        } else {
+                            mode.mode = Movement::RandomWaypoint { path: None };
+                        }
+                    } else {
+                        let target_x = rng.roll_dice(1, map.width - 2);
+                        let target_y = rng.roll_dice(1, map.height - 2);
+                        let idx = map.xy_idx(target_x, target_y);
+                        if tile_walkable(map.tiles[idx]) {
+                            let path = rltk::a_star_search(
+                                map.xy_idx(pos.x, pos.y) as i32,
+                                map.xy_idx(target_x, target_y) as i32,
+                                &mut *map,
+                            );
+                            if path.success && path.steps.len() > 1 {
+                                mode.mode = Movement::RandomWaypoint { path: Some(path.steps) };
+                            }
+                        }
+                    }
+                }
             }
         }
-
         // Remove marker
         for done in turn_done.iter() {
             turns.remove(*done);

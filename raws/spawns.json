@@ -321,7 +321,7 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "movement": "melee",
+      "movement": "random_waypoint",
       "faction": "Carnivores"
     },
     {
@@ -334,7 +334,7 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "movement": "melee",
+      "movement": "random_waypoint",
       "faction": "Carnivores"
     },
     {
@@ -347,7 +347,7 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "movement": "melee",
+      "movement": "random_waypoint",
       "faction": "Carnivores"
     },
     {
@@ -360,9 +360,34 @@
       },
       "blocks_tile": true,
       "vision_range": 8,
-      "movement": "melee",
+      "movement": "random_waypoint",
       "loot_table": "Animal",
       "faction": "Carnivores"
+    },
+    {
+      "name": "Bandit",
+      "renderable": {
+        "glyph": "☻",
+        "fg": "#FF0000",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "vision_range": 4,
+      "movement": "random_waypoint",
+      "quips": [
+        "Stand and deliver!",
+        "Alright, hand it over"
+      ],
+      "equipped": [
+        "Stained Tunic",
+        "Shield"
+      ],
+      "light": {
+        "range": 4,
+        "color": "#550000"
+      },
+      "faction": "Bandits"
     },
     {
       "name": "Deer",
@@ -388,7 +413,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "movement": "static",
+      "movement": "random",
       "skills": {
         "Melee": 2
       },
@@ -397,31 +422,6 @@
         "Slippers"
       ],
       "faction": "Townsfolk"
-    },
-    {
-      "name": "Bandit",
-      "renderable": {
-        "glyph": "☻",
-        "fg": "#FF0000",
-        "bg": "#000000",
-        "order": 1
-      },
-      "blocks_tile": true,
-      "vision_range": 4,
-      "movement": "random",
-      "quips": [
-        "Stand and deliver!",
-        "Alright, hand it over"
-      ],
-      "equipped": [
-        "Stained Tunic",
-        "Shield"
-      ],
-      "light": {
-        "range": 4,
-        "color": "#550000"
-      },
-      "faction": "Bandits"
     },
     {
       "name": "Shady Salesman",
@@ -542,7 +542,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "movement": "random",
+      "movement": "random_waypoint",
       "faction": "Townsfolk"
     },
     {
@@ -555,7 +555,7 @@
       },
       "blocks_tile": true,
       "vision_range": 4,
-      "movement": "random",
+      "movement": "random_waypoint",
       "quips": [
         "Lovely day, eh?",
         "Nice weather",
