@@ -16,17 +16,12 @@ pub struct Map {
     pub height: i32,
     pub revealed_tiles: Vec<bool>,
     pub visible_tiles: Vec<bool>,
-    pub blocked: Vec<bool>,
     pub depth: i32,
     pub bloodstains: HashSet<usize>,
     pub view_blocked: HashSet<usize>,
     pub name: String,
     pub outdoors: bool,
     pub light: Vec<rltk::RGB>,
-
-    #[serde(skip_serializing)]
-    #[serde(skip_deserializing)]
-    pub tile_content: Vec<Vec<Entity>>,
 }
 
 impl Map {
@@ -39,7 +34,7 @@ impl Map {
             return false;
         }
         let idx = self.xy_idx(x, y);
-        !self.blocked[idx]
+        !crate::spatial::is_blocked(idx)
     }
 
     pub fn populate_blocked(&mut self) {
@@ -60,8 +55,6 @@ impl Map {
             height,
             revealed_tiles: vec![false; map_tile_count],
             visible_tiles: vec![false; map_tile_count],
-            blocked: vec![false; map_tile_count],
-            tile_content: vec![Vec::new(); map_tile_count],
             depth: new_depth,
             bloodstains: HashSet::new(),
             view_blocked: HashSet::new(),
