@@ -45,16 +45,14 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
             destination_idx,
             |potential_target| {
                 let mut hostile = true;
-                if combat_stats.get(potential_target).is_some() {
-                    if let Some(faction) = factions.get(potential_target) {
-                        let reaction = crate::raws::faction_reaction(
-                            &faction.name,
-                            "Player",
-                            &crate::raws::RAWS.lock().unwrap(),
-                        );
-                        if reaction != Reaction::Attack {
-                            hostile = false;
-                        }
+                if let Some(faction) = factions.get(potential_target) {
+                    let reaction = crate::raws::faction_reaction(
+                        &faction.name,
+                        "Player",
+                        &crate::raws::RAWS.lock().unwrap(),
+                    );
+                    if reaction != Reaction::Attack {
+                        hostile = false;
                     }
                 }
                 if !hostile {
