@@ -11,21 +11,29 @@ impl<'a> System<'a> for DamageSystem {
     type SystemData = (
         WriteStorage<'a, Pools>,
         WriteStorage<'a, SufferDamage>,
+        WriteExpect<'a, Map>,
+        ReadStorage<'a, Position>,
+        Entities<'a>,
         ReadExpect<'a, Entity>,
         ReadStorage<'a, Attributes>,
         WriteExpect<'a, GameLog>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (mut pools, mut damage, player, attributes, mut log) = data;
+        let (mut pools, mut damage, map, positions, entities, player, attributes, mut log) = data;
         let mut xp_gain = 0;
 
-        for (mut pools, damage) in (&mut pools, &damage).join() {
+        for (entity, mut pools, damage) in (&entities, &mut pools, &damage).join() {
             for dmg in damage.amount.iter() {
                 pools.hit_points.current -= dmg.0;
 
                 if pools.hit_points.current < 1 && dmg.1 {
                     xp_gain += pools.level * 100;
+                    let pos = positions.get(entity);
+                    if let Some(pos) = pos {
+                        let idx = map.xy_idx(pos.x, pos.y);
+                        crate::spatial::remove_entity(entity, idx);
+                    }
                 }
             }
         }
