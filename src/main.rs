@@ -39,6 +39,7 @@ pub mod rex_assets;
 pub mod saveload_system;
 pub use gamesystem::*;
 mod lighting_system;
+mod spatial;
 
 #[macro_use]
 extern crate lazy_static;
