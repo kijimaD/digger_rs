@@ -143,6 +143,8 @@ pub struct Pools {
     pub mana: Pool,
     pub xp: i32,
     pub level: i32,
+    pub total_weight: f32,
+    pub total_initiative_penalty: f32,
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
@@ -255,6 +257,9 @@ pub struct WantsToDropItem {
 pub struct WantsToRemoveItem {
     pub item: Entity,
 }
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct EquipmentChanged {}
 
 #[derive(PartialEq, Copy, Clone, Serialize, Deserialize)]
 pub enum EquipmentSlot {

@@ -1,7 +1,7 @@
 use super::{
-    random_table::RandomTable, raws::*, Attribute, Attributes, Combatant, Faction, HungerClock,
-    HungerState, Initiative, LightSource, Map, Monster, Name, Player, Pool, Pools, Position, Rect,
-    Renderable, SerializeMe, Skill, Skills, TileType, Viewshed,
+    random_table::RandomTable, raws::*, Attribute, Attributes, Combatant, EquipmentChanged,
+    Faction, HungerClock, HungerState, Initiative, LightSource, Map, Monster, Name, Player, Pool,
+    Pools, Position, Rect, Renderable, SerializeMe, Skill, Skills, TileType, Viewshed,
 };
 use crate::{attr_bonus, mana_at_level, player_hp_at_level};
 use rltk::{RandomNumberGenerator, RGB};
@@ -39,7 +39,10 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             mana: Pool { current: mana_at_level(11, 1), max: mana_at_level(11, 1) },
             xp: 0,
             level: 1,
+            total_weight: 0.0,
+            total_initiative_penalty: 0.0,
         })
+        .with(EquipmentChanged {})
         .with(Player {})
         .with(Faction { name: "Player".to_string() })
         .with(Initiative { current: 0 })
@@ -189,7 +192,10 @@ pub fn battle_monster<S: ToString>(ecs: &mut World, name: S) {
             mana: Pool { current: mana_at_level(11, 1), max: mana_at_level(11, 1) },
             xp: 0,
             level: 1,
+            total_weight: 0.0,
+            total_initiative_penalty: 0.0,
         })
         .with(skills)
+        .with(EquipmentChanged {})
         .build();
 }
