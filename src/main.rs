@@ -116,6 +116,8 @@ impl State {
         lighting.run_now(&self.ecs);
         let mut quipper = ai::QuipSystem {};
         quipper.run_now(&self.ecs);
+        let mut encumbrance = ai::EncumbranceSystem {};
+        encumbrance.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
