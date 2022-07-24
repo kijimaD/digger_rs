@@ -213,6 +213,20 @@ pub fn spawn_named_item(
     None
 }
 
+pub fn get_vendor_items(categories: &[String], raws: &RawMaster) -> Vec<(String, f32)> {
+    let mut result: Vec<(String, f32)> = Vec::new();
+
+    for item in raws.raws.items.iter() {
+        if let Some(cat) = &item.vendor_category {
+            if categories.contains(cat) && item.base_value.is_some() {
+                result.push((item.name.clone(), item.base_value.unwrap()));
+            }
+        }
+    }
+
+    result
+}
+
 pub fn spawn_named_mob(
     raws: &RawMaster,
     ecs: &mut World,
@@ -234,6 +248,10 @@ pub fn spawn_named_mob(
 
         if let Some(quips) = &mob_template.quips {
             eb = eb.with(Quips { available: quips.clone() });
+        }
+
+        if let Some(vendor) = &mob_template.vendor {
+            eb = eb.with(Vendor { categories: vendor.clone() });
         }
 
         eb = eb.with(Name { name: mob_template.name.clone() });

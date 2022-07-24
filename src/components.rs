@@ -44,6 +44,11 @@ pub struct Faction {
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Vendor {
+    pub categories: Vec<String>,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct WantsToApproach {
     pub idx: i32,
 }
@@ -97,9 +102,6 @@ pub struct Viewshed {
 // TODO: 削除して、代わりにfactionを使用する
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Monster {}
-
-#[derive(Component, Debug, Serialize, Deserialize, Clone)]
-pub struct Vendor {}
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]
 pub struct Name {

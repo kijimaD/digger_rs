@@ -128,7 +128,8 @@
       },
       "weight_kg": 3.0,
       "base_value": 10.0,
-      "initiative_penalty": 2
+      "initiative_penalty": 2,
+      "vendor_category": "food"
     },
     {
       "name": "Dried Sausage",
@@ -482,7 +483,8 @@
       "blocks_tile": true,
       "vision_range": 4,
       "movement": "static",
-      "faction": "Townsfolk"
+      "faction": "Townsfolk",
+      "vendor": ["food"]
     },
     {
       "name": "Patron",
