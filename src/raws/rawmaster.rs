@@ -414,6 +414,7 @@ fn get_renderable_component(
     }
 }
 
+/// 階層によるモンスター生成テーブルを決定する
 pub fn get_spawn_table_for_depth(raws: &RawMaster, depth: i32) -> RandomTable {
     use super::SpawnTableEntry;
 

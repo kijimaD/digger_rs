@@ -86,7 +86,7 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
     player
 }
 
-const MAX_MONSTERS: i32 = 4;
+const MAX_MONSTERS: i32 = 2;
 
 fn room_table(map_depth: i32) -> RandomTable {
     get_spawn_table_for_depth(&RAWS.lock().unwrap(), map_depth)
@@ -131,7 +131,7 @@ pub fn spawn_region(
     // Scope to keep the borrow checker happy
     {
         let num_spawns =
-            i32::min(areas.len() as i32, rng.roll_dice(1, MAX_MONSTERS + 3) + (map_depth - 1) - 3);
+            i32::min(areas.len() as i32, rng.roll_dice(1, MAX_MONSTERS));
         if num_spawns == 0 {
             return;
         }
