@@ -1208,6 +1208,8 @@ pub enum CheatMenuResult {
     Cancel,
     TeleportToExit,
     Heal,
+    Reveal,
+    GodMode,
 }
 
 pub fn show_cheat_mode(_gs: &mut State, ctx: &mut Rltk) -> CheatMenuResult {
@@ -1241,11 +1243,25 @@ pub fn show_cheat_mode(_gs: &mut State, ctx: &mut Rltk) -> CheatMenuResult {
     ctx.set(19, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437(')'));
     ctx.print(21, y, "Heal all wounds");
 
+    y += 1;
+    ctx.set(17, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437('('));
+    ctx.set(18, y, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), rltk::to_cp437('R'));
+    ctx.set(19, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437(')'));
+    ctx.print(21, y, "Reveal the map");
+
+    y += 1;
+    ctx.set(17, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437('('));
+    ctx.set(18, y, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), rltk::to_cp437('G'));
+    ctx.set(19, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437(')'));
+    ctx.print(21, y, "God Mode (No Death)");
+
     match ctx.key {
         None => CheatMenuResult::NoResponse,
         Some(key) => match key {
             VirtualKeyCode::T => CheatMenuResult::TeleportToExit,
             VirtualKeyCode::H => CheatMenuResult::Heal,
+            VirtualKeyCode::R => CheatMenuResult::Reveal,
+            VirtualKeyCode::G => CheatMenuResult::GodMode,
             VirtualKeyCode::Escape => CheatMenuResult::Cancel,
             _ => CheatMenuResult::NoResponse,
         },
