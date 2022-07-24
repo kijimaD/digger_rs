@@ -203,7 +203,7 @@ fn get_limestone_cavern_glyph(idx: usize, map: &Map) -> (rltk::FontCharType, RGB
             fg = RGB::named(rltk::YELLOW);
         }
         TileType::Grass => {
-            glyph = rltk::to_cp437('"');
+            glyph = rltk::to_cp437('.');
             fg = RGB::named(rltk::GREEN);
         }
         TileType::ShallowWater => {
@@ -212,7 +212,7 @@ fn get_limestone_cavern_glyph(idx: usize, map: &Map) -> (rltk::FontCharType, RGB
         }
         TileType::DeepWater => {
             glyph = rltk::to_cp437('▓');
-            fg = RGB::named(rltk::BLUE);
+            fg = RGB::from_f32(0.2, 0.2, 1.0);
         }
         TileType::Gravel => {
             glyph = rltk::to_cp437(';');
