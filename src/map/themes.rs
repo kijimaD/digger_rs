@@ -3,6 +3,7 @@ use rltk::RGB;
 
 pub fn tile_glyph(idx: usize, map: &Map) -> (rltk::FontCharType, RGB, RGB) {
     let (glyph, mut fg, mut bg) = match map.depth {
+        4 => get_limestone_cavern_glyph(idx, map),
         3 => get_limestone_cavern_glyph(idx, map),
         2 => get_forest_glyph(idx, map),
         _ => get_tile_glyph_default(idx, map),
