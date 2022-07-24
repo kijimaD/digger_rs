@@ -1,6 +1,6 @@
 use super::{
     AreaStartingPosition, BuilderChain, BuilderMap, CullUnreachable, DLABuilder, DistantExit,
-    DrunkardsWalkBuilder, MetaMapBuilder, TileType, VoronoiSpawning, XStart, YStart,
+    DrunkardsWalkBuilder, MetaMapBuilder, PrefabBuilder, TileType, VoronoiSpawning, XStart, YStart,
 };
 use crate::map;
 use rltk::RandomNumberGenerator;
@@ -34,6 +34,7 @@ pub fn limestone_deep_cavern_builder(
     chain.with(VoronoiSpawning::new());
     chain.with(DistantExit::new());
     chain.with(CaveDecorator::new());
+    chain.with(PrefabBuilder::sectional(super::prefab_builder::prefab_sections::ORC_CAMP));
     chain
 }
 

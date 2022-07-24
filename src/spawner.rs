@@ -51,7 +51,7 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
         .with(Viewshed { visible_tiles: Vec::new(), range: 8, dirty: true })
         .with(Name { name: "Player".to_string() })
         .with(HungerClock { state: HungerState::WellFed, duration: 20 })
-        .with(LightSource { color: rltk::RGB::from_f32(1.0, 1.0, 0.5), range: 8 })
+        .with(LightSource { color: rltk::RGB::from_hex("#EDF122").expect("Bad color"), range: 8 })
         .with(skills)
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
