@@ -130,8 +130,7 @@ pub fn spawn_region(
 
     // Scope to keep the borrow checker happy
     {
-        let num_spawns =
-            i32::min(areas.len() as i32, rng.roll_dice(1, MAX_MONSTERS));
+        let num_spawns = i32::min(areas.len() as i32, rng.roll_dice(1, MAX_MONSTERS));
         if num_spawns == 0 {
             return;
         }

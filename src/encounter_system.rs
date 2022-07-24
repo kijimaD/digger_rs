@@ -1,5 +1,6 @@
 use super::{
-    gamelog::BattleLog, spawner, Battle, Combatant, Monster, Player, RunState, WantsToEncounter,
+    gamelog::BattleLog, spawner, Battle, Combatant, Monster, Player, Pools, RunState,
+    WantsToEncounter,
 };
 use specs::prelude::*;
 
@@ -24,6 +25,16 @@ pub fn invoke_battle(ecs: &mut World) {
 
     // 最初のwants_encounterだけ処理する
     for wants_encounter in (&wants_encounter).join().take(1) {
+        // god mode
+        let player_entity = ecs.fetch::<Entity>();
+        let pools = ecs.read_storage::<Pools>();
+        let player_pools = pools.get(*player_entity).unwrap();
+        if player_pools.god_mode {
+            entities.delete(wants_encounter.monster).expect("Unable to delete");
+            return;
+        }
+
+        // main process
         let mut runstate = ecs.write_resource::<RunState>();
         *runstate = RunState::BattleEncounter;
 

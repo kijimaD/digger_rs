@@ -28,6 +28,8 @@ mod cull_unreachable;
 use cull_unreachable::CullUnreachable;
 mod voronoi_spawning;
 use voronoi_spawning::VoronoiSpawning;
+mod prefab_builder;
+use prefab_builder::PrefabBuilder;
 mod distant_exit;
 use distant_exit::DistantExit;
 mod room_exploder;
@@ -178,6 +180,10 @@ pub fn random_builder(
         _ => random_shape_builder(rng, &mut builder),
     }
 
+    if rng.roll_dice(1, 20) == 1 {
+        builder.with(PrefabBuilder::sectional(prefab_builder::prefab_sections::UNDERGROUND_FORT));
+    }
+
     builder.with(DoorPlacement::new());
     builder
 }
@@ -259,7 +265,9 @@ fn random_shape_builder(rng: &mut rltk::RandomNumberGenerator, builder: &mut Bui
         9 => builder.start_with(DLABuilder::walk_outwards()),
         10 => builder.start_with(DLABuilder::central_attractor()),
         11 => builder.start_with(DLABuilder::insectoid()),
-        _ => builder.start_with(DLABuilder::heavy_erosion()),
+        12 => builder.start_with(DLABuilder::heavy_erosion()),
+        _ => builder
+            .start_with(PrefabBuilder::constant(prefab_builder::prefab_levels::WFC_POPULATED)),
     }
 
     // Set the start to the center and cull

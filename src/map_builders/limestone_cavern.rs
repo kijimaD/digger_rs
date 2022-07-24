@@ -1,6 +1,6 @@
 use super::{
-    AreaStartingPosition, BuilderChain, BuilderMap, CullUnreachable, DistantExit,
-    DrunkardsWalkBuilder, MetaMapBuilder, TileType, VoronoiSpawning, XStart, YStart, DLABuilder
+    AreaStartingPosition, BuilderChain, BuilderMap, CullUnreachable, DLABuilder, DistantExit,
+    DrunkardsWalkBuilder, MetaMapBuilder, TileType, VoronoiSpawning, XStart, YStart,
 };
 use crate::map;
 use rltk::RandomNumberGenerator;
@@ -22,7 +22,12 @@ pub fn limestone_cavern_builder(
     chain
 }
 
-pub fn limestone_deep_cavern_builder(new_depth: i32, _rng: &mut rltk::RandomNumberGenerator, width: i32, height: i32) -> BuilderChain {
+pub fn limestone_deep_cavern_builder(
+    new_depth: i32,
+    _rng: &mut rltk::RandomNumberGenerator,
+    width: i32,
+    height: i32,
+) -> BuilderChain {
     let mut chain = BuilderChain::new(new_depth, width, height, "Deep Limestone Caverns");
     chain.start_with(DLABuilder::central_attractor());
     chain.with(AreaStartingPosition::new(XStart::LEFT, YStart::TOP));
