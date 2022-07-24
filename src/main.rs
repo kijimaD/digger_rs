@@ -486,6 +486,13 @@ impl GameState for State {
                 match result {
                     gui::CheatMenuResult::Cancel => newrunstate = RunState::AwaitingInput,
                     gui::CheatMenuResult::NoResponse => {}
+                    gui::CheatMenuResult::Heal => {
+                        let player = self.ecs.fetch::<Entity>();
+                        let mut pools = self.ecs.write_storage::<Pools>();
+                        let mut player_pools = pools.get_mut(*player).unwrap();
+                        player_pools.hit_points.current = player_pools.hit_points.max;
+                        newrunstate = RunState::AwaitingInput;
+                    }
                     gui::CheatMenuResult::TeleportToExit => {
                         self.goto_level(1);
                         self.mapgen_next_state = Some(RunState::PreRun);
