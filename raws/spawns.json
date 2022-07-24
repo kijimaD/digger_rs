@@ -108,7 +108,10 @@
         "effects": {
           "provides_healing": "8"
         }
-      }
+      },
+      "weight_kg": 3.0,
+      "base_value": 10.0,
+      "initiative_penalty": 2
     },
     {
       "name": "Rations",
@@ -122,7 +125,11 @@
         "effects": {
           "food": ""
         }
-      }
+      },
+      "weight_kg": 3.0,
+      "base_value": 10.0,
+      "initiative_penalty": 2,
+      "vendor_category": "food"
     },
     {
       "name": "Dried Sausage",
@@ -136,7 +143,10 @@
         "effects": {
           "food": ""
         }
-      }
+      },
+      "weight_kg": 3.0,
+      "base_value": 10.0,
+      "initiative_penalty": 2
     },
     {
       "name": "Beer",
@@ -150,10 +160,13 @@
         "effects": {
           "provides_healing": "4"
         }
-      }
+      },
+      "weight_kg": 3.0,
+      "base_value": 10.0,
+      "initiative_penalty": 2
     },
     {
-      "name": "Rusty Longsword",
+      "name": "Rusty Longswor",
       "renderable": {
         "glyph": "/",
         "fg": "#BB77BB",
@@ -164,7 +177,10 @@
         "attribute": "Might",
         "base_damage": "1d8-1",
         "hit_bonus": -1
-      }
+      },
+      "weight_kg": 2.0,
+      "base_value": 5.0,
+      "initiative_penalty": 2
     },
     {
       "name": "Dagger",
@@ -178,7 +194,10 @@
         "attribute": "Quickness",
         "base_damage": "1d4",
         "hit_bonus": 0
-      }
+      },
+      "weight_kg": 1.0,
+      "base_value": 6.0,
+      "initiative_penalty": 1
     },
     {
       "name": "Longsword",
@@ -192,7 +211,10 @@
         "attribute": "Might",
         "base_damage": "1d8",
         "hit_bonus": 0
-      }
+      },
+      "weight_kg": 3.0,
+      "base_value": 10.0,
+      "initiative_penalty": 2
     },
     {
       "name": "Battleaxe",
@@ -206,7 +228,10 @@
         "attribute": "Might",
         "base_damage": "1d8+1",
         "hit_bonus": 0
-      }
+      },
+      "weight_kg": 3.0,
+      "base_value": 10.0,
+      "initiative_penalty": 2
     },
     {
       "name": "Shield",
@@ -219,7 +244,10 @@
       "wearable": {
         "slot": "Shield",
         "armor_class": 1.0
-      }
+      },
+      "weight_kg": 3.0,
+      "base_value": 10.0,
+      "initiative_penalty": 2
     },
     {
       "name": "Tower Shield",
@@ -232,7 +260,10 @@
       "wearable": {
         "slot": "Shield",
         "armor_class": 2.0
-      }
+      },
+      "weight_kg": 3.0,
+      "base_value": 10.0,
+      "initiative_penalty": 2
     },
     {
       "name": "Stained Tunic",
@@ -245,7 +276,10 @@
       "wearable": {
         "slot": "Torso",
         "armor_class": 0.1
-      }
+      },
+      "weight_kg": 3.0,
+      "base_value": 10.0,
+      "initiative_penalty": 2
     },
     {
       "name": "Torn Trousers",
@@ -258,7 +292,10 @@
       "wearable": {
         "slot": "Legs",
         "armor_class": 0.1
-      }
+      },
+      "weight_kg": 3.0,
+      "base_value": 10.0,
+      "initiative_penalty": 2
     },
     {
       "name": "Old Boots",
@@ -271,7 +308,10 @@
       "wearable": {
         "slot": "Legs",
         "armor_class": 0.1
-      }
+      },
+      "weight_kg": 3.0,
+      "base_value": 10.0,
+      "initiative_penalty": 2
     },
     {
       "name": "Slippers",
@@ -284,7 +324,10 @@
       "wearable": {
         "slot": "Legs",
         "armor_class": 0.1
-      }
+      },
+      "weight_kg": 3.0,
+      "base_value": 10.0,
+      "initiative_penalty": 2
     },
     {
       "name": "Meat",
@@ -298,7 +341,10 @@
         "effects": {
           "food": ""
         }
-      }
+      },
+      "weight_kg": 3.0,
+      "base_value": 10.0,
+      "initiative_penalty": 2
     },
     {
       "name": "Hide",
@@ -307,7 +353,10 @@
         "fg": "#A52A2A",
         "bg": "#000000",
         "order": 2
-      }
+      },
+      "weight_kg": 3.0,
+      "base_value": 10.0,
+      "initiative_penalty": 2
     }
   ],
   "mobs": [
@@ -434,7 +483,8 @@
       "blocks_tile": true,
       "vision_range": 4,
       "movement": "static",
-      "faction": "Townsfolk"
+      "faction": "Townsfolk",
+      "vendor": ["food"]
     },
     {
       "name": "Patron",

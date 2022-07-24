@@ -159,7 +159,11 @@ pub fn spawn_named_item(
 
         eb = eb.with(Name { name: item_template.name.clone() });
 
-        eb = eb.with(crate::components::Item {});
+        eb = eb.with(crate::components::Item {
+            initiative_penalty: item_template.initiative_penalty.unwrap_or(0.0),
+            weight_kg: item_template.weight_kg.unwrap_or(0.0),
+            base_value: item_template.base_value.unwrap_or(0.0),
+        });
 
         if let Some(consumable) = &item_template.consumable {
             eb = eb.with(crate::components::Consumable {});
@@ -209,6 +213,20 @@ pub fn spawn_named_item(
     None
 }
 
+pub fn get_vendor_items(categories: &[String], raws: &RawMaster) -> Vec<(String, f32)> {
+    let mut result: Vec<(String, f32)> = Vec::new();
+
+    for item in raws.raws.items.iter() {
+        if let Some(cat) = &item.vendor_category {
+            if categories.contains(cat) && item.base_value.is_some() {
+                result.push((item.name.clone(), item.base_value.unwrap()));
+            }
+        }
+    }
+
+    result
+}
+
 pub fn spawn_named_mob(
     raws: &RawMaster,
     ecs: &mut World,
@@ -230,6 +248,10 @@ pub fn spawn_named_mob(
 
         if let Some(quips) = &mob_template.quips {
             eb = eb.with(Quips { available: quips.clone() });
+        }
+
+        if let Some(vendor) = &mob_template.vendor {
+            eb = eb.with(Vendor { categories: vendor.clone() });
         }
 
         eb = eb.with(Name { name: mob_template.name.clone() });

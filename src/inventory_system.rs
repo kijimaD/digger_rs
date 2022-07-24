@@ -1,6 +1,6 @@
 use super::{
-    gamelog::GameLog, Consumable, Equippable, Equipped, HungerClock, HungerState, InBackpack,
-    InflictsDamage, Name, Pools, Position, ProvidesFood, ProvidesHealing, SufferDamage,
+    gamelog::GameLog, Consumable, EquipmentChanged, Equippable, Equipped, HungerClock, HungerState,
+    InBackpack, InflictsDamage, Name, Pools, Position, ProvidesFood, ProvidesHealing, SufferDamage,
     WantsToDropItem, WantsToPickupItem, WantsToRemoveItem, WantsToUseItem,
 };
 use specs::prelude::*;
@@ -16,17 +16,26 @@ impl<'a> System<'a> for ItemCollectionSystem {
         WriteStorage<'a, Position>,
         ReadStorage<'a, Name>,
         WriteStorage<'a, InBackpack>,
+        WriteStorage<'a, EquipmentChanged>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (player_entity, mut gamelog, mut wants_pickup, mut positions, names, mut backpack) =
-            data;
+        let (
+            player_entity,
+            mut gamelog,
+            mut wants_pickup,
+            mut positions,
+            names,
+            mut backpack,
+            mut dirty,
+        ) = data;
 
         for pickup in wants_pickup.join() {
             positions.remove(pickup.item);
             backpack
                 .insert(pickup.item, InBackpack { owner: pickup.collected_by })
                 .expect("Unable to insert backpack entry");
+            dirty.insert(pickup.collected_by, EquipmentChanged {}).expect("Unable to insert");
 
             if pickup.collected_by == *player_entity {
                 gamelog
@@ -59,6 +68,7 @@ impl<'a> System<'a> for ItemUseSystem {
         WriteStorage<'a, HungerClock>,
         WriteStorage<'a, Equipped>,
         WriteStorage<'a, InBackpack>,
+        WriteStorage<'a, EquipmentChanged>,
     );
 
     #[allow(clippy::cognitive_complexity)]
@@ -79,9 +89,11 @@ impl<'a> System<'a> for ItemUseSystem {
             mut hunger_clocks,
             mut equipped,
             mut backpack,
+            mut dirty,
         ) = data;
 
-        for (_entity, useitem) in (&entities, &wants_use).join() {
+        for (entity, useitem) in (&entities, &wants_use).join() {
+            dirty.insert(entity, EquipmentChanged {}).expect("Unable to insert");
             let mut used_item = true;
 
             // Targeting
@@ -198,6 +210,7 @@ impl<'a> System<'a> for ItemDropSystem {
         ReadStorage<'a, Name>,
         WriteStorage<'a, Position>,
         WriteStorage<'a, InBackpack>,
+        WriteStorage<'a, EquipmentChanged>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -209,6 +222,7 @@ impl<'a> System<'a> for ItemDropSystem {
             names,
             mut positions,
             mut backpack,
+            mut dirty,
         ) = data;
 
         for (entity, to_drop) in (&entities, &wants_drop).join() {
@@ -222,6 +236,7 @@ impl<'a> System<'a> for ItemDropSystem {
                 .insert(to_drop.item, Position { x: dropper_pos.x, y: dropper_pos.y })
                 .expect("Unable to insert position");
             backpack.remove(to_drop.item);
+            dirty.insert(entity, EquipmentChanged {}).expect("Unable to insert");
 
             if entity == *player_entity {
                 gamelog

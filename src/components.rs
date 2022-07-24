@@ -44,6 +44,11 @@ pub struct Faction {
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Vendor {
+    pub categories: Vec<String>,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct WantsToApproach {
     pub idx: i32,
 }
@@ -98,9 +103,6 @@ pub struct Viewshed {
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Monster {}
 
-#[derive(Component, Debug, Serialize, Deserialize, Clone)]
-pub struct Vendor {}
-
 #[derive(Component, Debug, ConvertSaveload, Clone)]
 pub struct Name {
     pub name: String,
@@ -143,6 +145,9 @@ pub struct Pools {
     pub mana: Pool,
     pub xp: i32,
     pub level: i32,
+    pub total_weight: f32,
+    pub total_initiative_penalty: f32,
+    pub gold: f32,
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
@@ -205,7 +210,11 @@ impl SufferDamage {
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
-pub struct Item {}
+pub struct Item {
+    pub initiative_penalty: f32,
+    pub weight_kg: f32,
+    pub base_value: f32,
+}
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Consumable {}
@@ -251,6 +260,9 @@ pub struct WantsToDropItem {
 pub struct WantsToRemoveItem {
     pub item: Entity,
 }
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct EquipmentChanged {}
 
 #[derive(PartialEq, Copy, Clone, Serialize, Deserialize)]
 pub enum EquipmentSlot {

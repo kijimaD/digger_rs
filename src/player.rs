@@ -1,7 +1,8 @@
 use super::{
     gamelog::GameLog, Attributes, BlocksTile, BlocksVisibility, Door, EntityMoved, Faction,
     HungerClock, HungerState, Item, Map, Monster, Name, Player, Pools, Position, Renderable,
-    RunState, State, TileType, Vendor, Viewshed, WantsToEncounter, WantsToMelee, WantsToPickupItem,
+    RunState, State, TileType, Vendor, VendorMode, Viewshed, WantsToEncounter, WantsToMelee,
+    WantsToPickupItem,
 };
 use crate::raws::Reaction;
 use rltk::{Point, Rltk, VirtualKeyCode};
@@ -44,6 +45,13 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
         result = crate::spatial::for_each_tile_content_with_gamemode(
             destination_idx,
             |potential_target| {
+                if let Some(_vendor) = vendors.get(potential_target) {
+                    return Some(RunState::ShowVendor {
+                        vendor: potential_target,
+                        mode: VendorMode::Sell,
+                    });
+                }
+
                 let mut hostile = true;
                 if let Some(faction) = factions.get(potential_target) {
                     let reaction = crate::raws::faction_reaction(
