@@ -42,6 +42,7 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             total_weight: 0.0,
             total_initiative_penalty: 0.0,
             gold: 0.0,
+            god_mode: false,
         })
         .with(EquipmentChanged {})
         .with(Player {})
@@ -50,7 +51,7 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
         .with(Viewshed { visible_tiles: Vec::new(), range: 8, dirty: true })
         .with(Name { name: "Player".to_string() })
         .with(HungerClock { state: HungerState::WellFed, duration: 20 })
-        .with(LightSource { color: rltk::RGB::from_f32(1.0, 1.0, 0.5), range: 8 })
+        .with(LightSource { color: rltk::RGB::from_hex("#EDF122").expect("Bad color"), range: 6 })
         .with(skills)
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
@@ -85,7 +86,7 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
     player
 }
 
-const MAX_MONSTERS: i32 = 4;
+const MAX_MONSTERS: i32 = 2;
 
 fn room_table(map_depth: i32) -> RandomTable {
     get_spawn_table_for_depth(&RAWS.lock().unwrap(), map_depth)
@@ -129,8 +130,7 @@ pub fn spawn_region(
 
     // Scope to keep the borrow checker happy
     {
-        let num_spawns =
-            i32::min(areas.len() as i32, rng.roll_dice(1, MAX_MONSTERS + 3) + (map_depth - 1) - 3);
+        let num_spawns = i32::min(areas.len() as i32, rng.roll_dice(1, MAX_MONSTERS));
         if num_spawns == 0 {
             return;
         }
@@ -196,6 +196,7 @@ pub fn battle_monster<S: ToString>(ecs: &mut World, name: S) {
             total_weight: 0.0,
             total_initiative_penalty: 0.0,
             gold: 10.0, // TODO: after implement battle monster spawner, randomize amount.
+            god_mode: false,
         })
         .with(skills)
         .with(EquipmentChanged {})

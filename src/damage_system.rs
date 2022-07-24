@@ -26,7 +26,9 @@ impl<'a> System<'a> for DamageSystem {
 
         for (entity, mut pools, damage) in (&entities, &mut pools, &damage).join() {
             for dmg in damage.amount.iter() {
-                pools.hit_points.current -= dmg.0;
+                if !pools.god_mode {
+                    pools.hit_points.current -= dmg.0;
+                }
 
                 if pools.hit_points.current < 1 && dmg.1 {
                     xp_gain += pools.level * 100;

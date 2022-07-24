@@ -134,10 +134,11 @@ impl<'a> System<'a> for MeleeCombatSystem {
 
                 if natural_roll != 1 && (natural_roll == 20 || modified_hit_roll > armor_class) {
                     // Target hit! Until we support weapons, we're going with 1d4
-                    let base_damage = rng.roll_dice(1, 4);
+                    let base_damage =
+                        rng.roll_dice(weapon_info.damage_n_dice, weapon_info.damage_die_type);
                     let attr_damage_bonus = attacker_attributes.might.bonus;
                     let skill_damage_bonus = skill_bonus(Skill::Melee, &*attacker_skills);
-                    let weapon_damage_bonus = 0;
+                    let weapon_damage_bonus = weapon_info.damage_bonus;
 
                     let damage = i32::max(
                         0,

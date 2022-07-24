@@ -110,7 +110,7 @@
         }
       },
       "weight_kg": 3.0,
-      "base_value": 10.0,
+      "base_value": 3.0,
       "initiative_penalty": 2
     },
     {
@@ -127,7 +127,7 @@
         }
       },
       "weight_kg": 3.0,
-      "base_value": 10.0,
+      "base_value": 2.0,
       "initiative_penalty": 2,
       "vendor_category": "food"
     },
@@ -145,7 +145,7 @@
         }
       },
       "weight_kg": 3.0,
-      "base_value": 10.0,
+      "base_value": 1.4,
       "initiative_penalty": 2
     },
     {
@@ -162,11 +162,11 @@
         }
       },
       "weight_kg": 3.0,
-      "base_value": 10.0,
+      "base_value": 2.0,
       "initiative_penalty": 2
     },
     {
-      "name": "Rusty Longswor",
+      "name": "Rusty Longsword",
       "renderable": {
         "glyph": "/",
         "fg": "#BB77BB",
@@ -175,7 +175,7 @@
       },
       "weapon": {
         "attribute": "Might",
-        "base_damage": "1d8-1",
+        "base_damage": "10d8-1",
         "hit_bonus": -1
       },
       "weight_kg": 2.0,
@@ -230,7 +230,7 @@
         "hit_bonus": 0
       },
       "weight_kg": 3.0,
-      "base_value": 10.0,
+      "base_value": 15.0,
       "initiative_penalty": 2
     },
     {
@@ -246,7 +246,7 @@
         "armor_class": 1.0
       },
       "weight_kg": 3.0,
-      "base_value": 10.0,
+      "base_value": 12.0,
       "initiative_penalty": 2
     },
     {
@@ -262,7 +262,7 @@
         "armor_class": 2.0
       },
       "weight_kg": 3.0,
-      "base_value": 10.0,
+      "base_value": 16.0,
       "initiative_penalty": 2
     },
     {
@@ -278,7 +278,7 @@
         "armor_class": 0.1
       },
       "weight_kg": 3.0,
-      "base_value": 10.0,
+      "base_value": 9.0,
       "initiative_penalty": 2
     },
     {
@@ -310,7 +310,7 @@
         "armor_class": 0.1
       },
       "weight_kg": 3.0,
-      "base_value": 10.0,
+      "base_value": 6.0,
       "initiative_penalty": 2
     },
     {
@@ -326,7 +326,7 @@
         "armor_class": 0.1
       },
       "weight_kg": 3.0,
-      "base_value": 10.0,
+      "base_value": 9.0,
       "initiative_penalty": 2
     },
     {
@@ -343,7 +343,7 @@
         }
       },
       "weight_kg": 3.0,
-      "base_value": 10.0,
+      "base_value": 2.0,
       "initiative_penalty": 2
     },
     {
@@ -355,7 +355,7 @@
         "order": 2
       },
       "weight_kg": 3.0,
-      "base_value": 10.0,
+      "base_value": 8.0,
       "initiative_penalty": 2
     }
   ],
@@ -484,7 +484,9 @@
       "vision_range": 4,
       "movement": "static",
       "faction": "Townsfolk",
-      "vendor": ["food"]
+      "vendor": [
+        "food"
+      ]
     },
     {
       "name": "Patron",
@@ -688,8 +690,7 @@
         "fg": "#AAAAAA",
         "bg": "#000000",
         "order": 2
-      },
-      "hidden": false
+      }
     },
     {
       "name": "Table",
@@ -698,8 +699,7 @@
         "fg": "#AAAAAA",
         "bg": "#000000",
         "order": 2
-      },
-      "hidden": false
+      }
     },
     {
       "name": "Chair",
@@ -708,8 +708,7 @@
         "fg": "#AAAAAA",
         "bg": "#000000",
         "order": 2
-      },
-      "hidden": false
+      }
     },
     {
       "name": "Candle",
@@ -718,8 +717,7 @@
         "fg": "#FFA500",
         "bg": "#000000",
         "order": 2
-      },
-      "hidden": false
+      }
     },
     {
       "name": "Anvil",
@@ -728,8 +726,7 @@
         "fg": "#AAAAAA",
         "bg": "#000000",
         "order": 2
-      },
-      "hidden": false
+      }
     },
     {
       "name": "Water Trough",
@@ -738,8 +735,7 @@
         "fg": "#5555FF",
         "bg": "#000000",
         "order": 2
-      },
-      "hidden": false
+      }
     },
     {
       "name": "Weapon Rack",
@@ -748,8 +744,7 @@
         "fg": "#FFD700",
         "bg": "#000000",
         "order": 2
-      },
-      "hidden": false
+      }
     },
     {
       "name": "Armor Stand",
@@ -758,8 +753,7 @@
         "fg": "#FFFFFF",
         "bg": "#000000",
         "order": 2
-      },
-      "hidden": false
+      }
     },
     {
       "name": "Chemistry Set",
@@ -768,8 +762,7 @@
         "fg": "#00FFFF",
         "bg": "#000000",
         "order": 2
-      },
-      "hidden": false
+      }
     },
     {
       "name": "Dead Thing",
@@ -778,8 +771,7 @@
         "fg": "#AA0000",
         "bg": "#000000",
         "order": 2
-      },
-      "hidden": false
+      }
     },
     {
       "name": "Cabinet",
@@ -788,8 +780,7 @@
         "fg": "#805A46",
         "bg": "#000000",
         "order": 2
-      },
-      "hidden": false
+      }
     },
     {
       "name": "Bed",
@@ -798,8 +789,7 @@
         "fg": "#805A46",
         "bg": "#000000",
         "order": 2
-      },
-      "hidden": false
+      }
     },
     {
       "name": "Loom",
@@ -808,8 +798,7 @@
         "fg": "#805A46",
         "bg": "#000000",
         "order": 2
-      },
-      "hidden": false
+      }
     },
     {
       "name": "Hide Rack",
@@ -818,8 +807,21 @@
         "fg": "#805A46",
         "bg": "#000000",
         "order": 2
+      }
+    },
+    {
+      "name": "Watch Fire",
+      "renderable": {
+        "glyph": "☼",
+        "fg": "#FFFF55",
+        "bg": "#000000",
+        "order": 2
       },
-      "hidden": false
+      "light": {
+        "range": 8,
+        "color": "#FFFF55"
+      },
+      "blocks_tile": true
     }
   ],
   "faction_table": [

@@ -32,7 +32,7 @@ impl<'a> System<'a> for LightingSystem {
                 if t.x > 0 && t.x < map.width && t.y > 0 && t.y < map.height {
                     let idx = map.xy_idx(t.x, t.y);
                     let distance = rltk::DistanceAlg::Pythagoras.distance2d(light_point, *t);
-                    let intensity = (range_f - distance) / range_f;
+                    let intensity = (range_f - distance * 1.6) / range_f + 0.8;
 
                     map.light[idx] = map.light[idx] + (light.color * intensity);
                 }

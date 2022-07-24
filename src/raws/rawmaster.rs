@@ -363,6 +363,14 @@ pub fn spawn_named_prop(
             eb = eb.with(Door { open: door_open });
         }
 
+        if let Some(light) = &prop_template.light {
+            eb = eb.with(LightSource {
+                range: light.range,
+                color: rltk::RGB::from_hex(&light.color).expect("Bad color"),
+            });
+            eb = eb.with(Viewshed { range: light.range, dirty: true, visible_tiles: Vec::new() });
+        }
+
         return Some(eb.build());
     }
     None
@@ -414,6 +422,7 @@ fn get_renderable_component(
     }
 }
 
+/// 階層によるモンスター生成テーブルを決定する
 pub fn get_spawn_table_for_depth(raws: &RawMaster, depth: i32) -> RandomTable {
     use super::SpawnTableEntry;
 
