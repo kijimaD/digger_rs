@@ -41,6 +41,7 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             level: 1,
             total_weight: 0.0,
             total_initiative_penalty: 0.0,
+            gold: 0.0,
         })
         .with(EquipmentChanged {})
         .with(Player {})
@@ -194,6 +195,7 @@ pub fn battle_monster<S: ToString>(ecs: &mut World, name: S) {
             level: 1,
             total_weight: 0.0,
             total_initiative_penalty: 0.0,
+            gold: 10.0, // TODO: after implement battle monster spawner, randomize amount.
         })
         .with(skills)
         .with(EquipmentChanged {})

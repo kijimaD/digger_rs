@@ -22,6 +22,7 @@ impl<'a> System<'a> for DamageSystem {
     fn run(&mut self, data: Self::SystemData) {
         let (mut pools, mut damage, map, positions, entities, player, attributes, mut log) = data;
         let mut xp_gain = 0;
+        let mut gold_gain = 0.0f32;
 
         for (entity, mut pools, damage) in (&entities, &mut pools, &damage).join() {
             for dmg in damage.amount.iter() {
@@ -29,6 +30,7 @@ impl<'a> System<'a> for DamageSystem {
 
                 if pools.hit_points.current < 1 && dmg.1 {
                     xp_gain += pools.level * 100;
+                    gold_gain += pools.gold;
                     let pos = positions.get(entity);
                     if let Some(pos) = pos {
                         let idx = map.xy_idx(pos.x, pos.y);
@@ -38,10 +40,11 @@ impl<'a> System<'a> for DamageSystem {
             }
         }
 
-        if xp_gain != 0 {
+        if xp_gain != 0 || gold_gain != 0.0 {
             let mut player_stats = pools.get_mut(*player).unwrap();
             let player_attributes = attributes.get(*player).unwrap();
             player_stats.xp += xp_gain;
+            player_stats.gold += gold_gain;
             if player_stats.xp >= player_stats.level * 1000 {
                 player_stats.level += 1;
                 log.entries
