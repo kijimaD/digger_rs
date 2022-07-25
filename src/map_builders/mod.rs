@@ -24,6 +24,8 @@ use room_based_stairs::RoomBasedStairs;
 use room_based_starting_position::RoomBasedStartingPosition;
 mod area_starting_points;
 use area_starting_points::{AreaStartingPosition, XStart, YStart};
+mod area_ending_points;
+use area_ending_points::{AreaEndingPosition, XEnd, YEnd};
 mod cull_unreachable;
 use cull_unreachable::CullUnreachable;
 mod voronoi_spawning;
@@ -57,7 +59,9 @@ use town::town_builder;
 mod forest;
 use forest::forest_builder;
 mod limestone_cavern;
-use limestone_cavern::{limestone_cavern_builder, limestone_deep_cavern_builder};
+use limestone_cavern::{
+    limestone_cavern_builder, limestone_deep_cavern_builder, limestone_transition_builder,
+};
 
 pub struct BuilderMap {
     pub spawn_list: Vec<(usize, String)>,
@@ -295,6 +299,7 @@ pub fn level_builder(
         2 => forest_builder(new_depth, rng, width, height),
         3 => limestone_cavern_builder(new_depth, rng, width, height),
         4 => limestone_deep_cavern_builder(new_depth, rng, width, height),
+        5 => limestone_transition_builder(new_depth, rng, width, height),
         _ => random_builder(new_depth, rng, width, height),
     }
 }
