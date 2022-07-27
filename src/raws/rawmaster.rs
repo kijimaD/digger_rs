@@ -175,6 +175,7 @@ pub fn spawn_named_item(
                             .with(ProvidesHealing { heal_amount: effect.1.parse::<i32>().unwrap() })
                     }
                     "food" => eb = eb.with(ProvidesFood {}),
+                    "town_portal" => eb = eb.with(TownPortal {}),
                     _ => {
                         rltk::console::log(format!(
                             "Warning: consumable effect {} not implemented.",

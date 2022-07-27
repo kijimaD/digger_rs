@@ -72,6 +72,7 @@ pub enum RunState {
     SaveGame,
     NextLevel,
     PreviousLevel,
+    TownPortal,
     ShowRemoveItem,
     GameOver,
     MapGeneration,
@@ -220,6 +221,7 @@ impl GameState for State {
                     self.ecs.maintain();
                     match *self.ecs.fetch::<RunState>() {
                         RunState::AwaitingInput => newrunstate = RunState::AwaitingInput,
+                        RunState::TownPortal => newrunstate = RunState::TownPortal,
                         _ => newrunstate = RunState::Ticking,
                     }
                 }
@@ -432,6 +434,14 @@ impl GameState for State {
             }
             RunState::PreviousLevel => {
                 self.goto_level(-1);
+                self.mapgen_next_state = Some(RunState::PreRun);
+                newrunstate = RunState::MapGeneration;
+            }
+            RunState::TownPortal => {
+                // Transition
+                let map_depth = self.ecs.fetch::<Map>().depth;
+                let destination_offset = 0 - (map_depth - 1);
+                self.goto_level(destination_offset);
                 self.mapgen_next_state = Some(RunState::PreRun);
                 newrunstate = RunState::MapGeneration;
             }
@@ -676,6 +686,8 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Wearable>();
     gs.ecs.register::<HungerClock>();
     gs.ecs.register::<ProvidesFood>();
+    gs.ecs.register::<TownPortal>();
+    gs.ecs.register::<TeleportTo>();
     gs.ecs.register::<WantsToRemoveItem>();
     gs.ecs.register::<ParticleLifetime>();
     gs.ecs.register::<BlocksVisibility>();

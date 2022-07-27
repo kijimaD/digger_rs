@@ -78,6 +78,12 @@
       "weight": 9,
       "min_depth": 2,
       "max_depth": 3
+    },
+    {
+      "name": "Town Portal Stone",
+      "weight": 4,
+      "min_depth": 0,
+      "max_depth": 100
     }
   ],
   "loot_tables": [
@@ -357,6 +363,23 @@
       "weight_kg": 3.0,
       "base_value": 8.0,
       "initiative_penalty": 2
+    },
+    {
+      "name": "Town Portal Stone",
+      "renderable": {
+        "glyph": ")",
+        "fg": "#AAAAFF",
+        "bg": "#000000",
+        "order": 2
+      },
+      "consumable": {
+        "effects": {
+          "town_portal": ""
+        }
+      },
+      "weight_lbs": 0.5,
+      "base_value": 20.0,
+      "vendor_category": "alchemy"
     }
   ],
   "mobs": [

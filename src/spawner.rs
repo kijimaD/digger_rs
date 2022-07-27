@@ -1,7 +1,8 @@
 use super::{
     random_table::RandomTable, raws::*, Attribute, Attributes, Combatant, EquipmentChanged,
-    Faction, HungerClock, HungerState, Initiative, LightSource, Map, Monster, Name, Player, Pool,
-    Pools, Position, Rect, Renderable, SerializeMe, Skill, Skills, TileType, Viewshed,
+    Faction, HungerClock, HungerState, Initiative, LightSource, Map, MasterDungeonMap, Monster,
+    Name, OtherLevelPosition, Player, Pool, Pools, Position, Rect, Renderable, SerializeMe, Skill,
+    Skills, TeleportTo, TileType, Viewshed,
 };
 use crate::{attr_bonus, mana_at_level, player_hp_at_level};
 use rltk::{RandomNumberGenerator, RGB};
@@ -81,6 +82,12 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
         ecs,
         "Torn Trousers",
         SpawnType::Equipped { by: player },
+    );
+    spawn_named_entity(
+        &RAWS.lock().unwrap(),
+        ecs,
+        "Town Portal Stone",
+        SpawnType::Carried { by: player },
     );
 
     player
