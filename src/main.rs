@@ -442,6 +442,9 @@ impl GameState for State {
                 newrunstate = RunState::MapGeneration;
             }
             RunState::TownPortal => {
+                // Spawn the portal
+                spawner::spawn_town_portal(&mut self.ecs);
+
                 // Transition
                 let map_depth = self.ecs.fetch::<Map>().depth;
                 let destination_offset = 0 - (map_depth - 1);
