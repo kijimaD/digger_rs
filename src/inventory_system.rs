@@ -1,7 +1,8 @@
 use super::{
     gamelog::GameLog, Consumable, EquipmentChanged, Equippable, Equipped, HungerClock, HungerState,
-    InBackpack, InflictsDamage, Name, Pools, Position, ProvidesFood, ProvidesHealing, SufferDamage,
-    WantsToDropItem, WantsToPickupItem, WantsToRemoveItem, WantsToUseItem,
+    InBackpack, InflictsDamage, Map, Name, Pools, Position, ProvidesFood, ProvidesHealing,
+    RunState, SufferDamage, TownPortal, WantsToDropItem, WantsToPickupItem, WantsToRemoveItem,
+    WantsToUseItem,
 };
 use specs::prelude::*;
 
@@ -54,7 +55,9 @@ impl<'a> System<'a> for ItemUseSystem {
     #[allow(clippy::type_complexity)]
     type SystemData = (
         ReadExpect<'a, Entity>,
+        ReadExpect<'a, Map>,
         WriteExpect<'a, GameLog>,
+        WriteExpect<'a, RunState>,
         Entities<'a>,
         WriteStorage<'a, WantsToUseItem>,
         ReadStorage<'a, Name>,
@@ -69,13 +72,16 @@ impl<'a> System<'a> for ItemUseSystem {
         WriteStorage<'a, Equipped>,
         WriteStorage<'a, InBackpack>,
         WriteStorage<'a, EquipmentChanged>,
+        ReadStorage<'a, TownPortal>,
     );
 
     #[allow(clippy::cognitive_complexity)]
     fn run(&mut self, data: Self::SystemData) {
         let (
             player_entity,
+            map,
             mut gamelog,
+            mut runstate,
             entities,
             mut wants_use,
             names,
@@ -90,6 +96,7 @@ impl<'a> System<'a> for ItemUseSystem {
             mut equipped,
             mut backpack,
             mut dirty,
+            town_portal,
         ) = data;
 
         for (entity, useitem) in (&entities, &wants_use).join() {
@@ -179,6 +186,19 @@ impl<'a> System<'a> for ItemUseSystem {
                             names.get(useitem.item).unwrap().name
                         ));
                     }
+                }
+            }
+
+            // town portal
+            if let Some(_townportal) = town_portal.get(useitem.item) {
+                if map.depth == 1 {
+                    gamelog
+                        .entries
+                        .push("You are a already in town, so the sand does nothing.".to_string());
+                } else {
+                    used_item = true;
+                    gamelog.entries.push("You are teleported back to town!".to_string());
+                    *runstate = RunState::TownPortal;
                 }
             }
 

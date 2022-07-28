@@ -92,6 +92,17 @@ pub struct HungerClock {
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct ProvidesFood {}
 
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct TownPortal {}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct TeleportTo {
+    pub x: i32,
+    pub y: i32,
+    pub depth: i32,
+    pub player_only: bool,
+}
+
 #[derive(Component, ConvertSaveload, Clone)]
 pub struct Viewshed {
     pub visible_tiles: Vec<rltk::Point>,
@@ -325,6 +336,24 @@ pub struct Door {
 pub struct LightSource {
     pub color: RGB,
     pub range: i32,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct EntryTrigger {}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct SingleActivation {}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct ApplyMove {
+    pub dest_idx: usize,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct ApplyTeleport {
+    pub dest_x: i32,
+    pub dest_y: i32,
+    pub dest_depth: i32,
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]

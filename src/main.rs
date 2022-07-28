@@ -21,6 +21,10 @@ mod damage_system;
 use damage_system::DamageSystem;
 mod battle_action_system;
 use battle_action_system::BattleActionSystem;
+mod trigger_system;
+use trigger_system::TriggerSystem;
+mod movement_system;
+use movement_system::MovementSystem;
 mod ai;
 mod encounter_system;
 mod gamelog;
@@ -72,11 +76,13 @@ pub enum RunState {
     SaveGame,
     NextLevel,
     PreviousLevel,
+    TownPortal,
     ShowRemoveItem,
     GameOver,
     MapGeneration,
     ShowCheatMenu,
     ShowVendor { vendor: Entity, mode: VendorMode },
+    TeleportingToOtherLevel { x: i32, y: i32, depth: i32 },
 }
 
 pub struct State {
@@ -125,6 +131,11 @@ impl State {
         quipper.run_now(&self.ecs);
         let mut encumbrance = ai::EncumbranceSystem {};
         encumbrance.run_now(&self.ecs);
+        let mut trigger = trigger_system::TriggerSystem {};
+        trigger.run_now(&self.ecs);
+        defaultmove.run_now(&self.ecs);
+        let mut moving = movement_system::MovementSystem {};
+        moving.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -220,6 +231,10 @@ impl GameState for State {
                     self.ecs.maintain();
                     match *self.ecs.fetch::<RunState>() {
                         RunState::AwaitingInput => newrunstate = RunState::AwaitingInput,
+                        RunState::TownPortal => newrunstate = RunState::TownPortal,
+                        RunState::TeleportingToOtherLevel { x, y, depth } => {
+                            newrunstate = RunState::TeleportingToOtherLevel { x, y, depth }
+                        }
                         _ => newrunstate = RunState::Ticking,
                     }
                 }
@@ -432,6 +447,30 @@ impl GameState for State {
             }
             RunState::PreviousLevel => {
                 self.goto_level(-1);
+                self.mapgen_next_state = Some(RunState::PreRun);
+                newrunstate = RunState::MapGeneration;
+            }
+            RunState::TownPortal => {
+                // Spawn the portal
+                spawner::spawn_town_portal(&mut self.ecs);
+
+                // Transition
+                let map_depth = self.ecs.fetch::<Map>().depth;
+                let destination_offset = 0 - (map_depth - 1);
+                self.goto_level(destination_offset);
+                self.mapgen_next_state = Some(RunState::PreRun);
+                newrunstate = RunState::MapGeneration;
+            }
+            RunState::TeleportingToOtherLevel { x, y, depth } => {
+                self.goto_level(depth - 1);
+                let player_entity = self.ecs.fetch::<Entity>();
+                if let Some(pos) = self.ecs.write_storage::<Position>().get_mut(*player_entity) {
+                    pos.x = x;
+                    pos.y = y;
+                }
+                let mut ppos = self.ecs.fetch_mut::<rltk::Point>();
+                ppos.x = x;
+                ppos.y = y;
                 self.mapgen_next_state = Some(RunState::PreRun);
                 newrunstate = RunState::MapGeneration;
             }
@@ -676,10 +715,16 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Wearable>();
     gs.ecs.register::<HungerClock>();
     gs.ecs.register::<ProvidesFood>();
+    gs.ecs.register::<TownPortal>();
+    gs.ecs.register::<TeleportTo>();
     gs.ecs.register::<WantsToRemoveItem>();
     gs.ecs.register::<ParticleLifetime>();
     gs.ecs.register::<BlocksVisibility>();
     gs.ecs.register::<Door>();
+    gs.ecs.register::<EntryTrigger>();
+    gs.ecs.register::<SingleActivation>();
+    gs.ecs.register::<ApplyMove>();
+    gs.ecs.register::<ApplyTeleport>();
     gs.ecs.register::<LightSource>();
     gs.ecs.register::<EntityMoved>();
     gs.ecs.register::<Quips>();

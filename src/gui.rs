@@ -1213,7 +1213,7 @@ pub enum CheatMenuResult {
 }
 
 pub fn show_cheat_mode(_gs: &mut State, ctx: &mut Rltk) -> CheatMenuResult {
-    let count = 2;
+    let count = 4;
     let mut y = (25 - (count / 2)) as i32;
     ctx.draw_box(
         15,
