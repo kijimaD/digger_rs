@@ -23,6 +23,8 @@ mod battle_action_system;
 use battle_action_system::BattleActionSystem;
 mod trigger_system;
 use trigger_system::TriggerSystem;
+mod movement_system;
+use movement_system::MovementSystem;
 mod ai;
 mod encounter_system;
 mod gamelog;
@@ -130,6 +132,9 @@ impl State {
         encumbrance.run_now(&self.ecs);
         let mut trigger = trigger_system::TriggerSystem {};
         trigger.run_now(&self.ecs);
+        defaultmove.run_now(&self.ecs);
+        let mut moving = movement_system::MovementSystem {};
+        moving.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -701,6 +706,8 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Door>();
     gs.ecs.register::<EntryTrigger>();
     gs.ecs.register::<SingleActivation>();
+    gs.ecs.register::<ApplyMove>();
+    gs.ecs.register::<ApplyTeleport>();
     gs.ecs.register::<LightSource>();
     gs.ecs.register::<EntityMoved>();
     gs.ecs.register::<Quips>();
