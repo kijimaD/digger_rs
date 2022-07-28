@@ -21,6 +21,8 @@ mod damage_system;
 use damage_system::DamageSystem;
 mod battle_action_system;
 use battle_action_system::BattleActionSystem;
+mod trigger_system;
+use trigger_system::TriggerSystem;
 mod ai;
 mod encounter_system;
 mod gamelog;
@@ -126,6 +128,8 @@ impl State {
         quipper.run_now(&self.ecs);
         let mut encumbrance = ai::EncumbranceSystem {};
         encumbrance.run_now(&self.ecs);
+        let mut trigger = trigger_system::TriggerSystem {};
+        trigger.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -692,6 +696,8 @@ fn main() -> rltk::BError {
     gs.ecs.register::<ParticleLifetime>();
     gs.ecs.register::<BlocksVisibility>();
     gs.ecs.register::<Door>();
+    gs.ecs.register::<EntryTrigger>();
+    gs.ecs.register::<SingleActivation>();
     gs.ecs.register::<LightSource>();
     gs.ecs.register::<EntityMoved>();
     gs.ecs.register::<Quips>();

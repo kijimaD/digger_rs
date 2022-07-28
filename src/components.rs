@@ -339,6 +339,12 @@ pub struct LightSource {
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct EntryTrigger {}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct SingleActivation {}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct EntityMoved {}
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
