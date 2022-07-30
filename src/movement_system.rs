@@ -1,5 +1,5 @@
 use super::{
-    ApplyMove, ApplyTeleport, BlocksTile, EntityMoved, Map, OtherLevelPosition, Position, RunState,
+    ApplyMove, ApplyTeleport, EntityMoved, Map, OtherLevelPosition, Position, RunState,
     Viewshed,
 };
 use specs::prelude::*;
@@ -11,7 +11,6 @@ impl<'a> System<'a> for MovementSystem {
     type SystemData = (
         WriteExpect<'a, Map>,
         WriteStorage<'a, Position>,
-        ReadStorage<'a, BlocksTile>,
         Entities<'a>,
         WriteStorage<'a, ApplyMove>,
         WriteStorage<'a, ApplyTeleport>,
@@ -24,9 +23,8 @@ impl<'a> System<'a> for MovementSystem {
 
     fn run(&mut self, data: Self::SystemData) {
         let (
-            mut map,
+            map,
             mut position,
-            blockers,
             entities,
             mut apply_move,
             mut apply_teleport,

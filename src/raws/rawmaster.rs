@@ -1,7 +1,6 @@
 use super::{Raws, Reaction};
 use crate::components::*;
 use crate::random_table::RandomTable;
-use crate::{attr_bonus, mana_at_level, npc_hp};
 use regex::Regex;
 use specs::prelude::*;
 use specs::saveload::{MarkedBuilder, SimpleMarker};
@@ -400,7 +399,7 @@ fn spawn_position<'a>(
     tag: &str,
     raws: &RawMaster,
 ) -> EntityBuilder<'a> {
-    let mut eb = new_entity;
+    let eb = new_entity;
 
     match pos {
         SpawnType::AtPosition { x, y } => eb.with(Position { x, y }),

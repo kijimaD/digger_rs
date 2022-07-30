@@ -1,4 +1,4 @@
-use super::{Map, Position, Renderable, TileType};
+use super::{Map, Position, Renderable};
 use crate::map::tile_glyph;
 use rltk::{Point, Rltk, RGB};
 use specs::prelude::*;

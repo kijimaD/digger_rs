@@ -1,4 +1,4 @@
-use super::{gamelog::GameLog, HungerClock, HungerState, MyTurn, Pools, RunState, SufferDamage};
+use super::{gamelog::GameLog, HungerClock, HungerState, MyTurn, Pools, SufferDamage};
 use specs::prelude::*;
 
 pub struct HungerSystem {}
@@ -9,7 +9,6 @@ impl<'a> System<'a> for HungerSystem {
         Entities<'a>,
         WriteStorage<'a, HungerClock>,
         ReadExpect<'a, Entity>, // The player
-        ReadExpect<'a, RunState>,
         WriteStorage<'a, SufferDamage>,
         WriteExpect<'a, GameLog>,
         ReadStorage<'a, Pools>,
@@ -21,7 +20,6 @@ impl<'a> System<'a> for HungerSystem {
             entities,
             mut hunger_clock,
             player_entity,
-            runstate,
             mut inflict_damage,
             mut log,
             pools,

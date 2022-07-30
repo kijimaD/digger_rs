@@ -3,7 +3,7 @@ use super::{
     Consumable, Equipped, HungerClock, HungerState, InBackpack, Item, Map, Monster, Name, Player,
     Pools, Position, RunState, State, Vendor, VendorMode,
 };
-use rltk::{Point, RandomNumberGenerator, Rltk, VirtualKeyCode, RGB};
+use rltk::{RandomNumberGenerator, Rltk, VirtualKeyCode, RGB};
 use specs::prelude::*;
 
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
@@ -890,8 +890,8 @@ pub fn battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResult {
 // 逃走。
 // 敵シンボルは消さずに、戦闘用エンティティだけ削除する
 fn run_away_battle(ecs: &mut World) {
-    let mut combatants = ecs.write_storage::<Combatant>();
-    let mut monsters = ecs.read_storage::<Monster>();
+    let combatants = ecs.write_storage::<Combatant>();
+    let monsters = ecs.read_storage::<Monster>();
     let entities = ecs.entities();
 
     for (entity, _combatant, _monster) in (&entities, &combatants, &monsters).join() {

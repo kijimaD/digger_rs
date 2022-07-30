@@ -77,8 +77,6 @@ pub fn delete_the_dead(ecs: &mut World) {
         let players = ecs.read_storage::<Player>();
         let names = ecs.read_storage::<Name>();
         let combatant = ecs.read_storage::<Combatant>();
-        let positions = ecs.read_storage::<Position>();
-        let mut map = ecs.write_resource::<Map>();
 
         let entities = ecs.entities();
         let mut log = ecs.write_resource::<BattleLog>();
