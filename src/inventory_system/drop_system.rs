@@ -1,4 +1,4 @@
-use super::{gamelog::GameLog, InBackpack, Name, Position, WantsToDropItem, EquipmentChanged};
+use super::{gamelog::GameLog, EquipmentChanged, InBackpack, Name, Position, WantsToDropItem};
 use specs::prelude::*;
 
 pub struct ItemDropSystem {}

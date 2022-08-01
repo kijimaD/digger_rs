@@ -1,4 +1,4 @@
-use super::{gamelog::GameLog, EquipmentChanged, InBackpack, Position, WantsToPickupItem, Name};
+use super::{gamelog::GameLog, EquipmentChanged, InBackpack, Name, Position, WantsToPickupItem};
 use specs::prelude::*;
 
 pub struct ItemCollectionSystem {}

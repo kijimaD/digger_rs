@@ -1,7 +1,7 @@
 use super::{
-    gamelog::BattleLog, particle_system::ParticleBuilder, skill_bonus, Attributes, EquipmentSlot,
-    Equipped, HungerClock, HungerState, MeleeWeapon, Name, NaturalAttackDefense, Pools, Position,
-    Skill, Skills, SufferDamage, WantsToMelee, WeaponAttribute, Wearable,
+    effects::*, gamelog::BattleLog, particle_system::ParticleBuilder, skill_bonus, Attributes,
+    EquipmentSlot, Equipped, HungerClock, HungerState, MeleeWeapon, Name, NaturalAttackDefense,
+    Pools, Position, Skill, Skills, SufferDamage, WantsToMelee, WeaponAttribute, Wearable,
 };
 use specs::prelude::*;
 

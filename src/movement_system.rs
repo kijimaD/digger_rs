@@ -1,6 +1,5 @@
 use super::{
-    ApplyMove, ApplyTeleport, EntityMoved, Map, OtherLevelPosition, Position, RunState,
-    Viewshed,
+    ApplyMove, ApplyTeleport, EntityMoved, Map, OtherLevelPosition, Position, RunState, Viewshed,
 };
 use specs::prelude::*;
 
