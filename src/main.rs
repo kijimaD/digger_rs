@@ -22,6 +22,7 @@ use damage_system::DamageSystem;
 mod battle_action_system;
 use battle_action_system::BattleActionSystem;
 mod ai;
+pub mod effects;
 mod encounter_system;
 mod gamelog;
 mod gui;
