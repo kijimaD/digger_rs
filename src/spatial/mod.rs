@@ -80,6 +80,11 @@ where
     RunState::AwaitingInput
 }
 
+pub fn get_tile_content_clone(idx: usize) -> Vec<Entity> {
+    let lock = SPATIAL_MAP.lock().unwrap();
+    lock.tile_content[idx].iter().map(|(e, _)| *e).collect()
+}
+
 pub fn move_entity(entity: Entity, moving_from: usize, moving_to: usize) {
     let mut lock = SPATIAL_MAP.lock().unwrap();
     let mut entity_blocks = false;

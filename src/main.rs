@@ -120,12 +120,8 @@ impl State {
         item_remove.run_now(&self.ecs);
         let mut hunger = hunger_system::HungerSystem {};
         hunger.run_now(&self.ecs);
-        let mut particles = particle_system::ParticleSpawnSystem {};
-        particles.run_now(&self.ecs);
         let mut damage = DamageSystem {};
         damage.run_now(&self.ecs);
-        let mut lighting = lighting_system::LightingSystem {};
-        lighting.run_now(&self.ecs);
         let mut quipper = ai::QuipSystem {};
         quipper.run_now(&self.ecs);
         let mut encumbrance = ai::EncumbranceSystem {};
@@ -135,6 +131,12 @@ impl State {
         defaultmove.run_now(&self.ecs);
         let mut moving = movement_system::MovementSystem {};
         moving.run_now(&self.ecs);
+
+        effects::run_effects_queue(&mut self.ecs);
+        let mut particles = particle_system::ParticleSpawnSystem {};
+        particles.run_now(&self.ecs);
+        let mut lighting = lighting_system::LightingSystem {};
+        lighting.run_now(&self.ecs);
 
         self.ecs.maintain();
     }
@@ -148,6 +150,8 @@ impl State {
         damage.run_now(&self.ecs);
         let mut itemuse = ItemUseSystem {};
         itemuse.run_now(&self.ecs);
+
+        effects::run_effects_queue(&mut self.ecs);
 
         self.ecs.maintain();
     }

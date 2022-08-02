@@ -1,7 +1,7 @@
 use super::{
     gamelog::GameLog, Consumable, EquipmentChanged, Equippable, Equipped, HungerClock, HungerState,
     InBackpack, InflictsDamage, Map, Name, Pools, ProvidesFood, ProvidesHealing, RunState,
-    SufferDamage, TownPortal, WantsToUseItem,
+    TownPortal, WantsToUseItem,
 };
 use specs::prelude::*;
 
@@ -21,7 +21,6 @@ impl<'a> System<'a> for ItemUseSystem {
         ReadStorage<'a, ProvidesHealing>,
         ReadStorage<'a, InflictsDamage>,
         WriteStorage<'a, Pools>,
-        WriteStorage<'a, SufferDamage>,
         ReadStorage<'a, Equippable>,
         ReadStorage<'a, ProvidesFood>,
         WriteStorage<'a, HungerClock>,
@@ -45,7 +44,6 @@ impl<'a> System<'a> for ItemUseSystem {
             healing,
             _inflict_damage,
             mut pools,
-            _suffer_damage,
             equippable,
             provides_food,
             mut hunger_clocks,
