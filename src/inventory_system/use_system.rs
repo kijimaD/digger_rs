@@ -61,45 +61,6 @@ impl<'a> System<'a> for ItemUseSystem {
             let mut party_targets: Vec<Entity> = Vec::new();
             party_targets.push(*player_entity);
 
-            // If it is equippable, then we want to equip it - and unequip whatever else was in that slot
-            let item_equippable = equippable.get(useitem.item);
-            match item_equippable {
-                None => {}
-                Some(can_equip) => {
-                    let target_slot = can_equip.slot;
-                    let target = useitem.target;
-
-                    // Remove any items the target has in the item's slot
-                    let mut to_unequip: Vec<Entity> = Vec::new();
-                    for (item_entity, already_equipped, name) in
-                        (&entities, &equipped, &names).join()
-                    {
-                        if already_equipped.owner == target && already_equipped.slot == target_slot
-                        {
-                            to_unequip.push(item_entity);
-                            gamelog.entries.push(format!("You unequip {}.", name.name));
-                        }
-                    }
-                    // FIXME: スロットが占有されているときに装備すると、前の装備が消える
-                    // 装備を外す -> バックパックにしまう
-                    for item in to_unequip.iter() {
-                        equipped.remove(*item);
-                        backpack
-                            .insert(*item, InBackpack { owner: *player_entity })
-                            .expect("Unable to insert backpack entry");
-                    }
-
-                    // Wield the item
-                    equipped
-                        .insert(useitem.item, Equipped { owner: target, slot: target_slot })
-                        .expect("Unable to insert equipped component");
-                    backpack.remove(useitem.item);
-                    gamelog
-                        .entries
-                        .push(format!("You equip {}.", names.get(useitem.item).unwrap().name));
-                }
-            }
-
             // If it heals, apply the healing
             let item_heals = healing.get(useitem.item);
             match item_heals {
