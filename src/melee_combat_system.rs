@@ -167,32 +167,12 @@ impl<'a> System<'a> for MeleeCombatSystem {
                         "{} considers attacking {}, but misjudges the timing.",
                         name.name, target_name.name
                     ));
-                    if let Some(pos) = positions.get(wants_melee.target) {
-                        particle_builder.request(
-                            pos.x,
-                            pos.y,
-                            rltk::RGB::named(rltk::BLUE),
-                            rltk::RGB::named(rltk::BLACK),
-                            rltk::to_cp437('‼'),
-                            200.0,
-                        );
-                    }
                 } else {
                     // Miss
                     log.entries.push(format!(
                         "{} attacks {}, but can't connect.",
                         name.name, target_name.name
                     ));
-                    if let Some(pos) = positions.get(wants_melee.target) {
-                        particle_builder.request(
-                            pos.x,
-                            pos.y,
-                            rltk::RGB::named(rltk::CYAN),
-                            rltk::RGB::named(rltk::BLACK),
-                            rltk::to_cp437('‼'),
-                            200.0,
-                        );
-                    }
                 }
             }
         }

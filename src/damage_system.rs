@@ -203,11 +203,11 @@ fn check_battle_win(ecs: &mut World) {
             entities.delete(victim).expect("Delete failed");
 
             // floor blood
-            let pos = positions.get(victim);
-            if let Some(pos) = pos {
-                let idx = map.xy_idx(pos.x, pos.y);
-                map.bloodstains.insert(idx);
-            }
+            // let pos = positions.get(victim);
+            // if let Some(pos) = pos {
+            //     let idx = map.xy_idx(pos.x, pos.y);
+            //     map.bloodstains.insert(idx);
+            // }
 
             let mut runstate = ecs.write_resource::<RunState>();
             *runstate = RunState::BattleResult;
