@@ -15,6 +15,7 @@ pub enum EffectType {
     Damage { amount: i32 },
     Bloodstain,
     Particle { glyph: rltk::FontCharType, fg: rltk::RGB, bg: rltk::RGB, lifespan: f32 },
+    EntityDeath,
 }
 
 #[derive(Clone, Debug)]
@@ -82,6 +83,7 @@ fn affect_tile(ecs: &mut World, effect: &EffectSpawner, tile_idx: i32) {
 fn affect_entity(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
     match &effect.effect_type {
         EffectType::Damage { .. } => damage::inflict_damage(ecs, effect, target),
+        EffectType::EntityDeath => damage::death(ecs, effect, target),
         EffectType::Bloodstain { .. } => {
             if let Some(pos) = entity_position(ecs, target) {
                 damage::bloodstain(ecs, pos)
@@ -92,6 +94,5 @@ fn affect_entity(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
                 particles::particle_to_tile(ecs, pos, &effect)
             }
         }
-        _ => {}
     }
 }

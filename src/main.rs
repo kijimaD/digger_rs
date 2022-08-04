@@ -17,9 +17,8 @@ mod map_indexing_system;
 use map_indexing_system::MapIndexingSystem;
 mod melee_combat_system;
 use melee_combat_system::MeleeCombatSystem;
-mod damage_system;
-use damage_system::DamageSystem;
 mod battle_action_system;
+mod damage_system;
 use battle_action_system::BattleActionSystem;
 mod ai;
 pub mod effects;
@@ -120,8 +119,6 @@ impl State {
         item_remove.run_now(&self.ecs);
         let mut hunger = hunger_system::HungerSystem {};
         hunger.run_now(&self.ecs);
-        let mut damage = DamageSystem {};
-        damage.run_now(&self.ecs);
         let mut quipper = ai::QuipSystem {};
         quipper.run_now(&self.ecs);
         let mut encumbrance = ai::EncumbranceSystem {};
@@ -146,8 +143,6 @@ impl State {
         battle_action.run_now(&self.ecs);
         let mut melee = MeleeCombatSystem {};
         melee.run_now(&self.ecs);
-        let mut damage = DamageSystem {};
-        damage.run_now(&self.ecs);
         let mut itemuse = ItemUseSystem {};
         itemuse.run_now(&self.ecs);
 

@@ -2,71 +2,7 @@ use super::{
     gamelog::BattleLog, gamelog::GameLog, Attributes, Battle, Combatant, Equipped, InBackpack,
     LootTable, Map, Monster, Name, Player, Pools, Position, RunState, SufferDamage,
 };
-use crate::{mana_at_level, player_hp_at_level};
 use specs::prelude::*;
-
-pub struct DamageSystem {}
-
-impl<'a> System<'a> for DamageSystem {
-    type SystemData = (
-        WriteStorage<'a, Pools>,
-        WriteStorage<'a, SufferDamage>,
-        WriteExpect<'a, Map>,
-        ReadStorage<'a, Position>,
-        Entities<'a>,
-        ReadExpect<'a, Entity>,
-        ReadStorage<'a, Attributes>,
-        WriteExpect<'a, GameLog>,
-    );
-
-    fn run(&mut self, data: Self::SystemData) {
-        let (mut pools, mut damage, map, positions, entities, player, attributes, mut log) = data;
-        let mut xp_gain = 0;
-        let mut gold_gain = 0.0f32;
-
-        for (entity, mut pools, damage) in (&entities, &mut pools, &damage).join() {
-            for dmg in damage.amount.iter() {
-                if !pools.god_mode {
-                    pools.hit_points.current -= dmg.0;
-                }
-
-                if pools.hit_points.current < 1 && dmg.1 {
-                    xp_gain += pools.level * 100;
-                    gold_gain += pools.gold;
-                    let pos = positions.get(entity);
-                    if let Some(pos) = pos {
-                        let idx = map.xy_idx(pos.x, pos.y);
-                        crate::spatial::remove_entity(entity, idx);
-                    }
-                }
-            }
-        }
-
-        if xp_gain != 0 || gold_gain != 0.0 {
-            let mut player_stats = pools.get_mut(*player).unwrap();
-            let player_attributes = attributes.get(*player).unwrap();
-            player_stats.xp += xp_gain;
-            player_stats.gold += gold_gain;
-            if player_stats.xp >= player_stats.level * 1000 {
-                player_stats.level += 1;
-                log.entries
-                    .push(format!("Congratulations, you are now level {}", player_stats.level));
-                player_stats.hit_points.max = player_hp_at_level(
-                    player_attributes.fitness.base + player_attributes.fitness.modifiers,
-                    player_stats.level,
-                );
-                player_stats.hit_points.current = player_stats.hit_points.max;
-                player_stats.mana.max = mana_at_level(
-                    player_attributes.intelligence.base + player_attributes.intelligence.modifiers,
-                    player_stats.level,
-                );
-                player_stats.mana.current = player_stats.mana.max;
-            }
-        }
-
-        damage.clear();
-    }
-}
 
 pub fn delete_the_dead(ecs: &mut World) {
     let mut dead: Vec<Entity> = Vec::new();
