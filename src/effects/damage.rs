@@ -43,7 +43,6 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
 
     let mut pools = ecs.write_storage::<Pools>();
     let attributes = ecs.read_storage::<Attributes>();
-    let mut map = ecs.fetch_mut::<Map>();
 
     {
         if let Some(pos) = entity_position(ecs, target) {
@@ -82,6 +81,7 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
                     player_stats.mana.current = player_stats.mana.max;
 
                     let player_pos = ecs.fetch::<rltk::Point>();
+                    let map = ecs.fetch::<Map>();
                     for i in 0..10 {
                         if player_pos.y - i > 1 {
                             add_effect(
