@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2022-08-01T00:58:50.073Z" agent="5.0 (X11)" etag="Tmbl8QJN_4n-KOIP4LDq" version="20.2.2" type="github" pages="2">
+<mxfile host="app.diagrams.net" modified="2022-08-05T09:56:04.963Z" agent="5.0 (X11)" etag="XVm-Uk7deTbtOfb67UMr" version="20.2.2" type="github" pages="3">
   <diagram id="xgExO2VgEaIyeyu2MwbZ" name="ステージLC">
     <mxGraphModel dx="1406" dy="757" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -8,7 +8,7 @@
           <mxGeometry x="70" y="260" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="ELOPcXGTnWT-Js7EqJzr-3" value="各ダンジョン" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="260" y="260" width="120" height="60" as="geometry" />
+          <mxGeometry x="294" y="260" width="120" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
@@ -58,6 +58,11 @@
               <mxPoint x="910" y="820" />
               <mxPoint x="550" y="820" />
             </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="0IkihTS5zGJ0JQKMcza6-11" value="戦闘継続" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="jUmFY09pZoFJpSRK4bMP-22">
+          <mxGeometry x="-0.3402" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="jUmFY09pZoFJpSRK4bMP-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="jUmFY09pZoFJpSRK4bMP-10" target="jUmFY09pZoFJpSRK4bMP-23">
@@ -123,8 +128,113 @@
         <mxCell id="jUmFY09pZoFJpSRK4bMP-27" value="フィールドへ" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="1440" y="260" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="0IkihTS5zGJ0JQKMcza6-1" value="&amp;lt;diagram/&amp;gt;" style="text;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="480" y="750" width="90" height="40" as="geometry" />
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="OUv0jVe5gZ62N6YKWdYC" name="effect system">
+    <mxGraphModel dx="970" dy="522" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="MtfLHptTJ_sEdnldehco-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="MtfLHptTJ_sEdnldehco-1" target="MtfLHptTJ_sEdnldehco-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="MtfLHptTJ_sEdnldehco-7" value="use" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="MtfLHptTJ_sEdnldehco-5">
+          <mxGeometry x="0.1792" y="1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MtfLHptTJ_sEdnldehco-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="MtfLHptTJ_sEdnldehco-1" target="MtfLHptTJ_sEdnldehco-13">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="220" y="360" />
+              <mxPoint x="220" y="470" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MtfLHptTJ_sEdnldehco-15" value="効果のあるタイルに移動" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="MtfLHptTJ_sEdnldehco-14">
+          <mxGeometry x="0.0671" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MtfLHptTJ_sEdnldehco-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="MtfLHptTJ_sEdnldehco-1" target="MtfLHptTJ_sEdnldehco-18">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="220" y="360" />
+              <mxPoint x="220" y="250" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MtfLHptTJ_sEdnldehco-20" value="ダメージを受ける" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="MtfLHptTJ_sEdnldehco-19">
+          <mxGeometry x="0.4004" y="1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MtfLHptTJ_sEdnldehco-1" value="Actor" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="160" y="330" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="MtfLHptTJ_sEdnldehco-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="MtfLHptTJ_sEdnldehco-2" target="MtfLHptTJ_sEdnldehco-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="MtfLHptTJ_sEdnldehco-6" value="ItemUseを&lt;br&gt;enqueue" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="MtfLHptTJ_sEdnldehco-4">
+          <mxGeometry x="-0.28" y="3" relative="1" as="geometry">
+            <mxPoint x="14" y="3" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MtfLHptTJ_sEdnldehco-2" value="item" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="270" y="330" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="MtfLHptTJ_sEdnldehco-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="MtfLHptTJ_sEdnldehco-3" target="MtfLHptTJ_sEdnldehco-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="MtfLHptTJ_sEdnldehco-10" value="解釈" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="MtfLHptTJ_sEdnldehco-9">
+          <mxGeometry x="-0.2644" y="1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MtfLHptTJ_sEdnldehco-3" value="Effect Queue&lt;br&gt;&lt;br&gt;ダメージを与える&lt;br&gt;タイルに装飾する&lt;br&gt;ポータルを発生させる" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="490" y="330" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="MtfLHptTJ_sEdnldehco-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="MtfLHptTJ_sEdnldehco-8" target="MtfLHptTJ_sEdnldehco-3">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="720" y="270" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="730" y="300" />
+              <mxPoint x="550" y="300" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MtfLHptTJ_sEdnldehco-12" value="Effectをenqueue" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="MtfLHptTJ_sEdnldehco-11">
+          <mxGeometry x="-0.0489" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MtfLHptTJ_sEdnldehco-8" value="具体的なEffect" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="670" y="330" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="MtfLHptTJ_sEdnldehco-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="MtfLHptTJ_sEdnldehco-13" target="MtfLHptTJ_sEdnldehco-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="MtfLHptTJ_sEdnldehco-17" value="Effectをenqueue" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="MtfLHptTJ_sEdnldehco-16">
+          <mxGeometry x="-0.408" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MtfLHptTJ_sEdnldehco-13" value="TriggerSystem" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="270" y="440" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="MtfLHptTJ_sEdnldehco-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="MtfLHptTJ_sEdnldehco-18">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="540" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MtfLHptTJ_sEdnldehco-22" value="BloodEffectをenqueue" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="MtfLHptTJ_sEdnldehco-21">
+          <mxGeometry x="-0.5202" y="2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="MtfLHptTJ_sEdnldehco-18" value="DamageSystem" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="270" y="220" width="120" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
