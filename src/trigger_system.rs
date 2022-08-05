@@ -1,11 +1,12 @@
 use super::{
-    gamelog::GameLog, ApplyTeleport, EntityMoved, EntryTrigger, Map, Name, Position,
+    effects::*, gamelog::GameLog, ApplyTeleport, EntityMoved, EntryTrigger, Map, Name, Position,
     SingleActivation, TeleportTo,
 };
 use specs::prelude::*;
 
 pub struct TriggerSystem {}
 
+/// タイルにセットされたコンポーネントを元に、イベントを生成するsystem
 impl<'a> System<'a> for TriggerSystem {
     #[allow(clippy::type_complexity)]
     type SystemData = (
@@ -22,6 +23,7 @@ impl<'a> System<'a> for TriggerSystem {
         ReadExpect<'a, Entity>,
     );
 
+    /// エンティティが動いたとき、その位置にトリガーエンティティがないか確認する。トリガーがあった場合、effectを生成する。effectにはtrigger entity自体を渡しているので、効果を特定できる
     fn run(&mut self, data: Self::SystemData) {
         let (
             map,
@@ -38,7 +40,6 @@ impl<'a> System<'a> for TriggerSystem {
         ) = data;
 
         // Iterate the entities that moved and their final position
-        let mut remove_entities: Vec<Entity> = Vec::new();
         for (entity, mut _entity_moved, pos) in (&entities, &mut entity_moved, &position).join() {
             let idx = map.xy_idx(pos.x, pos.y);
             crate::spatial::for_each_tile_content(idx, |entity_id| {
@@ -54,38 +55,16 @@ impl<'a> System<'a> for TriggerSystem {
                                 log.entries.push(format!("{} triggers!", &name.name));
                             }
 
-                            // If its a teleporter, then do that
-                            if let Some(teleport) = teleporters.get(entity_id) {
-                                if (teleport.player_only && entity == *player_entity)
-                                    || !teleport.player_only
-                                {
-                                    apply_teleport
-                                        .insert(
-                                            entity,
-                                            ApplyTeleport {
-                                                dest_x: teleport.x,
-                                                dest_y: teleport.y,
-                                                dest_depth: teleport.depth,
-                                            },
-                                        )
-                                        .expect("Unable to insert");
-                                }
-                            }
-
-                            // If it is single activation, it needs to be removed
-                            let sa = single_activation.get(entity_id);
-                            if let Some(_sa) = sa {
-                                remove_entities.push(entity_id);
-                            }
+                            // Call the effects system
+                            add_effect(
+                                Some(entity),
+                                EffectType::TriggerFire { trigger: entity_id },
+                                Targets::Tile { tile_idx: idx as i32 },
+                            );
                         }
                     }
                 }
             });
-        }
-
-        // Remove any single activation traps
-        for trap in remove_entities.iter() {
-            entities.delete(*trap).expect("Unable to delete trap");
         }
 
         // Remove all entity movement markers

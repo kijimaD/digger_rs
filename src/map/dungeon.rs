@@ -1,7 +1,7 @@
 use super::{Map, TileType};
 use crate::components::{OtherLevelPosition, Position, Viewshed};
 use crate::map_builders::level_builder;
-use rltk::{Algorithm2D, BaseMap, Point};
+use rltk::Point;
 use serde::{Deserialize, Serialize};
 use specs::prelude::*;
 use std::collections::HashMap;
@@ -22,7 +22,7 @@ impl MasterDungeonMap {
 
     pub fn get_map(&self, depth: i32) -> Option<Map> {
         if self.maps.contains_key(&depth) {
-            let mut result = self.maps[&depth].clone();
+            let result = self.maps[&depth].clone();
             Some(result)
         } else {
             None

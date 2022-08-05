@@ -1,6 +1,6 @@
 use super::{
     AreaStartingPosition, BuilderChain, BuilderMap, CellularAutomataBuilder, CullUnreachable,
-    DistantExit, MetaMapBuilder, TileType, VoronoiSpawning, XStart, YStart,
+    MetaMapBuilder, TileType, VoronoiSpawning, XStart, YStart,
 };
 use crate::map;
 use rltk::RandomNumberGenerator;

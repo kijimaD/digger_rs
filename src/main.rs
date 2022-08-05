@@ -17,20 +17,18 @@ mod map_indexing_system;
 use map_indexing_system::MapIndexingSystem;
 mod melee_combat_system;
 use melee_combat_system::MeleeCombatSystem;
-mod damage_system;
-use damage_system::DamageSystem;
 mod battle_action_system;
+mod damage_system;
 use battle_action_system::BattleActionSystem;
-mod trigger_system;
-use trigger_system::TriggerSystem;
-mod movement_system;
-use movement_system::MovementSystem;
 mod ai;
+pub mod effects;
 mod encounter_system;
 mod gamelog;
 mod gui;
 mod inventory_system;
+mod movement_system;
 mod spawner;
+mod trigger_system;
 use inventory_system::{ItemCollectionSystem, ItemDropSystem, ItemRemoveSystem, ItemUseSystem};
 pub mod camera;
 mod gamesystem;
@@ -113,6 +111,8 @@ impl State {
         mapindex.run_now(&self.ecs);
         let mut pickup = ItemCollectionSystem {};
         pickup.run_now(&self.ecs);
+        let mut itemequip = inventory_system::ItemEquipOnUse {};
+        itemequip.run_now(&self.ecs);
         let mut itemuse = ItemUseSystem {};
         itemuse.run_now(&self.ecs);
         let mut drop_items = ItemDropSystem {};
@@ -121,12 +121,6 @@ impl State {
         item_remove.run_now(&self.ecs);
         let mut hunger = hunger_system::HungerSystem {};
         hunger.run_now(&self.ecs);
-        let mut particles = particle_system::ParticleSpawnSystem {};
-        particles.run_now(&self.ecs);
-        let mut damage = DamageSystem {};
-        damage.run_now(&self.ecs);
-        let mut lighting = lighting_system::LightingSystem {};
-        lighting.run_now(&self.ecs);
         let mut quipper = ai::QuipSystem {};
         quipper.run_now(&self.ecs);
         let mut encumbrance = ai::EncumbranceSystem {};
@@ -137,6 +131,12 @@ impl State {
         let mut moving = movement_system::MovementSystem {};
         moving.run_now(&self.ecs);
 
+        effects::run_effects_queue(&mut self.ecs);
+        let mut particles = particle_system::ParticleSpawnSystem {};
+        particles.run_now(&self.ecs);
+        let mut lighting = lighting_system::LightingSystem {};
+        lighting.run_now(&self.ecs);
+
         self.ecs.maintain();
     }
 
@@ -145,10 +145,10 @@ impl State {
         battle_action.run_now(&self.ecs);
         let mut melee = MeleeCombatSystem {};
         melee.run_now(&self.ecs);
-        let mut damage = DamageSystem {};
-        damage.run_now(&self.ecs);
         let mut itemuse = ItemUseSystem {};
         itemuse.run_now(&self.ecs);
+
+        effects::run_effects_queue(&mut self.ecs);
 
         self.ecs.maintain();
     }
@@ -570,46 +570,6 @@ impl GameState for State {
 }
 
 impl State {
-    fn entities_to_remove_on_level_change(&mut self) -> Vec<Entity> {
-        let entities = self.ecs.entities();
-        let player = self.ecs.read_storage::<Player>();
-        let backpack = self.ecs.read_storage::<InBackpack>();
-        let player_entity = self.ecs.fetch::<Entity>();
-        let equipped = self.ecs.read_storage::<Equipped>();
-
-        let mut to_delete: Vec<Entity> = Vec::new();
-        for entity in entities.join() {
-            let mut should_delete = true;
-
-            // Don't delete the player
-            let p = player.get(entity);
-            if let Some(_p) = p {
-                should_delete = false;
-            }
-
-            // Don't delete the player's equipment
-            let bp = backpack.get(entity);
-            if let Some(bp) = bp {
-                if bp.owner == *player_entity {
-                    should_delete = false;
-                }
-            }
-
-            let eq = equipped.get(entity);
-            if let Some(eq) = eq {
-                if eq.owner == *player_entity {
-                    should_delete = false;
-                }
-            }
-
-            if should_delete {
-                to_delete.push(entity);
-            }
-        }
-
-        to_delete
-    }
-
     fn goto_level(&mut self, offset: i32) {
         freeze_level_entities(&mut self.ecs);
 
@@ -695,7 +655,6 @@ fn main() -> rltk::BError {
     gs.ecs.register::<WantsToEncounter>();
     gs.ecs.register::<Battle>();
     gs.ecs.register::<Combatant>();
-    gs.ecs.register::<SufferDamage>();
     gs.ecs.register::<Item>();
     gs.ecs.register::<ProvidesHealing>();
     gs.ecs.register::<InflictsDamage>();

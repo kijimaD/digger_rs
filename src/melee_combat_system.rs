@@ -1,7 +1,7 @@
 use super::{
-    gamelog::BattleLog, particle_system::ParticleBuilder, skill_bonus, Attributes, EquipmentSlot,
-    Equipped, HungerClock, HungerState, MeleeWeapon, Name, NaturalAttackDefense, Pools, Position,
-    Skill, Skills, SufferDamage, WantsToMelee, WeaponAttribute, Wearable,
+    effects::*, gamelog::BattleLog, particle_system::ParticleBuilder, skill_bonus, Attributes,
+    EquipmentSlot, Equipped, HungerClock, HungerState, MeleeWeapon, Name, NaturalAttackDefense,
+    Pools, Position, Skill, Skills, WantsToMelee, WeaponAttribute, Wearable,
 };
 use specs::prelude::*;
 
@@ -23,7 +23,6 @@ impl<'a> System<'a> for MeleeCombatSystem {
         ReadStorage<'a, Name>,
         ReadStorage<'a, Attributes>,
         ReadStorage<'a, Skills>,
-        WriteStorage<'a, SufferDamage>,
         WriteExpect<'a, ParticleBuilder>,
         ReadStorage<'a, Position>,
         ReadStorage<'a, HungerClock>,
@@ -33,7 +32,6 @@ impl<'a> System<'a> for MeleeCombatSystem {
         ReadStorage<'a, MeleeWeapon>,
         ReadStorage<'a, Wearable>,
         ReadStorage<'a, NaturalAttackDefense>,
-        ReadExpect<'a, Entity>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
@@ -44,7 +42,6 @@ impl<'a> System<'a> for MeleeCombatSystem {
             names,
             attributes,
             skills,
-            mut inflict_damage,
             mut particle_builder,
             positions,
             hunger_clock,
@@ -54,7 +51,6 @@ impl<'a> System<'a> for MeleeCombatSystem {
             meleeweapons,
             wearables,
             natural,
-            player_entity,
         ) = data;
 
         for (entity, wants_melee, name, attacker_attributes, attacker_skills, attacker_pools) in
@@ -124,9 +120,6 @@ impl<'a> System<'a> for MeleeCombatSystem {
                         armor_item_bonus_f += armor.armor_class;
                     }
                 }
-                let base_armor_class = 10;
-                let armor_quickness_bonus = target_attributes.quickness.bonus;
-                let armor_skill_bonus = skill_bonus(Skill::Defense, &*target_skills);
                 let armor_item_bonus = armor_item_bonus_f as i32;
 
                 let armor_class =
@@ -148,11 +141,10 @@ impl<'a> System<'a> for MeleeCombatSystem {
                             + skill_damage_bonus
                             + weapon_damage_bonus,
                     );
-                    SufferDamage::new_damage(
-                        &mut inflict_damage,
-                        wants_melee.target,
-                        damage,
-                        entity == *player_entity,
+                    add_effect(
+                        Some(entity),
+                        EffectType::Damage { amount: damage },
+                        Targets::Single { target: wants_melee.target },
                     );
                     log.entries.push(format!(
                         "{} hits {}, for {} hp.",
@@ -175,32 +167,12 @@ impl<'a> System<'a> for MeleeCombatSystem {
                         "{} considers attacking {}, but misjudges the timing.",
                         name.name, target_name.name
                     ));
-                    if let Some(pos) = positions.get(wants_melee.target) {
-                        particle_builder.request(
-                            pos.x,
-                            pos.y,
-                            rltk::RGB::named(rltk::BLUE),
-                            rltk::RGB::named(rltk::BLACK),
-                            rltk::to_cp437('‼'),
-                            200.0,
-                        );
-                    }
                 } else {
                     // Miss
                     log.entries.push(format!(
                         "{} attacks {}, but can't connect.",
                         name.name, target_name.name
                     ));
-                    if let Some(pos) = positions.get(wants_melee.target) {
-                        particle_builder.request(
-                            pos.x,
-                            pos.y,
-                            rltk::RGB::named(rltk::CYAN),
-                            rltk::RGB::named(rltk::BLACK),
-                            rltk::to_cp437('‼'),
-                            200.0,
-                        );
-                    }
                 }
             }
         }

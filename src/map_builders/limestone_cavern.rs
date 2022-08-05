@@ -4,7 +4,6 @@ use super::{
     MetaMapBuilder, NearestCorridors, PrefabBuilder, RoomBasedSpawner, RoomDrawer, RoomExploder,
     RoomSort, RoomSorter, TileType, VoronoiSpawning, XEnd, XStart, YEnd, YStart,
 };
-use crate::map;
 use rltk::RandomNumberGenerator;
 
 pub fn limestone_cavern_builder(
