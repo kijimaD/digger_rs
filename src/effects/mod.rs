@@ -5,6 +5,7 @@ use std::sync::Mutex;
 mod damage;
 mod targeting;
 pub use targeting::*;
+mod hunger;
 mod particles;
 mod triggers;
 
@@ -18,6 +19,7 @@ pub enum EffectType {
     Particle { glyph: rltk::FontCharType, fg: rltk::RGB, bg: rltk::RGB, lifespan: f32 },
     EntityDeath,
     ItemUse { item: Entity },
+    WellFed,
 }
 
 #[derive(Clone, Debug)]
@@ -69,6 +71,7 @@ fn target_applicator(ecs: &mut World, effect: &EffectSpawner) {
 fn tile_effect_hits_entities(effect: &EffectType) -> bool {
     match effect {
         EffectType::Damage { .. } => true,
+        EffectType::WellFed => true,
         _ => false,
     }
 }
@@ -100,6 +103,7 @@ fn affect_entity(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
                 particles::particle_to_tile(ecs, pos, &effect)
             }
         }
+        EffectType::WellFed => hunger::well_fed(ecs, effect, target),
         _ => {}
     }
 }

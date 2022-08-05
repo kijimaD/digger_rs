@@ -1,5 +1,5 @@
 use super::*;
-use crate::components::{Attributes, Consumable, Player, Pools};
+use crate::components::{Attributes, Consumable, Name, Player, Pools, ProvidesFood};
 use crate::gamelog::GameLog;
 use crate::gamesystem::{mana_at_level, player_hp_at_level};
 use specs::prelude::*;
@@ -16,4 +16,10 @@ pub fn item_trigger(creator: Option<Entity>, item: Entity, targets: &Targets, ec
 
 fn event_trigger(creator: Option<Entity>, entity: Entity, targets: &Targets, ecs: &mut World) {
     let mut gamelog = ecs.fetch_mut::<GameLog>();
+
+    if ecs.read_storage::<ProvidesFood>().get(entity).is_some() {
+        add_effect(creator, EffectType::WellFed, targets.clone());
+        let names = ecs.read_storage::<Name>();
+        gamelog.entries.push(format!("You eat the {}.", names.get(entity).unwrap().name));
+    }
 }
