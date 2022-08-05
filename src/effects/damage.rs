@@ -101,3 +101,23 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
         }
     }
 }
+
+pub fn heal_damage(ecs: &mut World, heal: &EffectSpawner, target: Entity) {
+    let mut pools = ecs.write_storage::<Pools>();
+    if let Some(pool) = pools.get_mut(target) {
+        if let EffectType::Healing { amount } = heal.effect_type {
+            pool.hit_points.current =
+                i32::min(pool.hit_points.max, pool.hit_points.current + amount);
+            add_effect(
+                None,
+                EffectType::Particle {
+                    glyph: rltk::to_cp437('‼'),
+                    fg: rltk::RGB::named(rltk::GREEN),
+                    bg: rltk::RGB::named(rltk::BLACK),
+                    lifespan: 200.0,
+                },
+                Targets::Single { target },
+            );
+        }
+    }
+}

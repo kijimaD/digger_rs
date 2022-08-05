@@ -2,10 +2,12 @@ use specs::prelude::*;
 use std::collections::VecDeque;
 use std::sync::Mutex;
 
+use crate::map::Map;
 mod damage;
 mod targeting;
 pub use targeting::*;
 mod hunger;
+mod movement;
 mod particles;
 mod triggers;
 
@@ -20,6 +22,9 @@ pub enum EffectType {
     EntityDeath,
     ItemUse { item: Entity },
     WellFed,
+    Healing { amount: i32 },
+    TriggerFire { trigger: Entity },
+    TeleportTo { x: i32, y: i32, depth: i32, player_only: bool },
 }
 
 #[derive(Clone, Debug)]
@@ -51,9 +56,13 @@ pub fn run_effects_queue(ecs: &mut World) {
     }
 }
 
+/// effectの対象を元に分岐して、異なる関数を適用する
+/// EffectType::ItemUseの場合、triggerが呼ばれ、triggerが各種effectを生成する。つまり間接的にeffectを生成する
 fn target_applicator(ecs: &mut World, effect: &EffectSpawner) {
     if let EffectType::ItemUse { item } = effect.effect_type {
         triggers::item_trigger(effect.creator, item, &effect.targets, ecs);
+    } else if let EffectType::TriggerFire { trigger } = effect.effect_type {
+        triggers::trigger(effect.creator, trigger, &effect.targets, ecs);
     } else {
         match &effect.targets {
             Targets::Tile { tile_idx } => affect_tile(ecs, effect, *tile_idx),
@@ -68,10 +77,13 @@ fn target_applicator(ecs: &mut World, effect: &EffectSpawner) {
     }
 }
 
+/// タイルへの効果がタイル上のentityにも及ぶeffect
 fn tile_effect_hits_entities(effect: &EffectType) -> bool {
     match effect {
         EffectType::Damage { .. } => true,
         EffectType::WellFed => true,
+        EffectType::Healing { .. } => true,
+        EffectType::TeleportTo { .. } => true,
         _ => false,
     }
 }
@@ -104,6 +116,8 @@ fn affect_entity(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
             }
         }
         EffectType::WellFed => hunger::well_fed(ecs, effect, target),
+        EffectType::Healing { .. } => damage::heal_damage(ecs, effect, target),
+        EffectType::TeleportTo { .. } => movement::apply_teleport(ecs, effect, target),
         _ => {}
     }
 }
