@@ -655,7 +655,6 @@ fn main() -> rltk::BError {
     gs.ecs.register::<WantsToEncounter>();
     gs.ecs.register::<Battle>();
     gs.ecs.register::<Combatant>();
-    gs.ecs.register::<SufferDamage>();
     gs.ecs.register::<Item>();
     gs.ecs.register::<ProvidesHealing>();
     gs.ecs.register::<InflictsDamage>();

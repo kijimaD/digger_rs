@@ -15,7 +15,12 @@ pub fn item_trigger(creator: Option<Entity>, item: Entity, targets: &Targets, ec
     }
 }
 
-fn event_trigger(creator: Option<Entity>, entity: Entity, targets: &Targets, ecs: &mut World) -> bool {
+fn event_trigger(
+    creator: Option<Entity>,
+    entity: Entity,
+    targets: &Targets,
+    ecs: &mut World,
+) -> bool {
     let mut did_something = false;
     let mut gamelog = ecs.fetch_mut::<GameLog>();
 
