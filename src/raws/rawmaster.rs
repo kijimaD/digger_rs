@@ -137,6 +137,30 @@ fn find_slot_for_equippable_item(tag: &str, raws: &RawMaster) -> EquipmentSlot {
     panic!("Trying to equip {}, but it has no slot tag.", tag);
 }
 
+macro_rules! apply_effects {
+    ( $effects:expr, $eb:expr) => {
+        for effect in $effects.iter() {
+            let effect_name = effect.0.as_str();
+            match effect_name {
+                "provides_healing" => {
+                    $eb =
+                        $eb.with(ProvidesHealing { heal_amount: effect.1.parse::<i32>().unwrap() })
+                }
+                "damage" => {
+                    $eb = $eb.with(InflictsDamage { damage: effect.1.parse::<i32>().unwrap() })
+                }
+                "town_portal" => $eb = $eb.with(TownPortal {}),
+                "food" => $eb = $eb.with(ProvidesFood {}),
+                "single_activation" => $eb = $eb.with(SingleActivation {}),
+                _ => rltk::console::log(format!(
+                    "Warning: consumable effect {} not implemented.",
+                    effect_name
+                )),
+            }
+        }
+    };
+}
+
 pub fn spawn_named_item(
     raws: &RawMaster,
     ecs: &mut World,
@@ -166,23 +190,7 @@ pub fn spawn_named_item(
 
         if let Some(consumable) = &item_template.consumable {
             eb = eb.with(crate::components::Consumable {});
-            for effect in consumable.effects.iter() {
-                let effect_name = effect.0.as_str();
-                match effect_name {
-                    "provides_healing" => {
-                        eb = eb
-                            .with(ProvidesHealing { heal_amount: effect.1.parse::<i32>().unwrap() })
-                    }
-                    "food" => eb = eb.with(ProvidesFood {}),
-                    "town_portal" => eb = eb.with(TownPortal {}),
-                    _ => {
-                        rltk::console::log(format!(
-                            "Warning: consumable effect {} not implemented.",
-                            effect_name
-                        ));
-                    }
-                }
-            }
+            apply_effects!(consumable.effects, eb);
         }
 
         if let Some(weapon) = &item_template.weapon {
@@ -369,6 +377,11 @@ pub fn spawn_named_prop(
                 color: rltk::RGB::from_hex(&light.color).expect("Bad color"),
             });
             eb = eb.with(Viewshed { range: light.range, dirty: true, visible_tiles: Vec::new() });
+        }
+
+        if let Some(entry_trigger) = &prop_template.entry_trigger {
+            eb = eb.with(EntryTrigger {});
+            apply_effects!(entry_trigger.effects, eb);
         }
 
         return Some(eb.build());
