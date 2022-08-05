@@ -7,15 +7,16 @@ use specs::prelude::*;
 
 pub fn item_trigger(creator: Option<Entity>, item: Entity, targets: &Targets, ecs: &mut World) {
     // Use the item via the generic system
-    event_trigger(creator, item, targets, ecs);
+    let did_something = event_trigger(creator, item, targets, ecs);
 
     // if it was a consumable, then it gets deleted
-    if ecs.read_storage::<Consumable>().get(item).is_some() {
+    if did_something && ecs.read_storage::<Consumable>().get(item).is_some() {
         ecs.entities().delete(item).expect("Delete Failed");
     }
 }
 
-fn event_trigger(creator: Option<Entity>, entity: Entity, targets: &Targets, ecs: &mut World) {
+fn event_trigger(creator: Option<Entity>, entity: Entity, targets: &Targets, ecs: &mut World) -> bool {
+    let mut did_something = false;
     let mut gamelog = ecs.fetch_mut::<GameLog>();
 
     // food
@@ -23,6 +24,7 @@ fn event_trigger(creator: Option<Entity>, entity: Entity, targets: &Targets, ecs
         add_effect(creator, EffectType::WellFed, targets.clone());
         let names = ecs.read_storage::<Name>();
         gamelog.entries.push(format!("You eat the {}.", names.get(entity).unwrap().name));
+        did_something = true;
     }
 
     // town portal
@@ -34,17 +36,20 @@ fn event_trigger(creator: Option<Entity>, entity: Entity, targets: &Targets, ecs
             gamelog.entries.push("You are teleported back to town!".to_string());
             let mut runstate = ecs.fetch_mut::<RunState>();
             *runstate = RunState::TownPortal;
+            did_something = true;
         }
     }
 
     // healing
     if let Some(heal) = ecs.read_storage::<ProvidesHealing>().get(entity) {
         add_effect(creator, EffectType::Healing { amount: heal.heal_amount }, targets.clone());
+        did_something = true;
     }
 
     // damage
     if let Some(damage) = ecs.read_storage::<InflictsDamage>().get(entity) {
         add_effect(creator, EffectType::Damage { amount: damage.damage }, targets.clone());
+        did_something = true;
     }
 
     // teleport
@@ -59,13 +64,16 @@ fn event_trigger(creator: Option<Entity>, entity: Entity, targets: &Targets, ecs
             },
             targets.clone(),
         );
+        did_something = true;
     }
+
+    did_something
 }
 
 pub fn trigger(creator: Option<Entity>, trigger: Entity, targets: &Targets, ecs: &mut World) {
-    event_trigger(creator, trigger, targets, ecs);
+    let did_something = event_trigger(creator, trigger, targets, ecs);
 
-    if ecs.read_storage::<SingleActivation>().get(trigger).is_some() {
+    if did_something && ecs.read_storage::<SingleActivation>().get(trigger).is_some() {
         ecs.entities().delete(trigger).expect("Delete failed");
     }
 }
