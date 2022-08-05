@@ -45,8 +45,10 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
     let attributes = ecs.read_storage::<Attributes>();
     let mut map = ecs.fetch_mut::<Map>();
 
-    if let Some(pos) = entity_position(ecs, target) {
-        crate::spatial::remove_entity(target, pos as usize);
+    {
+        if let Some(pos) = entity_position(ecs, target) {
+            crate::spatial::remove_entity(target, pos as usize);
+        }
     }
 
     if let Some(source) = effect.creator {
