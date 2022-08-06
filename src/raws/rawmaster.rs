@@ -216,6 +216,15 @@ pub fn spawn_named_item(
             eb = eb.with(Wearable { slot, armor_class: wearable.armor_class });
         }
 
+        if let Some(ab) = &item_template.attributes {
+            eb = eb.with(AttributeBonus {
+                might: ab.might,
+                fitness: ab.fitness,
+                quickness: ab.quickness,
+                intelligence: ab.intelligence,
+            });
+        }
+
         return Some(eb.build());
     }
     None

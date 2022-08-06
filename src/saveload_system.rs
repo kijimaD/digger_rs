@@ -101,7 +101,8 @@ pub fn save_game(ecs: &mut World) {
             WantsToPickupItem,
             WantsToRemoveItem,
             WantsToUseItem,
-            Wearable
+            Wearable,
+            AttributeBonus
         );
     }
 
@@ -205,7 +206,8 @@ pub fn load_game(ecs: &mut World) {
             WantsToPickupItem,
             WantsToRemoveItem,
             WantsToUseItem,
-            Wearable
+            Wearable,
+            AttributeBonus
         );
     }
 

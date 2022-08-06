@@ -303,6 +303,14 @@ pub struct Wearable {
     pub slot: EquipmentSlot,
 }
 
+#[derive(Component, Serialize, Deserialize, Clone)]
+pub struct AttributeBonus {
+    pub might: Option<i32>,
+    pub fitness: Option<i32>,
+    pub quickness: Option<i32>,
+    pub intelligence: Option<i32>,
+}
+
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct BlocksVisibility {}
 

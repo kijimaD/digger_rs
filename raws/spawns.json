@@ -50,6 +50,12 @@
       "max_depth": 100
     },
     {
+      "name": "Gauntlets of Ogre Power",
+      "weight": 1,
+      "min_depth": 0,
+      "max_depth": 100
+    },
+    {
       "name": "Tower Shield",
       "weight": 1,
       "min_depth": 3,
@@ -302,6 +308,31 @@
       "weight_kg": 3.0,
       "base_value": 10.0,
       "initiative_penalty": 2
+    },
+    {
+      "name": "Gauntlets of Ogre Power",
+      "renderable": {
+        "glyph": "[",
+        "fg": "#00FF00",
+        "bg": "#000000",
+        "order": 2
+      },
+      "wearable": {
+        "slot": "Hands",
+        "armor_class": 0.1,
+        "might": 5
+      },
+      "weight_lbs": 1.0,
+      "base_value": 300.0,
+      "initiative_penalty": 0.0,
+      "vendor_category": "armor",
+      "magic": {
+        "class": "common",
+        "naming": "Unidentified Gauntlets"
+      },
+      "attributes": {
+        "might": 5
+      }
     },
     {
       "name": "Old Boots",

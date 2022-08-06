@@ -672,6 +672,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Equipped>();
     gs.ecs.register::<MeleeWeapon>();
     gs.ecs.register::<Wearable>();
+    gs.ecs.register::<AttributeBonus>();
     gs.ecs.register::<HungerClock>();
     gs.ecs.register::<ProvidesFood>();
     gs.ecs.register::<TownPortal>();
