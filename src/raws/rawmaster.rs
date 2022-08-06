@@ -1,6 +1,6 @@
 use super::{Raws, Reaction};
 use crate::components::*;
-use crate::random_table::RandomTable;
+use crate::random_table::{MasterTable, RandomTable};
 use regex::Regex;
 use specs::prelude::*;
 use specs::saveload::{MarkedBuilder, SimpleMarker};
@@ -445,7 +445,7 @@ fn get_renderable_component(
 }
 
 /// 階層によるモンスター生成テーブルを決定する
-pub fn get_spawn_table_for_depth(raws: &RawMaster, depth: i32) -> RandomTable {
+pub fn get_spawn_table_for_depth(raws: &RawMaster, depth: i32) -> MasterTable {
     use super::SpawnTableEntry;
 
     let available_options: Vec<&SpawnTableEntry> = raws
@@ -455,14 +455,15 @@ pub fn get_spawn_table_for_depth(raws: &RawMaster, depth: i32) -> RandomTable {
         .filter(|a| depth >= a.min_depth && depth <= a.max_depth)
         .collect();
 
-    let mut rt = RandomTable::new();
+    let mut rt = MasterTable::new();
     for e in available_options.iter() {
         let mut weight = e.weight;
         if e.add_map_depth_to_weight.is_some() {
             weight += depth;
         }
-        rt = rt.add(e.name.clone(), weight);
+        rt.add(e.name.clone(), weight, raws);
     }
+
     rt
 }
 
@@ -491,9 +492,10 @@ pub fn get_item_drop(
         let mut rt = RandomTable::new();
         let available_options = &raws.raws.loot_tables[raws.loot_index[table]];
         for item in available_options.drops.iter() {
-            rt = rt.add(item.name.clone(), item.weight);
+            rt.add(item.name.clone(), item.weight);
         }
-        return Some(rt.roll(rng));
+        let result = rt.roll(rng);
+        return Some(result);
     }
 
     None
@@ -511,4 +513,20 @@ pub fn faction_reaction(my_faction: &str, their_faction: &str, raws: &RawMaster)
         }
     }
     Reaction::Ignore
+}
+
+pub enum SpawnTableType {
+    Item,
+    Mob,
+    Prop,
+}
+
+pub fn spawn_type_by_name(raws: &RawMaster, key: &str) -> SpawnTableType {
+    if raws.item_index.contains_key(key) {
+        SpawnTableType::Item
+    } else if raws.mob_index.contains_key(key) {
+        SpawnTableType::Mob
+    } else {
+        SpawnTableType::Prop
+    }
 }

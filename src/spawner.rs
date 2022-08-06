@@ -1,8 +1,10 @@
 use super::{
-    random_table::RandomTable, raws::*, Attribute, Attributes, Combatant, EntryTrigger,
-    EquipmentChanged, Faction, HungerClock, HungerState, Initiative, LightSource, Map,
-    MasterDungeonMap, Monster, Name, OtherLevelPosition, Player, Pool, Pools, Position, Rect,
-    Renderable, SerializeMe, SingleActivation, Skill, Skills, TeleportTo, TileType, Viewshed,
+    random_table::{MasterTable, RandomTable},
+    raws::*,
+    Attribute, Attributes, Combatant, EntryTrigger, EquipmentChanged, Faction, HungerClock,
+    HungerState, Initiative, LightSource, Map, MasterDungeonMap, Monster, Name, OtherLevelPosition,
+    Player, Pool, Pools, Position, Rect, Renderable, SerializeMe, SingleActivation, Skill, Skills,
+    TeleportTo, TileType, Viewshed,
 };
 use crate::{attr_bonus, mana_at_level, player_hp_at_level};
 use rltk::{RandomNumberGenerator, RGB};
@@ -92,7 +94,7 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
 
 const MAX_MONSTERS: i32 = 2;
 
-fn room_table(map_depth: i32) -> RandomTable {
+fn room_table(map_depth: i32) -> MasterTable {
     get_spawn_table_for_depth(&RAWS.lock().unwrap(), map_depth)
 }
 
