@@ -36,6 +36,7 @@ impl MasterTable {
         }
     }
 
+    /// 保持した複数のRandomTableのどれを使うか決める。タイプごとの選出に偏りはない。
     pub fn roll(&self, rng: &mut RandomNumberGenerator) -> String {
         let roll = rng.roll_dice(1, 4);
         match roll {
@@ -47,6 +48,7 @@ impl MasterTable {
     }
 }
 
+/// 重み付けを保持する。個別の重みと全体の重みを持ち、それらを使って確率を変える。
 #[derive(Default)]
 pub struct RandomTable {
     entries: Vec<RandomEntry>,
