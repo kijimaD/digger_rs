@@ -614,6 +614,9 @@ impl State {
         } else {
             map::thaw_level_entities(&mut self.ecs);
         }
+
+        gamelog::clear_log();
+        gamelog::Logger::new().append("Enter the").color(rltk::CYAN).append("dungeon...").log();
     }
 }
 
@@ -700,7 +703,7 @@ fn main() -> rltk::BError {
 
     gs.ecs.insert(player_entity);
     gs.ecs.insert(RunState::MapGeneration {});
-    gs.ecs.insert(gamelog::GameLog { entries: vec!["Enter the dungeon...".to_string()] });
+    gs.ecs.insert(gamelog::GameLog { entries: vec!["".to_string()] }); // old
     gs.ecs.insert(gamelog::BattleLog { entries: vec!["".to_string()] });
     gs.ecs.insert(particle_system::ParticleBuilder::new());
     gs.ecs.insert(rex_assets::RexAssets::new());
