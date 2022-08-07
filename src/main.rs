@@ -97,6 +97,8 @@ impl State {
         vis.run_now(&self.ecs);
         let mut initiative = ai::InitiativeSystem {};
         initiative.run_now(&self.ecs);
+        let mut quipper = ai::QuipSystem {};
+        quipper.run_now(&self.ecs);
         let mut visible = ai::VisibleAI {};
         visible.run_now(&self.ecs);
         let mut adjacent = ai::AdjacentAI {};
@@ -121,8 +123,6 @@ impl State {
         item_remove.run_now(&self.ecs);
         let mut hunger = hunger_system::HungerSystem {};
         hunger.run_now(&self.ecs);
-        let mut quipper = ai::QuipSystem {};
-        quipper.run_now(&self.ecs);
         let mut encumbrance = ai::EncumbranceSystem {};
         encumbrance.run_now(&self.ecs);
         let mut trigger = trigger_system::TriggerSystem {};
