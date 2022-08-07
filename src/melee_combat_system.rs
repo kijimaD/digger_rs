@@ -150,6 +150,20 @@ impl<'a> System<'a> for MeleeCombatSystem {
                         "{} hits {}, for {} hp.",
                         &name.name, &target_name.name, damage
                     ));
+                    // crate::gamelog::Logger::new()
+                    //     .color(rltk::YELLOW)
+                    //     .append(&name.name)
+                    //     .color(rltk::WHITE)
+                    //     .append("hits")
+                    //     .color(rltk::YELLOW)
+                    //     .append(&target_name.name)
+                    //     .color(rltk::WHITE)
+                    //     .append("for")
+                    //     .color(rltk::RED)
+                    //     .append(format!("{}", damage))
+                    //     .color(rltk::WHITE)
+                    //     .append("hp.")
+                    //     .log();
                     if let Some(pos) = positions.get(wants_melee.target) {
                         // TODO: 戦闘モードに対応させる
                         particle_builder.request(
@@ -167,12 +181,32 @@ impl<'a> System<'a> for MeleeCombatSystem {
                         "{} considers attacking {}, but misjudges the timing.",
                         name.name, target_name.name
                     ));
+                    // crate::gamelog::Logger::new()
+                    //     .color(rltk::CYAN)
+                    //     .append(&name.name)
+                    //     .color(rltk::WHITE)
+                    //     .append("considers attacking")
+                    //     .color(rltk::CYAN)
+                    //     .append(&target_name.name)
+                    //     .color(rltk::WHITE)
+                    //     .append("but misjudges the timing!")
+                    //     .log();
                 } else {
                     // Miss
                     log.entries.push(format!(
                         "{} attacks {}, but can't connect.",
                         name.name, target_name.name
                     ));
+                    // crate::gamelog::Logger::new()
+                    //     .color(rltk::CYAN)
+                    //     .append(&name.name)
+                    //     .color(rltk::WHITE)
+                    //     .append("attacks")
+                    //     .color(rltk::CYAN)
+                    //     .append(&target_name.name)
+                    //     .color(rltk::WHITE)
+                    //     .append("but can't connect.")
+                    //     .log();
                 }
             }
         }

@@ -1,6 +1,4 @@
-use super::{
-    gamelog::GameLog, EquipmentChanged, Equippable, Equipped, InBackpack, Name, WantsToUseItem,
-};
+use super::{gamelog, EquipmentChanged, Equippable, Equipped, InBackpack, Name, WantsToUseItem};
 use specs::prelude::*;
 
 pub struct ItemEquipOnUse {}
@@ -9,7 +7,6 @@ impl<'a> System<'a> for ItemEquipOnUse {
     #[allow(clippy::type_complexity)]
     type SystemData = (
         ReadExpect<'a, Entity>,
-        WriteExpect<'a, GameLog>,
         Entities<'a>,
         WriteStorage<'a, WantsToUseItem>,
         ReadStorage<'a, Name>,
@@ -23,7 +20,6 @@ impl<'a> System<'a> for ItemEquipOnUse {
     fn run(&mut self, data: Self::SystemData) {
         let (
             player_entity,
-            mut gamelog,
             entities,
             mut wants_use,
             names,
@@ -38,12 +34,17 @@ impl<'a> System<'a> for ItemEquipOnUse {
             if let Some(can_equip) = equippable.get(useitem.item) {
                 let target_slot = can_equip.slot;
 
+                // Unequip
                 let mut to_unequip: Vec<Entity> = Vec::new();
                 for (item_entity, already_equipped, name) in (&entities, &equipped, &names).join() {
                     if already_equipped.owner == target && already_equipped.slot == target_slot {
                         to_unequip.push(item_entity);
                         if target == *player_entity {
-                            gamelog.entries.push(format!("You unequip {}.", name.name));
+                            crate::gamelog::Logger::new()
+                                .append("You unequip")
+                                .color(rltk::CYAN)
+                                .append(&name.name)
+                                .log();
                         }
                     }
                 }
@@ -61,9 +62,11 @@ impl<'a> System<'a> for ItemEquipOnUse {
                     .expect("Unable to insert equipped component");
                 backpack.remove(useitem.item);
                 if target == *player_entity {
-                    gamelog
-                        .entries
-                        .push(format!("You equip {}.", names.get(useitem.item).unwrap().name));
+                    crate::gamelog::Logger::new()
+                        .append("You equip")
+                        .color(rltk::CYAN)
+                        .append(&names.get(useitem.item).unwrap().name)
+                        .log();
                 }
 
                 // Done with item

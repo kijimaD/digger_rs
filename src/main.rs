@@ -576,8 +576,7 @@ impl State {
         let current_depth = self.ecs.fetch::<Map>().depth;
         self.generate_world_map(current_depth + offset, offset);
 
-        let mut gamelog = self.ecs.fetch_mut::<gamelog::GameLog>();
-        gamelog.entries.push("You change level.".to_string());
+        gamelog::Logger::new().append("You change Lovel.").log();
     }
 
     fn game_over_cleanup(&mut self) {
@@ -614,9 +613,6 @@ impl State {
         } else {
             map::thaw_level_entities(&mut self.ecs);
         }
-
-        gamelog::clear_log();
-        gamelog::Logger::new().append("Enter the").color(rltk::CYAN).append("dungeon...").log();
     }
 }
 
@@ -703,7 +699,8 @@ fn main() -> rltk::BError {
 
     gs.ecs.insert(player_entity);
     gs.ecs.insert(RunState::MapGeneration {});
-    gs.ecs.insert(gamelog::GameLog { entries: vec!["".to_string()] }); // old
+    gamelog::clear_log();
+    gamelog::Logger::new().append("Enter the").color(rltk::CYAN).append("dungeon...").log();
     gs.ecs.insert(gamelog::BattleLog { entries: vec!["".to_string()] });
     gs.ecs.insert(particle_system::ParticleBuilder::new());
     gs.ecs.insert(rex_assets::RexAssets::new());

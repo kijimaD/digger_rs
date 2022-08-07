@@ -1,6 +1,6 @@
 use super::*;
 use crate::components::{Attributes, Player, Pools};
-use crate::gamelog::GameLog;
+use crate::gamelog;
 use crate::gamesystem::{mana_at_level, player_hp_at_level};
 use crate::map::Map;
 use specs::prelude::*;
@@ -58,7 +58,6 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
             }
 
             if xp_gain != 0 || gold_gain != 0.0 {
-                let mut log = ecs.fetch_mut::<GameLog>();
                 let mut player_stats = pools.get_mut(source).unwrap();
                 let player_attributes = attributes.get(source).unwrap();
                 player_stats.xp += xp_gain;
@@ -66,8 +65,12 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
                 if player_stats.xp >= player_stats.level * 1000 {
                     // level up
                     player_stats.level += 1;
-                    log.entries
-                        .push(format!("Congratulations, you are now level{}", player_stats.level));
+                    gamelog::Logger::new()
+                        .append(format!("Congratulations, you are now level{}", player_stats.level))
+                        .color(rltk::MAGENTA)
+                        .append("Congratulations, you are now level")
+                        .append(format!("{}", player_stats.level))
+                        .log();
                     player_stats.hit_points.max = player_hp_at_level(
                         player_attributes.fitness.base + player_attributes.fitness.modifiers,
                         player_stats.level,

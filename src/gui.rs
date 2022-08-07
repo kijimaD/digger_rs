@@ -1,7 +1,7 @@
 use super::{
-    camera, gamelog, gamelog::BattleLog, gamelog::GameLog, Attribute, Attributes, Battle,
-    Combatant, Consumable, Equipped, HungerClock, HungerState, InBackpack, Item, Map, Monster,
-    Name, Player, Pools, Position, RunState, State, Vendor, VendorMode,
+    camera, gamelog, gamelog::BattleLog, Attribute, Attributes, Battle, Combatant, Consumable,
+    Equipped, HungerClock, HungerState, InBackpack, Item, Map, Monster, Name, Player, Pools,
+    Position, RunState, State, Vendor, VendorMode,
 };
 use rltk::{RandomNumberGenerator, Rltk, TextBlock, VirtualKeyCode, RGB};
 use specs::prelude::*;

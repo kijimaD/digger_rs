@@ -1,6 +1,6 @@
 use super::{
-    gamelog::BattleLog, gamelog::GameLog, Attributes, Battle, Combatant, Equipped, InBackpack,
-    LootTable, Map, Monster, Name, Player, Pools, Position, RunState,
+    gamelog::BattleLog, Attributes, Battle, Combatant, Equipped, InBackpack, LootTable, Map,
+    Monster, Name, Player, Pools, Position, RunState,
 };
 use specs::prelude::*;
 
