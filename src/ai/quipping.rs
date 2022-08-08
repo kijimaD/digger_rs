@@ -29,12 +29,9 @@ impl<'a> System<'a> for QuipSystem {
                 };
 
                 gamelog::Logger::new()
-                    .color(rltk::YELLOW)
-                    .append(&name.name)
-                    .color(rltk::WHITE)
+                    .npc_name(&name.name)
                     .append("says")
-                    .color(rltk::CYAN)
-                    .append(&quip.available[quip_index])
+                    .npc_name(&quip.available[quip_index])
                     .log();
 
                 quip.available.remove(quip_index);
