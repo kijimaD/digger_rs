@@ -224,6 +224,9 @@ impl GameState for State {
             }
             RunState::AwaitingInput => {
                 newrunstate = player_input(self, ctx);
+                if newrunstate != RunState::AwaitingInput {
+                    crate::gamelog::record_event("Turn", 1);
+                }
             }
             RunState::Ticking => {
                 while newrunstate == RunState::Ticking {

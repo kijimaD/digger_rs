@@ -7,8 +7,14 @@ use specs::prelude::*;
 
 pub fn inflict_damage(ecs: &mut World, damage: &EffectSpawner, target: Entity) {
     let mut pools = ecs.write_storage::<Pools>();
+    let player_entity = ecs.fetch::<Entity>();
     if let Some(pool) = pools.get_mut(target) {
         if !pool.god_mode {
+            if let Some(creator) = damage.creator {
+                if creator == target {
+                    return;
+                }
+            }
             if let EffectType::Damage { amount } = damage.effect_type {
                 pool.hit_points.current -= amount;
                 // TODO: particle系を適切にする
@@ -23,6 +29,16 @@ pub fn inflict_damage(ecs: &mut World, damage: &EffectSpawner, target: Entity) {
                     },
                     Targets::Single { target },
                 );
+
+                if target == *player_entity {
+                    crate::gamelog::record_event("Damage Taken", amount);
+                }
+
+                if let Some(creator) = damage.creator {
+                    if creator == *player_entity {
+                        crate::gamelog::record_event("Damage Inflicted", amount);
+                    }
+                }
 
                 if pool.hit_points.current < 1 {
                     add_effect(damage.creator, EffectType::EntityDeath, Targets::Single { target });
