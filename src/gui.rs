@@ -1001,7 +1001,6 @@ pub fn game_over(ctx: &mut Rltk) -> GameOverResult {
         RGB::named(rltk::BLACK),
         "That day, sadly, is not in this chapter..",
     );
-
     ctx.print_color_centered(
         20,
         RGB::named(rltk::MAGENTA),
