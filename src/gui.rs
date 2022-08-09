@@ -1,6 +1,6 @@
 use super::{
     camera, gamelog, gamelog::BattleLog, Attribute, Attributes, Battle, Combatant, Consumable,
-    Equipped, HungerClock, HungerState, InBackpack, Item, Map, Monster, Name, Player, Pools,
+    Equipped, HungerClock, HungerState, InBackpack, Item, Map, Monster, Name, Player, Point, Pools,
     Position, RunState, State, Vendor, VendorMode,
 };
 use rltk::{RandomNumberGenerator, Rltk, TextBlock, VirtualKeyCode, RGB};
@@ -156,9 +156,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     }
 
     // Log
-    let mut block = TextBlock::new(1, 46, 79, 58);
-    block.print(&gamelog::log_display());
-    block.render(&mut rltk::BACKEND_INTERNAL.lock().consoles[0].console);
+    gamelog::print_log(&mut rltk::BACKEND_INTERNAL.lock().consoles[1].console, Point::new(1, 23));
 
     // Tooltip
     draw_tooltips(ecs, ctx);
