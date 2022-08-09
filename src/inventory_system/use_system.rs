@@ -1,5 +1,5 @@
 use super::{
-    gamelog::GameLog, Consumable, EquipmentChanged, Equippable, Equipped, HungerClock, HungerState,
+    gamelog, Consumable, EquipmentChanged, Equippable, Equipped, HungerClock, HungerState,
     InBackpack, InflictsDamage, Map, Name, Pools, ProvidesFood, ProvidesHealing, RunState,
     TownPortal, WantsToUseItem,
 };
@@ -13,7 +13,6 @@ impl<'a> System<'a> for ItemUseSystem {
     type SystemData = (
         ReadExpect<'a, Entity>,
         ReadExpect<'a, Map>,
-        WriteExpect<'a, GameLog>,
         WriteExpect<'a, RunState>,
         Entities<'a>,
         WriteStorage<'a, WantsToUseItem>,
@@ -36,7 +35,6 @@ impl<'a> System<'a> for ItemUseSystem {
         let (
             player_entity,
             map,
-            mut gamelog,
             mut runstate,
             entities,
             mut wants_use,

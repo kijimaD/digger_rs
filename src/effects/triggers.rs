@@ -1,6 +1,6 @@
 use super::*;
 use crate::components::*;
-use crate::gamelog::GameLog;
+use crate::gamelog;
 use crate::gamesystem::{mana_at_level, player_hp_at_level};
 use crate::RunState;
 use specs::prelude::*;
@@ -22,13 +22,14 @@ fn event_trigger(
     ecs: &mut World,
 ) -> bool {
     let mut did_something = false;
-    let mut gamelog = ecs.fetch_mut::<GameLog>();
 
     // food
     if ecs.read_storage::<ProvidesFood>().get(entity).is_some() {
         add_effect(creator, EffectType::WellFed, targets.clone());
         let names = ecs.read_storage::<Name>();
-        gamelog.entries.push(format!("You eat the {}.", names.get(entity).unwrap().name));
+        gamelog::Logger::new()
+            .append(format!("You eat the {}.", names.get(entity).unwrap().name))
+            .log();
         did_something = true;
     }
 
@@ -36,9 +37,9 @@ fn event_trigger(
     if ecs.read_storage::<TownPortal>().get(entity).is_some() {
         let map = ecs.fetch::<Map>();
         if map.depth == 1 {
-            gamelog.entries.push("You are already in town!".to_string());
+            gamelog::Logger::new().append("You are already in town!").log();
         } else {
-            gamelog.entries.push("You are teleported back to town!".to_string());
+            gamelog::Logger::new().append("You are teleported back to town!").log();
             let mut runstate = ecs.fetch_mut::<RunState>();
             *runstate = RunState::TownPortal;
             did_something = true;

@@ -1,14 +1,20 @@
 use super::*;
 use crate::components::{Attributes, Player, Pools};
-use crate::gamelog::GameLog;
+use crate::gamelog;
 use crate::gamesystem::{mana_at_level, player_hp_at_level};
 use crate::map::Map;
 use specs::prelude::*;
 
 pub fn inflict_damage(ecs: &mut World, damage: &EffectSpawner, target: Entity) {
     let mut pools = ecs.write_storage::<Pools>();
+    let player_entity = ecs.fetch::<Entity>();
     if let Some(pool) = pools.get_mut(target) {
         if !pool.god_mode {
+            if let Some(creator) = damage.creator {
+                if creator == target {
+                    return;
+                }
+            }
             if let EffectType::Damage { amount } = damage.effect_type {
                 pool.hit_points.current -= amount;
                 // TODO: particle系を適切にする
@@ -23,6 +29,16 @@ pub fn inflict_damage(ecs: &mut World, damage: &EffectSpawner, target: Entity) {
                     },
                     Targets::Single { target },
                 );
+
+                if target == *player_entity {
+                    crate::gamelog::record_event("Damage Taken", amount);
+                }
+
+                if let Some(creator) = damage.creator {
+                    if creator == *player_entity {
+                        crate::gamelog::record_event("Damage Inflicted", amount);
+                    }
+                }
 
                 if pool.hit_points.current < 1 {
                     add_effect(damage.creator, EffectType::EntityDeath, Targets::Single { target });
@@ -58,7 +74,6 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
             }
 
             if xp_gain != 0 || gold_gain != 0.0 {
-                let mut log = ecs.fetch_mut::<GameLog>();
                 let mut player_stats = pools.get_mut(source).unwrap();
                 let player_attributes = attributes.get(source).unwrap();
                 player_stats.xp += xp_gain;
@@ -66,8 +81,12 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
                 if player_stats.xp >= player_stats.level * 1000 {
                     // level up
                     player_stats.level += 1;
-                    log.entries
-                        .push(format!("Congratulations, you are now level{}", player_stats.level));
+                    gamelog::Logger::new()
+                        .append(format!("Congratulations, you are now level{}", player_stats.level))
+                        .color(rltk::MAGENTA)
+                        .append("Congratulations, you are now level")
+                        .append(format!("{}", player_stats.level))
+                        .log();
                     player_stats.hit_points.max = player_hp_at_level(
                         player_attributes.fitness.base + player_attributes.fitness.modifiers,
                         player_stats.level,

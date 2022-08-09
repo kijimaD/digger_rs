@@ -1,4 +1,4 @@
-use super::{gamelog::GameLog, EquipmentChanged, InBackpack, Name, Position, WantsToDropItem};
+use super::{gamelog, EquipmentChanged, InBackpack, Name, Position, WantsToDropItem};
 use specs::prelude::*;
 
 pub struct ItemDropSystem {}
@@ -7,7 +7,6 @@ impl<'a> System<'a> for ItemDropSystem {
     #[allow(clippy::type_complexity)]
     type SystemData = (
         ReadExpect<'a, Entity>,
-        WriteExpect<'a, GameLog>,
         Entities<'a>,
         WriteStorage<'a, WantsToDropItem>,
         ReadStorage<'a, Name>,
@@ -19,7 +18,6 @@ impl<'a> System<'a> for ItemDropSystem {
     fn run(&mut self, data: Self::SystemData) {
         let (
             player_entity,
-            mut gamelog,
             entities,
             mut wants_drop,
             names,
@@ -42,9 +40,9 @@ impl<'a> System<'a> for ItemDropSystem {
             dirty.insert(entity, EquipmentChanged {}).expect("Unable to insert");
 
             if entity == *player_entity {
-                gamelog
-                    .entries
-                    .push(format!("You drop the {}.", names.get(to_drop.item).unwrap().name));
+                gamelog::Logger::new()
+                    .append(format!("You drop the {}.", names.get(to_drop.item).unwrap().name))
+                    .log();
             }
         }
 

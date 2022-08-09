@@ -1,5 +1,5 @@
 use super::{
-    effects::*, gamelog::GameLog, ApplyTeleport, EntityMoved, EntryTrigger, Map, Name, Position,
+    effects::*, gamelog, ApplyTeleport, EntityMoved, EntryTrigger, Map, Name, Position,
     SingleActivation, TeleportTo,
 };
 use specs::prelude::*;
@@ -16,7 +16,6 @@ impl<'a> System<'a> for TriggerSystem {
         ReadStorage<'a, EntryTrigger>,
         ReadStorage<'a, Name>,
         Entities<'a>,
-        WriteExpect<'a, GameLog>,
         ReadStorage<'a, SingleActivation>,
         ReadStorage<'a, TeleportTo>,
         WriteStorage<'a, ApplyTeleport>,
@@ -32,7 +31,6 @@ impl<'a> System<'a> for TriggerSystem {
             entry_trigger,
             names,
             entities,
-            mut log,
             single_activation,
             teleporters,
             mut apply_teleport,
@@ -52,7 +50,9 @@ impl<'a> System<'a> for TriggerSystem {
                             // We triggered it
                             let name = names.get(entity_id);
                             if let Some(name) = name {
-                                log.entries.push(format!("{} triggers!", &name.name));
+                                gamelog::Logger::new()
+                                    .append(format!("{} triggers!", &name.name))
+                                    .log();
                             }
 
                             // Call the effects system

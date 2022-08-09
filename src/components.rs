@@ -303,6 +303,14 @@ pub struct Wearable {
     pub slot: EquipmentSlot,
 }
 
+#[derive(Component, Serialize, Deserialize, Clone)]
+pub struct AttributeBonus {
+    pub might: Option<i32>,
+    pub fitness: Option<i32>,
+    pub quickness: Option<i32>,
+    pub intelligence: Option<i32>,
+}
+
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct BlocksVisibility {}
 
@@ -357,4 +365,5 @@ pub struct SerializationHelper {
 #[derive(Component, Serialize, Deserialize, Clone)]
 pub struct DMSerializationHelper {
     pub map: super::map::MasterDungeonMap,
+    pub log: Vec<Vec<crate::gamelog::LogFragment>>,
 }

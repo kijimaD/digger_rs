@@ -97,6 +97,8 @@ impl State {
         vis.run_now(&self.ecs);
         let mut initiative = ai::InitiativeSystem {};
         initiative.run_now(&self.ecs);
+        let mut quipper = ai::QuipSystem {};
+        quipper.run_now(&self.ecs);
         let mut visible = ai::VisibleAI {};
         visible.run_now(&self.ecs);
         let mut adjacent = ai::AdjacentAI {};
@@ -121,8 +123,6 @@ impl State {
         item_remove.run_now(&self.ecs);
         let mut hunger = hunger_system::HungerSystem {};
         hunger.run_now(&self.ecs);
-        let mut quipper = ai::QuipSystem {};
-        quipper.run_now(&self.ecs);
         let mut encumbrance = ai::EncumbranceSystem {};
         encumbrance.run_now(&self.ecs);
         let mut trigger = trigger_system::TriggerSystem {};
@@ -224,6 +224,9 @@ impl GameState for State {
             }
             RunState::AwaitingInput => {
                 newrunstate = player_input(self, ctx);
+                if newrunstate != RunState::AwaitingInput {
+                    crate::gamelog::record_event("Turn", 1);
+                }
             }
             RunState::Ticking => {
                 while newrunstate == RunState::Ticking {
@@ -576,8 +579,7 @@ impl State {
         let current_depth = self.ecs.fetch::<Map>().depth;
         self.generate_world_map(current_depth + offset, offset);
 
-        let mut gamelog = self.ecs.fetch_mut::<gamelog::GameLog>();
-        gamelog.entries.push("You change level.".to_string());
+        gamelog::Logger::new().append("You change Lovel.").log();
     }
 
     fn game_over_cleanup(&mut self) {
@@ -614,6 +616,11 @@ impl State {
         } else {
             map::thaw_level_entities(&mut self.ecs);
         }
+
+        gamelog::clear_log();
+        gamelog::Logger::new().append("Enter the").color(rltk::CYAN).append("dungeon...").log();
+
+        gamelog::clear_events();
     }
 }
 
@@ -672,6 +679,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Equipped>();
     gs.ecs.register::<MeleeWeapon>();
     gs.ecs.register::<Wearable>();
+    gs.ecs.register::<AttributeBonus>();
     gs.ecs.register::<HungerClock>();
     gs.ecs.register::<ProvidesFood>();
     gs.ecs.register::<TownPortal>();
@@ -699,7 +707,7 @@ fn main() -> rltk::BError {
 
     gs.ecs.insert(player_entity);
     gs.ecs.insert(RunState::MapGeneration {});
-    gs.ecs.insert(gamelog::GameLog { entries: vec!["Enter the dungeon...".to_string()] });
+    gamelog::clear_log();
     gs.ecs.insert(gamelog::BattleLog { entries: vec!["".to_string()] });
     gs.ecs.insert(particle_system::ParticleBuilder::new());
     gs.ecs.insert(rex_assets::RexAssets::new());

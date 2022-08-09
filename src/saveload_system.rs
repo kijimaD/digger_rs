@@ -37,7 +37,7 @@ pub fn save_game(ecs: &mut World) {
         .build();
     let savehelper2 = ecs
         .create_entity()
-        .with(DMSerializationHelper { map: dungeon_master })
+        .with(DMSerializationHelper { map: dungeon_master, log: crate::gamelog::clone_log() })
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
 
@@ -101,7 +101,8 @@ pub fn save_game(ecs: &mut World) {
             WantsToPickupItem,
             WantsToRemoveItem,
             WantsToUseItem,
-            Wearable
+            Wearable,
+            AttributeBonus
         );
     }
 
@@ -205,7 +206,8 @@ pub fn load_game(ecs: &mut World) {
             WantsToPickupItem,
             WantsToRemoveItem,
             WantsToUseItem,
-            Wearable
+            Wearable,
+            AttributeBonus
         );
     }
 
@@ -227,6 +229,7 @@ pub fn load_game(ecs: &mut World) {
             let mut dungeonmaster = ecs.write_resource::<super::map::MasterDungeonMap>();
             *dungeonmaster = h.map.clone();
             deleteme2 = Some(e);
+            crate::gamelog::restore_log(&mut h.log.clone());
         }
         for (e, _p, pos) in (&entities, &player, &position).join() {
             let mut ppos = ecs.write_resource::<rltk::Point>();

@@ -1,4 +1,4 @@
-use super::{gamelog::GameLog, EquipmentChanged, InBackpack, Name, Position, WantsToPickupItem};
+use super::{gamelog, EquipmentChanged, InBackpack, Name, Position, WantsToPickupItem};
 use specs::prelude::*;
 
 pub struct ItemCollectionSystem {}
@@ -7,7 +7,6 @@ impl<'a> System<'a> for ItemCollectionSystem {
     #[allow(clippy::type_complexity)]
     type SystemData = (
         ReadExpect<'a, Entity>,
-        WriteExpect<'a, GameLog>,
         WriteStorage<'a, WantsToPickupItem>,
         WriteStorage<'a, Position>,
         ReadStorage<'a, Name>,
@@ -16,15 +15,7 @@ impl<'a> System<'a> for ItemCollectionSystem {
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (
-            player_entity,
-            mut gamelog,
-            mut wants_pickup,
-            mut positions,
-            names,
-            mut backpack,
-            mut dirty,
-        ) = data;
+        let (player_entity, mut wants_pickup, mut positions, names, mut backpack, mut dirty) = data;
 
         for pickup in wants_pickup.join() {
             positions.remove(pickup.item);
@@ -34,9 +25,9 @@ impl<'a> System<'a> for ItemCollectionSystem {
             dirty.insert(pickup.collected_by, EquipmentChanged {}).expect("Unable to insert");
 
             if pickup.collected_by == *player_entity {
-                gamelog
-                    .entries
-                    .push(format!("You pick up the {}.", names.get(pickup.item).unwrap().name));
+                gamelog::Logger::new()
+                    .append(format!("You pick up the {}.", names.get(pickup.item).unwrap().name))
+                    .log();
             }
         }
 

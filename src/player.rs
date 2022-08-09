@@ -1,8 +1,7 @@
 use super::{
-    gamelog::GameLog, Attributes, BlocksTile, BlocksVisibility, Door, EntityMoved, Faction,
-    HungerClock, HungerState, Item, Map, Monster, Name, Player, Pools, Position, Renderable,
-    RunState, State, TileType, Vendor, VendorMode, Viewshed, WantsToEncounter, WantsToMelee,
-    WantsToPickupItem,
+    gamelog, Attributes, BlocksTile, BlocksVisibility, Door, EntityMoved, Faction, HungerClock,
+    HungerState, Item, Map, Monster, Name, Player, Pools, Position, Renderable, RunState, State,
+    TileType, Vendor, VendorMode, Viewshed, WantsToEncounter, WantsToMelee, WantsToPickupItem,
 };
 use crate::raws::Reaction;
 use rltk::{Point, Rltk, VirtualKeyCode};
@@ -151,7 +150,6 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
     let player_pos = ecs.fetch::<Point>();
     let entities = ecs.entities();
     let items = ecs.read_storage::<Item>();
-    let mut gamelog = ecs.fetch_mut::<GameLog>();
     let names = ecs.read_storage::<Name>();
 
     let mut target: Option<Entity> = None;
@@ -165,7 +163,9 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
         None => {}
         Some(target) => match target {
             _item => {
-                gamelog.entries.push(format!("{} is there.[G]", names.get(target).unwrap().name))
+                gamelog::Logger::new()
+                    .append(format!("{} is there.[G]", names.get(target).unwrap().name))
+                    .log();
             }
         },
     }
@@ -173,7 +173,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
     // 足元の地形を表示
     let player_idx = map.xy_idx(player_pos.x, player_pos.y);
     if map.tiles[player_idx] == TileType::DownStairs {
-        gamelog.entries.push(format!("downstairs."))
+        gamelog::Logger::new().append(format!("downstairs.")).log();
     }
 
     result
@@ -186,8 +186,7 @@ pub fn try_next_level(ecs: &mut World) -> bool {
     if map.tiles[player_idx] == TileType::DownStairs {
         true
     } else {
-        let mut gamelog = ecs.fetch_mut::<GameLog>();
-        gamelog.entries.push("There is no way down from here.".to_string());
+        gamelog::Logger::new().append(format!("There is no way down from here.")).log();
         false
     }
 }
@@ -199,8 +198,7 @@ pub fn try_previous_level(ecs: &mut World) -> bool {
     if map.tiles[player_idx] == TileType::UpStairs {
         true
     } else {
-        let mut gamelog = ecs.fetch_mut::<GameLog>();
-        gamelog.entries.push("There is no way up from here.".to_string());
+        gamelog::Logger::new().append(format!("There is no way up from here.")).log();
         false
     }
 }
@@ -211,7 +209,6 @@ fn get_item(ecs: &mut World) {
     let entities = ecs.entities();
     let items = ecs.read_storage::<Item>();
     let positions = ecs.read_storage::<Position>();
-    let mut gamelog = ecs.fetch_mut::<GameLog>();
 
     let mut target_item: Option<Entity> = None;
     for (item_entity, _item, position) in (&entities, &items, &positions).join() {
@@ -221,7 +218,7 @@ fn get_item(ecs: &mut World) {
     }
 
     match target_item {
-        None => gamelog.entries.push("There is nothing here to pick up.".to_string()),
+        None => gamelog::Logger::new().append(format!("There is nothing here to pick up.")).log(),
         Some(item) => {
             let mut pickup = ecs.write_storage::<WantsToPickupItem>();
             pickup
