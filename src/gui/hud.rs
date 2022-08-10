@@ -5,6 +5,45 @@ use super::{
 use rltk::prelude::*;
 use specs::prelude::*;
 
+/// Draw outer line
+fn draw_framework(draw_batch: &mut DrawBatch) {
+    let gray = RGB::named(rltk::GRAY).to_rgba(1.0);
+    let black = RGB::named(rltk::BLACK).to_rgba(1.0);
+
+    // separators
+    draw_batch.draw_hollow_box(Rect::with_size(0, 0, 79, 59), ColorPair::new(gray, black)); // Overall box
+    draw_batch.draw_hollow_box(Rect::with_size(0, 0, 49, 45), ColorPair::new(gray, black)); // Map box
+    draw_batch.draw_hollow_box(Rect::with_size(0, 45, 79, 14), ColorPair::new(gray, black)); // Log box
+    draw_batch.draw_hollow_box(Rect::with_size(49, 0, 30, 8), ColorPair::new(gray, black)); // Top-right panel
+
+    // connectors
+    draw_batch.set(Point::new(0, 45), ColorPair::new(gray, black), to_cp437('├'));
+    draw_batch.set(Point::new(49, 8), ColorPair::new(gray, black), to_cp437('├'));
+    draw_batch.set(Point::new(49, 0), ColorPair::new(gray, black), to_cp437('┬'));
+    draw_batch.set(Point::new(49, 45), ColorPair::new(gray, black), to_cp437('┴'));
+    draw_batch.set(Point::new(79, 8), ColorPair::new(gray, black), to_cp437('┤'));
+    draw_batch.set(Point::new(79, 45), ColorPair::new(gray, black), to_cp437('┤'));
+}
+
+/// Draw the town name
+fn draw_map_level(ecs: &World, draw_batch: &mut DrawBatch) {
+    let gray = RGB::named(rltk::GRAY).to_rgba(1.0);
+    let black = RGB::named(rltk::BLACK).to_rgba(1.0);
+    let white = RGB::named(rltk::WHITE).to_rgba(1.0);
+
+    let map = ecs.fetch::<Map>();
+    let name_length = map.name.len() + 1;
+    let x_pos = (22 - (name_length / 2)) as i32;
+    draw_batch.set(Point::new(x_pos, 0), ColorPair::new(gray, black), to_cp437('┤'));
+    draw_batch.set(
+        Point::new(x_pos + name_length as i32, 0),
+        ColorPair::new(gray, black),
+        to_cp437('├'),
+    );
+    draw_batch.print_color(Point::new(x_pos + 1, 0), &map.name, ColorPair::new(white, black));
+    std::mem::drop(map);
+}
+
 fn draw_attribute(name: &str, attribute: &Attribute, y: i32, draw_batch: &mut DrawBatch) {
     let black = RGB::named(rltk::BLACK);
     let attr_gray: RGB = RGB::from_hex("#CCCCCC").expect("Oops");
@@ -41,46 +80,19 @@ fn draw_attributes(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Enti
     draw_attribute("Intelligence:", &attr.intelligence, 7, draw_batch);
 }
 
-fn draw_framework(draw_batch: &mut DrawBatch) {
-    let gray = RGB::named(rltk::GRAY).to_rgba(1.0);
-    let black = RGB::named(rltk::BLACK).to_rgba(1.0);
-
-    // separators
-    draw_batch.draw_hollow_box(Rect::with_size(0, 0, 79, 59), ColorPair::new(gray, black)); // Overall box
-    draw_batch.draw_hollow_box(Rect::with_size(0, 0, 49, 45), ColorPair::new(gray, black)); // Map box
-    draw_batch.draw_hollow_box(Rect::with_size(0, 45, 79, 14), ColorPair::new(gray, black)); // Log box
-    draw_batch.draw_hollow_box(Rect::with_size(49, 0, 30, 8), ColorPair::new(gray, black)); // Top-right panel
-
-    // connectors
-    draw_batch.set(Point::new(0, 45), ColorPair::new(gray, black), to_cp437('├'));
-    draw_batch.set(Point::new(49, 8), ColorPair::new(gray, black), to_cp437('├'));
-    draw_batch.set(Point::new(49, 0), ColorPair::new(gray, black), to_cp437('┬'));
-    draw_batch.set(Point::new(49, 45), ColorPair::new(gray, black), to_cp437('┴'));
-    draw_batch.set(Point::new(79, 8), ColorPair::new(gray, black), to_cp437('┤'));
-    draw_batch.set(Point::new(79, 45), ColorPair::new(gray, black), to_cp437('┤'));
-}
-
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     let mut draw_batch = DrawBatch::new();
     let player_entity = ecs.fetch::<Entity>();
 
-    draw_attributes(ecs, &mut draw_batch, &player_entity);
     draw_framework(&mut draw_batch);
+    draw_map_level(ecs, &mut draw_batch);
+    draw_attributes(ecs, &mut draw_batch, &player_entity);
 
     use rltk::to_cp437;
 
     let gray = RGB::named(rltk::GRAY).to_rgba(1.0);
     let black = RGB::named(rltk::BLACK).to_rgba(1.0);
     let white = RGB::named(rltk::WHITE).to_rgba(1.0);
-
-    // Draw the town name
-    let map = ecs.fetch::<Map>();
-    let name_length = map.name.len() + 1;
-    let x_pos = (22 - (name_length / 2)) as i32;
-    ctx.set(x_pos, 0, gray, black, to_cp437('┤'));
-    ctx.set(x_pos + name_length as i32, 0, gray, black, to_cp437('├'));
-    ctx.print_color(x_pos + 1, 0, white, black, &map.name);
-    std::mem::drop(map);
 
     // Draw stats
     let player_entity = ecs.fetch::<Entity>();
