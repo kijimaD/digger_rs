@@ -1,5 +1,5 @@
-use super::{Map, Position, Renderable};
 use crate::map::tile_glyph;
+use crate::{Map, Position, Renderable};
 use rltk::{Point, Rltk, RGB};
 use specs::prelude::*;
 

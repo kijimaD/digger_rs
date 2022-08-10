@@ -30,7 +30,6 @@ mod movement_system;
 mod spawner;
 mod trigger_system;
 use inventory_system::{ItemCollectionSystem, ItemDropSystem, ItemRemoveSystem, ItemUseSystem};
-pub mod camera;
 mod gamesystem;
 mod hunger_system;
 pub mod map_builders;
