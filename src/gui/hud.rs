@@ -119,6 +119,35 @@ fn draw_attributes(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Enti
     draw_attribute("Intelligence:", &attr.intelligence, 7, draw_batch);
 }
 
+fn initiative_weight(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) {
+    let black = RGB::named(rltk::BLACK).to_rgba(1.0);
+    let white = RGB::named(rltk::WHITE).to_rgba(1.0);
+    let attributes = ecs.read_storage::<Attributes>();
+    let attr = attributes.get(*player_entity).unwrap();
+    let pools = ecs.read_storage::<Pools>();
+    let player_pools = pools.get(*player_entity).unwrap();
+
+    draw_batch.print_color(
+        Point::new(50, 9),
+        &format!(
+            "{:.0} kg ({} kg max)",
+            player_pools.total_weight,
+            (attr.might.base + attr.might.modifiers) * 15
+        ),
+        ColorPair::new(white, black),
+    );
+    draw_batch.print_color(
+        Point::new(50, 10),
+        &format!("Initiative Penalty: {:.0}", player_pools.total_initiative_penalty),
+        ColorPair::new(white, black),
+    );
+    draw_batch.print_color(
+        Point::new(50, 11),
+        &format!("Gold: {:.1}", player_pools.gold),
+        ColorPair::new(rltk::RGB::named(rltk::GOLD), black),
+    );
+}
+
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     let mut draw_batch = DrawBatch::new();
     let player_entity = ecs.fetch::<Entity>();
@@ -127,46 +156,12 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     draw_map_level(ecs, &mut draw_batch);
     draw_stats(ecs, &mut draw_batch, &player_entity);
     draw_attributes(ecs, &mut draw_batch, &player_entity);
+    initiative_weight(ecs, &mut draw_batch, &player_entity);
 
-    use rltk::to_cp437;
-
-    let gray = RGB::named(rltk::GRAY).to_rgba(1.0);
     let black = RGB::named(rltk::BLACK).to_rgba(1.0);
     let white = RGB::named(rltk::WHITE).to_rgba(1.0);
 
-    let attributes = ecs.read_storage::<Attributes>();
-    let attr = attributes.get(*player_entity).unwrap();
-
     let player_entity = ecs.fetch::<Entity>();
-    let pools = ecs.read_storage::<Pools>();
-    let player_pools = pools.get(*player_entity).unwrap();
-
-    // Initiative and weight
-    ctx.print_color(
-        50,
-        9,
-        white,
-        black,
-        &format!(
-            "{:.0} kg ({} kg max)",
-            player_pools.total_weight,
-            (attr.might.base + attr.might.modifiers) * 15
-        ),
-    );
-    ctx.print_color(
-        50,
-        10,
-        white,
-        black,
-        &format!("Initiative Penalty: {:.0}", player_pools.total_initiative_penalty),
-    );
-    ctx.print_color(
-        50,
-        11,
-        rltk::RGB::named(rltk::GOLD),
-        black,
-        &format!("Gold: {:.1}", player_pools.gold),
-    );
 
     // Equipped
     let mut y = 13;
