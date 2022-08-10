@@ -571,6 +571,8 @@ impl GameState for State {
             spawner::battle_monster(&mut self.ecs, "orcA");
         }
         encounter_system::invoke_battle(&mut self.ecs);
+
+        rltk::render_draw_buffer(ctx);
     }
 }
 

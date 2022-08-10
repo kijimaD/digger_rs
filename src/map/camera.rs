@@ -1,11 +1,13 @@
 use crate::map::tile_glyph;
 use crate::{Map, Position, Renderable};
-use rltk::{Point, Rltk, RGB};
+use rltk::prelude::*;
 use specs::prelude::*;
 
 const SHOW_BOUNDARIES: bool = false;
 
 pub fn render_camera(ecs: &World, ctx: &mut Rltk) {
+    let mut draw_batch = DrawBatch::new();
+
     let map = ecs.fetch::<Map>();
     let (min_x, max_x, min_y, max_y) = get_screen_bounds(ecs, ctx);
 
@@ -20,10 +22,14 @@ pub fn render_camera(ecs: &World, ctx: &mut Rltk) {
                 let idx = map.xy_idx(tx, ty);
                 if map.revealed_tiles[idx] {
                     let (glyph, fg, bg) = tile_glyph(idx, &*map);
-                    ctx.set(x, y, fg, bg, glyph);
+                    draw_batch.set(Point::new(x + 1, y + 1), ColorPair::new(fg, bg), glyph);
                 }
             } else if SHOW_BOUNDARIES {
-                ctx.set(x, y, RGB::named(rltk::GRAY), RGB::named(rltk::BLACK), rltk::to_cp437('·'));
+                draw_batch.set(
+                    Point::new(x + 1, y + 1),
+                    ColorPair::new(RGB::named(rltk::GRAY), RGB::named(rltk::BLACK)),
+                    to_cp437('·'),
+                );
             }
             x += 1;
         }
@@ -34,6 +40,7 @@ pub fn render_camera(ecs: &World, ctx: &mut Rltk) {
     let renderables = ecs.read_storage::<Renderable>();
     let map = ecs.fetch::<Map>();
 
+    // 見えてる範囲のrenderableを描画する
     let mut data = (&positions, &renderables).join().collect::<Vec<_>>();
     data.sort_by(|&a, &b| b.1.render_order.cmp(&a.1.render_order));
     for (pos, render) in data.iter() {
@@ -46,10 +53,16 @@ pub fn render_camera(ecs: &World, ctx: &mut Rltk) {
                 && entity_screen_y > 0
                 && entity_screen_y < map_height
             {
-                ctx.set(entity_screen_x, entity_screen_y, render.fg, render.bg, render.glyph);
+                draw_batch.set(
+                    Point::new(entity_screen_x + 1, entity_screen_y + 1),
+                    ColorPair::new(render.fg, render.bg),
+                    render.glyph,
+                );
             }
         }
     }
+
+    draw_batch.submit(0);
 }
 
 pub fn get_screen_bounds(ecs: &World, ctx: &mut Rltk) -> (i32, i32, i32, i32) {
