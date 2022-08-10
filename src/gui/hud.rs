@@ -70,6 +70,45 @@ fn draw_attribute(name: &str, attribute: &Attribute, y: i32, draw_batch: &mut Dr
     }
 }
 
+fn draw_stats(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) {
+    let black = RGB::named(rltk::BLACK).to_rgba(1.0);
+    let white = RGB::named(rltk::WHITE).to_rgba(1.0);
+    let player_entity = ecs.fetch::<Entity>();
+    let pools = ecs.read_storage::<Pools>();
+    let player_pools = pools.get(*player_entity).unwrap();
+    let health =
+        format!("Health:{}/{}", player_pools.hit_points.current, player_pools.hit_points.max);
+    let mana = format!("Mana:{}/{}", player_pools.mana.current, player_pools.mana.max);
+
+    draw_batch.print_color(Point::new(50, 1), &health, ColorPair::new(white, black));
+    draw_batch.print_color(Point::new(50, 2), &mana, ColorPair::new(white, black));
+    draw_batch.bar_horizontal(
+        Point::new(64, 1),
+        14,
+        player_pools.hit_points.current,
+        player_pools.hit_points.max,
+        ColorPair::new(RGB::named(rltk::RED), RGB::named(rltk::BLACK)),
+    );
+    draw_batch.bar_horizontal(
+        Point::new(64, 2),
+        14,
+        player_pools.mana.current,
+        player_pools.mana.max,
+        ColorPair::new(RGB::named(rltk::BLUE), RGB::named(rltk::BLACK)),
+    );
+
+    let xp = format!("Level:  {}", player_pools.level);
+    draw_batch.print_color(Point::new(50, 3), &xp, ColorPair::new(white, black));
+    let xp_level_start = (player_pools.level - 1) * 1000;
+    draw_batch.bar_horizontal(
+        Point::new(64, 3),
+        14,
+        player_pools.xp - xp_level_start,
+        1000,
+        ColorPair::new(RGB::named(rltk::GOLD), RGB::named(rltk::BLACK)),
+    );
+}
+
 fn draw_attributes(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) {
     let attributes = ecs.read_storage::<Attributes>();
     let attr = attributes.get(*player_entity).unwrap();
@@ -86,6 +125,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
 
     draw_framework(&mut draw_batch);
     draw_map_level(ecs, &mut draw_batch);
+    draw_stats(ecs, &mut draw_batch, &player_entity);
     draw_attributes(ecs, &mut draw_batch, &player_entity);
 
     use rltk::to_cp437;
@@ -94,36 +134,12 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     let black = RGB::named(rltk::BLACK).to_rgba(1.0);
     let white = RGB::named(rltk::WHITE).to_rgba(1.0);
 
-    // Draw stats
+    let attributes = ecs.read_storage::<Attributes>();
+    let attr = attributes.get(*player_entity).unwrap();
+
     let player_entity = ecs.fetch::<Entity>();
     let pools = ecs.read_storage::<Pools>();
     let player_pools = pools.get(*player_entity).unwrap();
-    let health =
-        format!("Health:{}/{}", player_pools.hit_points.current, player_pools.hit_points.max);
-    let mana = format!("Mana:{}/{}", player_pools.mana.current, player_pools.mana.max);
-    ctx.print_color(50, 1, white, black, &health);
-    ctx.print_color(50, 2, white, black, &mana);
-    ctx.draw_bar_horizontal(
-        64,
-        1,
-        14,
-        player_pools.hit_points.current,
-        player_pools.hit_points.max,
-        RGB::named(rltk::RED),
-        RGB::named(rltk::BLACK),
-    );
-    ctx.draw_bar_horizontal(
-        64,
-        2,
-        14,
-        player_pools.mana.current,
-        player_pools.mana.max,
-        RGB::named(rltk::BLUE),
-        RGB::named(rltk::BLACK),
-    );
-
-    let attributes = ecs.read_storage::<Attributes>();
-    let attr = attributes.get(*player_entity).unwrap();
 
     // Initiative and weight
     ctx.print_color(
@@ -178,20 +194,6 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
             index += 1;
         }
     }
-
-    // XP bar
-    let xp = format!("Level:  {}", player_pools.level);
-    ctx.print_color(50, 3, white, black, &xp);
-    let xp_level_start = (player_pools.level - 1) * 1000;
-    ctx.draw_bar_horizontal(
-        64,
-        3,
-        14,
-        player_pools.xp - xp_level_start,
-        1000,
-        RGB::named(rltk::GOLD),
-        RGB::named(rltk::BLACK),
-    );
 
     // Hunger State
     let hunger = ecs.read_storage::<HungerClock>();
