@@ -1,11 +1,44 @@
 use super::{
     gamelog, tooltips, Attribute, Attributes, Consumable, Equipped, HungerClock, HungerState,
-    InBackpack, Map, Name, Point, Pools,
+    InBackpack, Map, Name, Point, Pools, Player
 };
-use rltk::{Rltk, RGB};
+use rltk::prelude::*;
 use specs::prelude::*;
 
+fn draw_attribute(name: &str, attribute: &Attribute, y: i32, draw_batch: &mut DrawBatch) {
+    let black = RGB::named(rltk::BLACK);
+    let attr_gray: RGB = RGB::from_hex("#CCCCCC").expect("Oops");
+    draw_batch.print_color(Point::new(50, y), name, ColorPair::new(attr_gray, black));
+    let color: RGB = if attribute.modifiers < 0 {
+        RGB::from_f32(1.0, 0.0, 0.0)
+    } else if attribute.modifiers == 0 {
+        RGB::named(rltk::WHITE)
+    } else {
+        RGB::from_f32(0.0, 1.0, 0.0)
+    };
+    draw_batch.print_color(Point::new(67, y), &format!("{}", attribute.base + attribute.modifiers), ColorPair::new(color, black));
+    draw_batch.print_color(Point::new(73, y), &format!("{}", attribute.bonus), ColorPair::new(color, black));
+    if attribute.bonus > 0 {
+        draw_batch.set(Point::new(72, y), ColorPair::new(color, black), to_cp437('+'));
+    }
+}
+
+fn draw_attributes(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) {
+    let attributes = ecs.read_storage::<Attributes>();
+    let attr = attributes.get(*player_entity).unwrap();
+
+    draw_attribute("Might:", &attr.might, 4, draw_batch);
+    draw_attribute("Quickness:", &attr.quickness, 5, draw_batch);
+    draw_attribute("Fitness:", &attr.fitness, 6, draw_batch);
+    draw_attribute("Intelligence:", &attr.intelligence, 7, draw_batch);
+}
+
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
+    let mut draw_batch = DrawBatch::new();
+    let player_entity = ecs.fetch::<Entity>();
+
+    draw_attributes(ecs, &mut draw_batch, &player_entity);
+
     use rltk::to_cp437;
     let box_gray: RGB = RGB::from_hex("#999999").expect("Oops");
     let gray = RGB::named(rltk::GRAY).to_rgba(1.0);
@@ -63,13 +96,8 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
         RGB::named(rltk::BLACK),
     );
 
-    // Attributes
     let attributes = ecs.read_storage::<Attributes>();
     let attr = attributes.get(*player_entity).unwrap();
-    draw_attribute("Might:", &attr.might, 4, ctx);
-    draw_attribute("Quickness:", &attr.quickness, 5, ctx);
-    draw_attribute("Fitness:", &attr.fitness, 6, ctx);
-    draw_attribute("Intelligence:", &attr.intelligence, 7, ctx);
 
     // Initiative and weight
     ctx.print_color(
@@ -160,22 +188,4 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
 
     // Tooltip
     tooltips::draw_tooltips(ecs, ctx);
-}
-
-fn draw_attribute(name: &str, attribute: &Attribute, y: i32, ctx: &mut Rltk) {
-    let black = RGB::named(rltk::BLACK);
-    let attr_gray: RGB = RGB::from_hex("#CCCCCC").expect("Oops");
-    ctx.print_color(50, y, attr_gray, black, name);
-    let color: RGB = if attribute.modifiers < 0 {
-        RGB::from_f32(1.0, 0.0, 0.0)
-    } else if attribute.modifiers == 0 {
-        RGB::named(rltk::WHITE)
-    } else {
-        RGB::from_f32(0.0, 1.0, 0.0)
-    };
-    ctx.print_color(67, y, color, black, &format!("{}", attribute.base + attribute.modifiers));
-    ctx.print_color(73, y, color, black, &format!("{}", attribute.bonus));
-    if attribute.bonus > 0 {
-        ctx.set(72, y, color, black, rltk::to_cp437('+'));
-    }
 }
