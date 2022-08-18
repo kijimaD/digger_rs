@@ -237,10 +237,8 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     let mut y = equipped(ecs, &mut draw_batch, &player_entity);
     y += consumables(ecs, &mut draw_batch, &player_entity, y);
     status(ecs, &mut draw_batch, &player_entity);
-
-    // Log
     gamelog::print_log(&mut rltk::BACKEND_INTERNAL.lock().consoles[1].console, Point::new(1, 23));
-
-    // Tooltip
     tooltips::draw_tooltips(ecs, ctx);
+
+    draw_batch.submit(5000); // There are 80x60(4800) possible tiles in the map.
 }
