@@ -40,3 +40,23 @@ pub fn restore_log(log: &mut Vec<Vec<crate::gamelog::LogFragment>>) {
     LOG.lock().unwrap().clear();
     LOG.lock().unwrap().append(log);
 }
+
+pub fn print_log(console: &mut Box<dyn Console>, pos: Point) {
+    let mut y = pos.y;
+    let mut x = pos.x;
+    LOG.lock().unwrap().iter().rev().take(6).for_each(|log| {
+        log.iter().for_each(|frag| {
+            console.print_color(
+                x,
+                y,
+                frag.color.to_rgba(1.0),
+                RGB::named(rltk::BLACK).to_rgba(1.0),
+                &frag.text,
+            );
+            x += frag.text.len() as i32;
+            x += 1;
+        });
+        y += 1;
+        x = pos.x;
+    });
+}

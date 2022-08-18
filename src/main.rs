@@ -30,7 +30,6 @@ mod movement_system;
 mod spawner;
 mod trigger_system;
 use inventory_system::{ItemCollectionSystem, ItemDropSystem, ItemRemoveSystem, ItemUseSystem};
-pub mod camera;
 mod gamesystem;
 mod hunger_system;
 pub mod map_builders;
@@ -162,6 +161,9 @@ impl GameState for State {
             newrunstate = *runstate;
         }
 
+        ctx.set_active_console(1);
+        ctx.cls();
+        ctx.set_active_console(0);
         ctx.cls();
         particle_system::cull_dead_particles(&mut self.ecs, ctx);
 
@@ -569,6 +571,8 @@ impl GameState for State {
             spawner::battle_monster(&mut self.ecs, "orcA");
         }
         encounter_system::invoke_battle(&mut self.ecs);
+
+        rltk::render_draw_buffer(ctx);
     }
 }
 
@@ -626,8 +630,12 @@ impl State {
 
 fn main() -> rltk::BError {
     use rltk::RltkBuilder;
-    let mut context =
-        RltkBuilder::simple(80, 60).unwrap().with_title("Battle Digger Clone").build()?;
+    let mut context = RltkBuilder::simple(80, 60)
+        .unwrap()
+        .with_title("Battle Digger Clone")
+        .with_font("vga8x16.png", 8, 16)
+        .with_sparse_console(80, 30, "vga8x16.png")
+        .build()?;
     context.with_post_scanlines(true);
     let mut gs = State {
         ecs: World::new(),
