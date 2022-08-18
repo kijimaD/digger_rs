@@ -25,8 +25,8 @@ pub fn show_item_targeting(
     let mut j = 0;
     let mut targets: Vec<Entity> = Vec::new();
 
-    // とりあえず味方だけ
-    // TODO: targetが必要ないもの…食料とか…では表示しないようにしたい
+    // とりあえず味方用アイテムだけ
+    // TODO: 対象指定が必要ないもの…食料とか…では表示しないようにしたい
     for (entity, _pools, name) in (&entities, &pools, &name).join() {
         draw_batch.draw_box(
             Rect::with_size(15, y - 2, 31, (count + 3) as i32),
