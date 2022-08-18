@@ -169,6 +169,36 @@ fn equipped(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) -> 
     y
 }
 
+fn consumables(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity, mut y: i32) -> i32 {
+    y += 1;
+    let black = RGB::named(rltk::BLACK);
+    let yellow = RGB::named(rltk::YELLOW);
+    let green = RGB::named(rltk::GREEN);
+    let entities = ecs.entities();
+    let consumables = ecs.read_storage::<Consumable>();
+    let backpack = ecs.read_storage::<InBackpack>();
+    let names = ecs.read_storage::<Name>();
+    let mut index = 1;
+    for (entity, carried_by, _consumable) in (&entities, &backpack, &consumables).join() {
+        let name = names.get(entity).unwrap();
+        if carried_by.owner == *player_entity && index < 10{
+            draw_batch.print_color(
+                Point::new(50, y),
+                &format!("↑{}", index),
+                ColorPair::new(yellow, black)
+            );
+            draw_batch.print_color(
+                Point::new(53, y),
+                &name.name,
+                ColorPair::new(green, black)
+            );
+            y += 1;
+            index += 1;
+        }
+    }
+    y
+}
+
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     let mut draw_batch = DrawBatch::new();
     let player_entity = ecs.fetch::<Entity>();
@@ -179,30 +209,10 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     draw_attributes(ecs, &mut draw_batch, &player_entity);
     initiative_weight(ecs, &mut draw_batch, &player_entity);
     let mut y = equipped(ecs, &mut draw_batch, &player_entity);
-
-    let black = RGB::named(rltk::BLACK).to_rgba(1.0);
-    let white = RGB::named(rltk::WHITE).to_rgba(1.0);
-
-    let player_entity = ecs.fetch::<Entity>();
-
-    // Consumables
-    y += 1;
-    let green = RGB::from_f32(0.0, 1.0, 0.0);
-    let yellow = RGB::named(rltk::YELLOW);
-    let name = ecs.read_storage::<Name>();
-    let consumables = ecs.read_storage::<Consumable>();
-    let backpack = ecs.read_storage::<InBackpack>();
-    let mut index = 1;
-    for (carried_by, _consumable, item_name) in (&backpack, &consumables, &name).join() {
-        if carried_by.owner == *player_entity && index < 10 {
-            ctx.print_color(50, y, yellow, black, &format!("↑{}", index));
-            ctx.print_color(53, y, green, black, &item_name.name);
-            y += 1;
-            index += 1;
-        }
-    }
+    y += consumables(ecs, &mut draw_batch, &player_entity, y);
 
     // Hunger State
+    let player_entity = ecs.fetch::<Entity>();
     let hunger = ecs.read_storage::<HungerClock>();
     let hc = hunger.get(*player_entity).unwrap();
     match hc.state {
