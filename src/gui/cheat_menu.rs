@@ -1,5 +1,6 @@
-use super::State;
-use rltk::{Rltk, VirtualKeyCode, RGB};
+use super::{menu_box, menu_option};
+use crate::State;
+use rltk::prelude::*;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum CheatMenuResult {
@@ -12,47 +13,25 @@ pub enum CheatMenuResult {
 }
 
 pub fn show_cheat_mode(_gs: &mut State, ctx: &mut Rltk) -> CheatMenuResult {
+    let mut draw_batch = DrawBatch::new();
     let count = 4;
     let mut y = (25 - (count / 2)) as i32;
-    ctx.draw_box(
-        15,
-        y - 2,
-        31,
-        (count + 3) as i32,
-        RGB::named(rltk::WHITE),
-        RGB::named(rltk::BLACK),
-    );
-    ctx.print_color(18, y - 2, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), "Cheating!");
-    ctx.print_color(
-        18,
-        y + count as i32 + 1,
-        RGB::named(rltk::YELLOW),
-        RGB::named(rltk::BLACK),
+    menu_box(&mut draw_batch, 15, y, (count + 3) as i32, "Cheating!");
+    draw_batch.print_color(
+        Point::new(18, y + count as i32 + 1),
         "ESCAPE to cancel",
+        ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
     );
 
-    ctx.set(17, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437('('));
-    ctx.set(18, y, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), rltk::to_cp437('T'));
-    ctx.set(19, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437(')'));
-    ctx.print(21, y, "Teleport to exit");
-
+    menu_option(&mut draw_batch, 17, y, rltk::to_cp437('T'), "Teleport to next level");
     y += 1;
-    ctx.set(17, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437('('));
-    ctx.set(18, y, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), rltk::to_cp437('H'));
-    ctx.set(19, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437(')'));
-    ctx.print(21, y, "Heal all wounds");
-
+    menu_option(&mut draw_batch, 17, y, rltk::to_cp437('H'), "Heal all wounds");
     y += 1;
-    ctx.set(17, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437('('));
-    ctx.set(18, y, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), rltk::to_cp437('R'));
-    ctx.set(19, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437(')'));
-    ctx.print(21, y, "Reveal the map");
-
+    menu_option(&mut draw_batch, 17, y, rltk::to_cp437('R'), "Reveal the map");
     y += 1;
-    ctx.set(17, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437('('));
-    ctx.set(18, y, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), rltk::to_cp437('G'));
-    ctx.set(19, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437(')'));
-    ctx.print(21, y, "God Mode (No Death)");
+    menu_option(&mut draw_batch, 17, y, rltk::to_cp437('G'), "God Mode (No Death)");
+
+    draw_batch.submit(6000);
 
     match ctx.key {
         None => CheatMenuResult::NoResponse,
