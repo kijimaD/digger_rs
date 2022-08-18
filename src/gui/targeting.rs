@@ -1,5 +1,5 @@
 use super::{show_inventory, Name, Player, Pools, State};
-use rltk::{Rltk, VirtualKeyCode, RGB};
+use rltk::prelude::*;
 use specs::prelude::*;
 
 #[derive(PartialEq, Copy, Clone)]
@@ -13,9 +13,7 @@ pub fn show_item_targeting(
     gs: &mut State,
     ctx: &mut Rltk,
 ) -> (ItemTargetingResult, Option<Entity>) {
-    // とりあえず味方だけ
-    // TODO: targetが必要ないもの…食料とか…では表示しないようにしたい
-    show_inventory(gs, ctx);
+    let mut draw_batch = DrawBatch::new();
 
     let entities = gs.ecs.entities();
     let pools = gs.ecs.read_storage::<Pools>();
@@ -27,23 +25,42 @@ pub fn show_item_targeting(
     let mut j = 0;
     let mut targets: Vec<Entity> = Vec::new();
 
+    // とりあえず味方だけ
+    // TODO: targetが必要ないもの…食料とか…では表示しないようにしたい
     for (entity, _pools, name) in (&entities, &pools, &name).join() {
-        ctx.set(17, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437('('));
-        ctx.set(
-            18,
-            y,
-            RGB::named(rltk::YELLOW),
-            RGB::named(rltk::BLACK),
+        draw_batch.draw_box(
+            Rect::with_size(15, y - 2, 31, (count + 3) as i32),
+            ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
+        );
+        draw_batch.set(
+            Point::new(17, y),
+            ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
+            rltk::to_cp437('('),
+        );
+        draw_batch.set(
+            Point::new(18, y),
+            ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
             97 + j as rltk::FontCharType,
         );
-        ctx.set(19, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437(')'));
-        ctx.print(21, y, &name.name.to_string());
+        draw_batch.set(
+            Point::new(19, y),
+            ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
+            rltk::to_cp437(')'),
+        );
+
+        draw_batch.print_color(
+            Point::new(21, y),
+            &name.name,
+            ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
+        );
 
         targets.push(entity);
 
         y += 1;
         j += 1;
     }
+
+    draw_batch.submit(6000);
 
     match ctx.key {
         None => (ItemTargetingResult::NoResponse, None),
