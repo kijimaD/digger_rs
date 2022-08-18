@@ -1,5 +1,5 @@
-use super::{InBackpack, Name, State};
-use rltk::{Rltk, VirtualKeyCode, RGB};
+use super::{InBackpack, Name, State, item_result_menu};
+use rltk::prelude::*;
 use specs::prelude::*;
 
 #[derive(PartialEq, Copy, Clone)]
@@ -9,31 +9,30 @@ pub enum ItemMenuResult {
     Selected,
 }
 
-pub fn show_inventory(gs: &mut State, ctx: &mut Rltk) {
+pub fn show_inventory(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Option<Entity>) {
     let player_entity = gs.ecs.fetch::<Entity>();
     let names = gs.ecs.read_storage::<Name>();
     let backpack = gs.ecs.read_storage::<InBackpack>();
+    let entities = gs.ecs.entities();
 
-    let inventory = (&backpack, &names).join().filter(|item| item.0.owner == *player_entity);
-    let count = inventory.count();
+    let mut draw_batch = DrawBatch::new();
 
-    let y = (25 - (count / 2)) as i32;
-    ctx.draw_box(
-        15,
-        y - 2,
-        31,
-        (count + 3) as i32,
-        RGB::named(rltk::WHITE),
-        RGB::named(rltk::BLACK),
+    let mut items: Vec<(Entity, String)> = Vec::new();
+    (&entities, &backpack).join()
+        .filter(|item| item.1.owner == *player_entity )
+        .for_each(|item| {
+            let name = names.get(item.0).unwrap();
+            items.push((item.0, name.name.clone()))
+        });
+    let result = item_result_menu(
+        &mut draw_batch,
+        "Inventory",
+        items.len(),
+        &items,
+        ctx.key
     );
-    ctx.print_color(18, y - 2, RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK), "Inventory");
-    ctx.print_color(
-        18,
-        y + count as i32 + 1,
-        RGB::named(rltk::YELLOW),
-        RGB::named(rltk::BLACK),
-        "ESCAPE to cancel",
-    );
+    draw_batch.submit(6000);
+    result
 }
 
 pub fn show_field_inventory(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Option<Entity>) {
