@@ -158,11 +158,7 @@ fn equipped(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) -> 
     for (entity, equipped_by) in (&entities, &equipped).join() {
         if equipped_by.owner == *player_entity {
             let name = names.get(entity).unwrap();
-            draw_batch.print_color(
-                Point::new(50, y),
-                &name.name,
-                ColorPair::new(white, black)
-            );
+            draw_batch.print_color(Point::new(50, y), &name.name, ColorPair::new(white, black));
             y += 1;
         }
     }
@@ -181,22 +177,52 @@ fn consumables(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity, 
     let mut index = 1;
     for (entity, carried_by, _consumable) in (&entities, &backpack, &consumables).join() {
         let name = names.get(entity).unwrap();
-        if carried_by.owner == *player_entity && index < 10{
+        if carried_by.owner == *player_entity && index < 10 {
             draw_batch.print_color(
                 Point::new(50, y),
                 &format!("↑{}", index),
-                ColorPair::new(yellow, black)
+                ColorPair::new(yellow, black),
             );
-            draw_batch.print_color(
-                Point::new(53, y),
-                &name.name,
-                ColorPair::new(green, black)
-            );
+            draw_batch.print_color(Point::new(53, y), &name.name, ColorPair::new(green, black));
             y += 1;
             index += 1;
         }
     }
     y
+}
+
+fn status(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) {
+    let mut y = 44;
+    let hunger = ecs.read_storage::<HungerClock>();
+    let hc = hunger.get(*player_entity).unwrap();
+
+    match hc.state {
+        HungerState::WellFed => {
+            draw_batch.print_color(
+                Point::new(50, y),
+                "Well Fed",
+                ColorPair::new(RGB::named(rltk::GREEN), RGB::named(rltk::BLACK)),
+            );
+            y -= 1;
+        }
+        HungerState::Normal => {}
+        HungerState::Hungry => {
+            draw_batch.print_color(
+                Point::new(50, y),
+                "Hungry",
+                ColorPair::new(RGB::named(rltk::ORANGE), RGB::named(rltk::BLACK)),
+            );
+            y -= 1;
+        }
+        HungerState::Starving => {
+            draw_batch.print_color(
+                Point::new(50, y),
+                "Starving",
+                ColorPair::new(RGB::named(rltk::RED), RGB::named(rltk::BLACK)),
+            );
+            y -= 1;
+        }
+    }
 }
 
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
@@ -210,23 +236,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     initiative_weight(ecs, &mut draw_batch, &player_entity);
     let mut y = equipped(ecs, &mut draw_batch, &player_entity);
     y += consumables(ecs, &mut draw_batch, &player_entity, y);
-
-    // Hunger State
-    let player_entity = ecs.fetch::<Entity>();
-    let hunger = ecs.read_storage::<HungerClock>();
-    let hc = hunger.get(*player_entity).unwrap();
-    match hc.state {
-        HungerState::WellFed => {
-            ctx.print_color(50, 44, RGB::named(rltk::GREEN), RGB::named(rltk::BLACK), "Well Fed")
-        }
-        HungerState::Normal => {}
-        HungerState::Hungry => {
-            ctx.print_color(50, 44, RGB::named(rltk::ORANGE), RGB::named(rltk::BLACK), "Hungry")
-        }
-        HungerState::Starving => {
-            ctx.print_color(50, 44, RGB::named(rltk::RED), RGB::named(rltk::BLACK), "Starving")
-        }
-    }
+    status(ecs, &mut draw_batch, &player_entity);
 
     // Log
     gamelog::print_log(&mut rltk::BACKEND_INTERNAL.lock().consoles[1].console, Point::new(1, 23));
