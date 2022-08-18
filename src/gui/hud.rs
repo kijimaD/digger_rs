@@ -148,6 +148,27 @@ fn initiative_weight(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &En
     );
 }
 
+fn equipped(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) -> i32 {
+    let white = RGB::named(rltk::WHITE);
+    let black = RGB::named(rltk::BLACK);
+    let mut y = 13;
+    let entities = ecs.entities();
+    let equipped = ecs.read_storage::<Equipped>();
+    let names = ecs.read_storage::<Name>();
+    for (entity, equipped_by) in (&entities, &equipped).join() {
+        if equipped_by.owner == *player_entity {
+            let name = names.get(entity).unwrap();
+            draw_batch.print_color(
+                Point::new(50, y),
+                &name.name,
+                ColorPair::new(white, black)
+            );
+            y += 1;
+        }
+    }
+    y
+}
+
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     let mut draw_batch = DrawBatch::new();
     let player_entity = ecs.fetch::<Entity>();
@@ -157,27 +178,18 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     draw_stats(ecs, &mut draw_batch, &player_entity);
     draw_attributes(ecs, &mut draw_batch, &player_entity);
     initiative_weight(ecs, &mut draw_batch, &player_entity);
+    let mut y = equipped(ecs, &mut draw_batch, &player_entity);
 
     let black = RGB::named(rltk::BLACK).to_rgba(1.0);
     let white = RGB::named(rltk::WHITE).to_rgba(1.0);
 
     let player_entity = ecs.fetch::<Entity>();
 
-    // Equipped
-    let mut y = 13;
-    let equipped = ecs.read_storage::<Equipped>();
-    let name = ecs.read_storage::<Name>();
-    for (equipped_by, item_name) in (&equipped, &name).join() {
-        if equipped_by.owner == *player_entity {
-            ctx.print_color(50, y, white, black, &item_name.name);
-            y += 1;
-        }
-    }
-
     // Consumables
     y += 1;
     let green = RGB::from_f32(0.0, 1.0, 0.0);
     let yellow = RGB::named(rltk::YELLOW);
+    let name = ecs.read_storage::<Name>();
     let consumables = ecs.read_storage::<Consumable>();
     let backpack = ecs.read_storage::<InBackpack>();
     let mut index = 1;
