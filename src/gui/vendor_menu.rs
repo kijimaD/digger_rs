@@ -1,5 +1,5 @@
-use super::{Entity, InBackpack, Item, Name, State, Vendor, VendorMode};
-use rltk::{RandomNumberGenerator, Rltk, TextBlock, VirtualKeyCode, RGB};
+use super::{menu_box, Entity, InBackpack, Item, Name, State, Vendor, VendorMode};
+use rltk::prelude::*;
 use specs::prelude::*;
 
 pub fn show_vendor_menu(
@@ -30,6 +30,7 @@ fn vendor_sell_menu(
     _vendor: Entity,
     _mode: VendorMode,
 ) -> (VendorResult, Option<Entity>, Option<String>, Option<f32>) {
+    let mut draw_batch = DrawBatch::new();
     let player_entity = gs.ecs.fetch::<Entity>();
     let names = gs.ecs.read_storage::<Name>();
     let backpack = gs.ecs.read_storage::<InBackpack>();
@@ -40,27 +41,22 @@ fn vendor_sell_menu(
     let count = inventory.count();
 
     let mut y = (25 - (count / 2)) as i32;
-    ctx.draw_box(
+    menu_box(
+        &mut draw_batch,
         15,
-        y - 2,
-        51,
+        y,
         (count + 3) as i32,
-        RGB::named(rltk::WHITE),
-        RGB::named(rltk::BLACK),
-    );
-    ctx.print_color(
-        18,
-        y - 2,
-        RGB::named(rltk::YELLOW),
-        RGB::named(rltk::BLACK),
         "Sell Which Item? (space to switch to buy mode)",
     );
-    ctx.print_color(
-        18,
-        y + count as i32 + 1,
-        RGB::named(rltk::YELLOW),
-        RGB::named(rltk::BLACK),
+    draw_batch.print_color(
+        Point::new(18, y - 2),
+        "Sell Which Item? (space to switch to buy mode)",
+        ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
+    );
+    draw_batch.print_color(
+        Point::new(18, y + count as i32 + 1),
         "ESCAPE to cancel",
+        ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
     );
 
     let mut equippable: Vec<Entity> = Vec::new();
@@ -68,22 +64,30 @@ fn vendor_sell_menu(
     for (entity, _pack, name, item) in
         (&entities, &backpack, &names, &items).join().filter(|item| item.1.owner == *player_entity)
     {
-        ctx.set(17, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437('('));
-        ctx.set(
-            18,
-            y,
-            RGB::named(rltk::YELLOW),
-            RGB::named(rltk::BLACK),
+        draw_batch.set(
+            Point::new(17, y),
+            ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
+            rltk::to_cp437('('),
+        );
+        draw_batch.set(
+            Point::new(18, y),
+            ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
             97 + j as rltk::FontCharType,
         );
-        ctx.set(19, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437(')'));
+        draw_batch.set(
+            Point::new(19, y),
+            ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
+            rltk::to_cp437(')'),
+        );
 
-        ctx.print(21, y, &name.name.to_string());
-        ctx.print(50, y, &format!("{:.1} gp", item.base_value * 0.8));
+        draw_batch.print(Point::new(21, y), &name.name.to_string());
+        draw_batch.print(Point::new(50, y), &format!("{:.1} gp", item.base_value * 0.8));
         equippable.push(entity);
         y += 1;
         j += 1;
     }
+
+    draw_batch.submit(6000);
 
     match ctx.key {
         None => (VendorResult::NoResponse, None, None, None),
@@ -109,6 +113,7 @@ fn vendor_buy_menu(
 ) -> (VendorResult, Option<Entity>, Option<String>, Option<f32>) {
     use crate::raws::*;
 
+    let mut draw_batch = DrawBatch::new();
     let vendors = gs.ecs.read_storage::<Vendor>();
 
     let inventory = crate::raws::get_vendor_items(
@@ -118,44 +123,47 @@ fn vendor_buy_menu(
     let count = inventory.len();
 
     let mut y = (25 - (count / 2)) as i32;
-    ctx.draw_box(
+    menu_box(
+        &mut draw_batch,
         15,
-        y - 2,
-        51,
+        y,
         (count + 3) as i32,
-        RGB::named(rltk::WHITE),
-        RGB::named(rltk::BLACK),
+        "Sell Which Item? (space to switch to buy mode)",
     );
-    ctx.print_color(
-        18,
-        y - 2,
-        RGB::named(rltk::YELLOW),
-        RGB::named(rltk::BLACK),
+    draw_batch.print_color(
+        Point::new(18, y - 2),
         "Buy Which Item? (space to switch to sell mode)",
+        ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
     );
-    ctx.print_color(
-        18,
-        y + count as i32 + 1,
-        RGB::named(rltk::YELLOW),
-        RGB::named(rltk::BLACK),
+    draw_batch.print_color(
+        Point::new(18, y + count as i32 + 1),
         "ESCAPE to cancel",
+        ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
     );
 
     for (j, sale) in inventory.iter().enumerate() {
-        ctx.set(17, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437('('));
-        ctx.set(
-            18,
-            y,
-            RGB::named(rltk::YELLOW),
-            RGB::named(rltk::BLACK),
+        draw_batch.set(
+            Point::new(17, y),
+            ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
+            rltk::to_cp437('('),
+        );
+        draw_batch.set(
+            Point::new(18, y),
+            ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
             97 + j as rltk::FontCharType,
         );
-        ctx.set(19, y, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), rltk::to_cp437(')'));
+        draw_batch.set(
+            Point::new(19, y),
+            ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
+            rltk::to_cp437(')'),
+        );
 
-        ctx.print(21, y, &sale.0);
-        ctx.print(50, y, &format!("{:.1} gp", sale.1 * 1.2));
+        draw_batch.print(Point::new(21, y), &sale.0);
+        draw_batch.print(Point::new(50, y), &format!("{:.1} gp", sale.1 * 1.2));
         y += 1;
     }
+
+    draw_batch.submit(6000);
 
     match ctx.key {
         None => (VendorResult::NoResponse, None, None, None),
