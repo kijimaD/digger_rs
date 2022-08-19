@@ -98,6 +98,8 @@ impl State {
         initiative.run_now(&self.ecs);
         let mut quipper = ai::QuipSystem {};
         quipper.run_now(&self.ecs);
+        let mut moving = movement_system::MovementSystem {};
+        moving.run_now(&self.ecs);
         let mut visible = ai::VisibleAI {};
         visible.run_now(&self.ecs);
         let mut adjacent = ai::AdjacentAI {};
@@ -126,8 +128,6 @@ impl State {
         encumbrance.run_now(&self.ecs);
         let mut trigger = trigger_system::TriggerSystem {};
         trigger.run_now(&self.ecs);
-        let mut moving = movement_system::MovementSystem {};
-        moving.run_now(&self.ecs);
 
         effects::run_effects_queue(&mut self.ecs);
         let mut particles = particle_system::ParticleSpawnSystem {};
@@ -344,7 +344,13 @@ impl GameState for State {
                 let result = gui::show_battle_win_result(self, ctx);
                 match result {
                     gui::BattleResult::NoResponse => {}
-                    gui::BattleResult::Enter => newrunstate = RunState::AwaitingInput,
+                    gui::BattleResult::Enter => {
+                        newrunstate = RunState::AwaitingInput;
+
+                        // FIXME: 2回やらないと1ターン、敵がいた座標に移動できない
+                        self.run_systems();
+                        self.run_systems();
+                    },
                 }
             }
             RunState::ShowInventory => {
@@ -563,7 +569,7 @@ impl GameState for State {
             let mut runwriter = self.ecs.write_resource::<RunState>();
             *runwriter = newrunstate;
         }
-        // FIXME: 勝利しても、1ターン残る
+
         damage_system::delete_the_dead(&mut self.ecs);
 
         // TODO: モンスター生成を別のsystemにする
