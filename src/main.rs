@@ -589,7 +589,7 @@ impl State {
         let current_depth = self.ecs.fetch::<Map>().depth;
         self.generate_world_map(current_depth + offset, offset);
 
-        gamelog::Logger::new().append("You change Lovel.").log();
+        gamelog::Logger::new().append("You change Level.").log();
     }
 
     fn game_over_cleanup(&mut self) {
@@ -674,7 +674,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<NaturalAttackDefense>();
     gs.ecs.register::<WantsToMelee>();
     gs.ecs.register::<WantsToEncounter>();
-    gs.ecs.register::<Battle>();
+    gs.ecs.register::<OnBattle>();
     gs.ecs.register::<Combatant>();
     gs.ecs.register::<Item>();
     gs.ecs.register::<ProvidesHealing>();

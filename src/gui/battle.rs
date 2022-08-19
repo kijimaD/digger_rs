@@ -1,5 +1,5 @@
 use super::{
-    gamelog::BattleLog, show_inventory, Battle, Combatant, Consumable, InBackpack, ItemMenuResult,
+    gamelog::BattleLog, show_inventory, OnBattle, Combatant, Consumable, InBackpack, ItemMenuResult,
     Monster, Name, Pools, State,
 };
 use rltk::{RandomNumberGenerator, Rltk, VirtualKeyCode, RGB};
@@ -138,7 +138,7 @@ fn run_away_battle(ecs: &mut World) {
     }
 
     // battle削除
-    let mut battle = ecs.write_storage::<Battle>();
+    let mut battle = ecs.write_storage::<OnBattle>();
     battle.clear();
 
     let mut log = ecs.write_resource::<BattleLog>();

@@ -1,5 +1,5 @@
 use super::{
-    camera, gamelog, Attribute, Attributes, Battle, Combatant, Consumable, Equipped, HungerClock,
+    camera, gamelog, Attribute, Attributes, OnBattle, Combatant, Consumable, Equipped, HungerClock,
     HungerState, InBackpack, Item, Map, Monster, Name, Player, Point, Pools, Position, RunState,
     State, Vendor, VendorMode,
 };
