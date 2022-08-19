@@ -1,6 +1,6 @@
 use super::{
-    gamelog::BattleLog, Attributes, OnBattle, Combatant, Equipped, InBackpack, LootTable, Map,
-    Monster, Name, Player, Pools, Position, RunState,
+    gamelog::BattleLog, Attributes, Combatant, Equipped, InBackpack, LootTable, Map, Monster, Name,
+    OnBattle, Player, Pools, Position, RunState,
 };
 use specs::prelude::*;
 
@@ -49,24 +49,26 @@ pub fn delete_the_dead(ecs: &mut World) {
     }
 }
 
-/// 戦闘中の敵が残ってないとき、勝利。stateを切り替え、敵のシンボルエンティティ(Battleを持つ)を消す。
-/// 敵のシンボルエンティティがbattleを持つというのがわかりにくい。
+/// 戦闘中の敵が残ってないとき、勝利。シンボルエンティティを消す、state切り替えなどをやる
 fn check_battle_win(ecs: &mut World) {
+    // 敵のシンボルエンティティを消す
     let mut dead: Vec<Entity> = Vec::new();
     {
         let entities = ecs.entities();
         let pools = ecs.read_storage::<Pools>();
         let monster = ecs.read_storage::<Monster>();
         let combatant = ecs.read_storage::<Combatant>();
-        let battle_ecs = ecs.write_storage::<OnBattle>();
+        let mut on_battle = ecs.write_storage::<OnBattle>();
 
         if (&entities, &pools, &monster, &combatant).join().count() == 0 {
-            for (entity, _battle) in (&entities, &battle_ecs).join() {
-                dead.push(entity);
+            for (_entity, on_battle) in (&entities, &on_battle).join() {
+                dead.push(on_battle.monster);
             }
         }
+        on_battle.clear();
     }
 
+    // アイテムドロップ
     let mut to_spawn: Vec<(String, Position)> = Vec::new();
     {
         let mut to_drop: Vec<(Entity, Position)> = Vec::new();

@@ -1,6 +1,6 @@
 use super::{
-    gamelog::BattleLog, show_inventory, OnBattle, Combatant, Consumable, InBackpack, ItemMenuResult,
-    Monster, Name, Pools, State,
+    gamelog::BattleLog, show_inventory, Combatant, Consumable, InBackpack, ItemMenuResult, Monster,
+    Name, OnBattle, Pools, State,
 };
 use rltk::{RandomNumberGenerator, Rltk, VirtualKeyCode, RGB};
 use specs::prelude::*;

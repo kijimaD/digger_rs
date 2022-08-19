@@ -194,6 +194,7 @@ pub struct WantsToEncounter {
 
 #[derive(Component, Debug, Clone)]
 pub struct OnBattle {
+    pub monster: Entity,
     pub monsters: Vec<Entity>,
 }
 

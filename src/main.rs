@@ -350,7 +350,7 @@ impl GameState for State {
                         // FIXME: 2回やらないと1ターン、敵がいた座標に移動できない
                         self.run_systems();
                         self.run_systems();
-                    },
+                    }
                 }
             }
             RunState::ShowInventory => {

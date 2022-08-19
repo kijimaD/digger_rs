@@ -1,5 +1,5 @@
 use super::{
-    gamelog::BattleLog, OnBattle, Combatant, Monster, Player, Pools, RunState, WantsToEncounter,
+    gamelog::BattleLog, Combatant, Monster, OnBattle, Player, Pools, RunState, WantsToEncounter,
 };
 use specs::prelude::*;
 
@@ -43,9 +43,12 @@ pub fn invoke_battle(ecs: &mut World) {
             combat_monsters.push(entity);
         }
 
-        // battleを作成し、敵entityに追加する
+        // battleを作成し、player entityに追加する
         battle
-            .insert(wants_encounter.monster, OnBattle { monsters: combat_monsters })
+            .insert(
+                *player_entity,
+                OnBattle { monster: wants_encounter.monster, monsters: combat_monsters },
+            )
             .expect("Unable to insert encounter");
 
         // playerを戦闘中にする
