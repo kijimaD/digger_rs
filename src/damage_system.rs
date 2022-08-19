@@ -130,8 +130,6 @@ fn check_battle_win(ecs: &mut World) {
     {
         let entities = ecs.entities();
         let mut log = ecs.write_resource::<BattleLog>();
-        let positions = ecs.read_storage::<Position>();
-        let mut map = ecs.write_resource::<Map>();
 
         for victim in dead {
             log.entries.push(format!("You win!"));

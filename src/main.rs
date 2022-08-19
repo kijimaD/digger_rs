@@ -126,7 +126,6 @@ impl State {
         encumbrance.run_now(&self.ecs);
         let mut trigger = trigger_system::TriggerSystem {};
         trigger.run_now(&self.ecs);
-        defaultmove.run_now(&self.ecs);
         let mut moving = movement_system::MovementSystem {};
         moving.run_now(&self.ecs);
 
@@ -567,6 +566,7 @@ impl GameState for State {
         // FIXME: 勝利しても、1ターン残る
         damage_system::delete_the_dead(&mut self.ecs);
 
+        // TODO: モンスター生成を別のsystemにする
         if encounter_system::is_encounter(&mut self.ecs) {
             spawner::battle_monster(&mut self.ecs, "orcA");
         }

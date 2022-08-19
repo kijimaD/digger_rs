@@ -28,6 +28,8 @@ pub fn invoke_battle(ecs: &mut World) {
         let player_entity = ecs.fetch::<Entity>();
         let pools = ecs.read_storage::<Pools>();
         let player_pools = pools.get(*player_entity).unwrap();
+
+        // god modeのときはエンカウントしない
         if player_pools.god_mode {
             entities.delete(wants_encounter.monster).expect("Unable to delete");
             return;
