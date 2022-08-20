@@ -1,6 +1,6 @@
 use super::{
-    gamelog, show_inventory, Combatant, Consumable, InBackpack, ItemMenuResult,
-    Monster, Name, OnBattle, Pools, State,
+    gamelog, show_inventory, Combatant, Consumable, InBackpack, ItemMenuResult, Monster, Name,
+    OnBattle, Pools, State,
 };
 use rltk::prelude::*;
 use specs::prelude::*;
@@ -112,7 +112,9 @@ pub fn battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResult {
                     return BattleCommandResult::RunAway;
                 } else {
                     // 逃走失敗
-                    // log.entries.push(format!("Failed run away!"));
+                    gamelog::Logger::new()
+                        .append("Failed run away!")
+                        .log(&crate::gamelog::LogKind::Battle);
                     return BattleCommandResult::RunAwayFailed;
                 }
             }
@@ -137,7 +139,10 @@ fn run_away_battle(ecs: &mut World) {
     let mut battle = ecs.write_storage::<OnBattle>();
     battle.clear();
 
-    // log.entries.push(format!("Run away!"));
+    gamelog::Logger::new()
+        .color(rltk::GREEN)
+        .append("Run away!")
+        .log(&crate::gamelog::LogKind::Battle);
 }
 
 pub enum BattleTargetingResult {

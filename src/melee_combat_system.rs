@@ -1,7 +1,7 @@
 use super::{
-    effects::*, particle_system::ParticleBuilder, skill_bonus, Attributes,
-    EquipmentSlot, Equipped, HungerClock, HungerState, MeleeWeapon, Name, NaturalAttackDefense,
-    Pools, Position, Skill, Skills, WantsToMelee, WeaponAttribute, Wearable,
+    effects::*, particle_system::ParticleBuilder, skill_bonus, Attributes, EquipmentSlot, Equipped,
+    HungerClock, HungerState, MeleeWeapon, Name, NaturalAttackDefense, Pools, Position, Skill,
+    Skills, WantsToMelee, WeaponAttribute, Wearable,
 };
 use specs::prelude::*;
 

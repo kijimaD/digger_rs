@@ -1,6 +1,4 @@
-use super::{
-    Combatant, Monster, OnBattle, Player, Pools, RunState, WantsToEncounter,
-};
+use super::{gamelog, Combatant, Monster, OnBattle, Player, Pools, RunState, WantsToEncounter};
 use specs::prelude::*;
 
 pub fn is_encounter(ecs: &mut World) -> bool {
@@ -55,8 +53,8 @@ pub fn invoke_battle(ecs: &mut World) {
             combatant.insert(entity, Combatant {}).expect("Unable to insert combatant");
         }
 
-        // battlelog.entries = vec![];
-        // battlelog.entries.push(format!("Monster appearing!"));
+        gamelog::clear_log(&crate::gamelog::BATTLE_LOG);
+        gamelog::Logger::new().append("Monster appearing!").log(&crate::gamelog::LogKind::Battle);
     }
     wants_encounter.clear();
 }

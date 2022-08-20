@@ -15,8 +15,8 @@ pub fn append_entry(fragments: Vec<LogFragment>, log: &Mutex<Vec<Vec<LogFragment
     log.lock().unwrap().push(fragments);
 }
 
-pub fn clear_log() {
-    LOG.lock().unwrap().clear();
+pub fn clear_log(log: &Mutex<Vec<Vec<LogFragment>>>) {
+    log.lock().unwrap().clear();
 }
 
 pub fn log_display() -> TextBuilder {

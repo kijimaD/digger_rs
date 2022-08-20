@@ -1,6 +1,6 @@
 use super::{
-    Attributes, Combatant, Equipped, InBackpack, LootTable, Map, Monster, Name,
-    OnBattle, Player, Pools, Position, RunState,
+    Attributes, Combatant, Equipped, InBackpack, LootTable, Map, Monster, Name, OnBattle, Player,
+    Pools, Position, RunState,
 };
 use specs::prelude::*;
 
