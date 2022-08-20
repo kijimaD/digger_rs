@@ -49,10 +49,10 @@ pub fn delete_the_dead(ecs: &mut World) {
     }
 }
 
-/// 戦闘中の敵が残ってないとき、勝利。シンボルエンティティを消す、state切り替えなどをやる
+/// 戦闘中の敵が残ってないとき、勝利。アイテムドロップ、シンボルエンティティを消す、state切り替えなどをやる
 fn check_battle_win(ecs: &mut World) {
-    // 敵のシンボルエンティティを消す
     let mut dead: Vec<Entity> = Vec::new();
+
     {
         let entities = ecs.entities();
         let pools = ecs.read_storage::<Pools>();
@@ -66,6 +66,19 @@ fn check_battle_win(ecs: &mut World) {
             }
         }
         on_battle.clear();
+    }
+
+    {
+        let entities = ecs.entities();
+        let mut log = ecs.write_resource::<BattleLog>();
+
+        for victim in dead.clone() {
+            log.entries.push(format!("You win!"));
+            entities.delete(victim).expect("Delete failed");
+
+            let mut runstate = ecs.write_resource::<RunState>();
+            *runstate = RunState::BattleResult;
+        }
     }
 
     // アイテムドロップ
@@ -127,20 +140,6 @@ fn check_battle_win(ecs: &mut World) {
                 &drop.0,
                 crate::raws::SpawnType::AtPosition { x: drop.1.x, y: drop.1.y },
             );
-        }
-    }
-
-    {
-        let entities = ecs.entities();
-        let mut log = ecs.write_resource::<BattleLog>();
-
-        for victim in dead {
-            log.entries.push(format!("You win!"));
-
-            entities.delete(victim).expect("Delete failed");
-
-            let mut runstate = ecs.write_resource::<RunState>();
-            *runstate = RunState::BattleResult;
         }
     }
 }

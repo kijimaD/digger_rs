@@ -570,6 +570,7 @@ impl GameState for State {
             *runwriter = newrunstate;
         }
 
+        // 毎ループ最後に実行するため、system化できない
         damage_system::delete_the_dead(&mut self.ecs);
 
         // TODO: モンスター生成を別のsystemにする
