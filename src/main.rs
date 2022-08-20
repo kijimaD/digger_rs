@@ -306,6 +306,7 @@ impl GameState for State {
 
                         // MEMO: 倒した敵が消えないため
                         self.ecs.maintain();
+                        self.run_field_systems();
                     }
                 }
             }
