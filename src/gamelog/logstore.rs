@@ -2,20 +2,22 @@ use super::LogFragment;
 use rltk::prelude::*;
 use std::sync::Mutex;
 
+pub type LogType = Mutex<Vec<Vec<LogFragment>>>;
+
 lazy_static! {
-    pub static ref FIELD_LOG: Mutex<Vec<Vec<LogFragment>>> = Mutex::new(Vec::new());
-    pub static ref BATTLE_LOG: Mutex<Vec<Vec<LogFragment>>> = Mutex::new(Vec::new());
+    pub static ref FIELD_LOG: LogType = Mutex::new(Vec::new());
+    pub static ref BATTLE_LOG: LogType = Mutex::new(Vec::new());
 }
 
 pub fn append_fragment(fragment: LogFragment) {
     FIELD_LOG.lock().unwrap().push(vec![fragment]);
 }
 
-pub fn append_entry(fragments: Vec<LogFragment>, log: &Mutex<Vec<Vec<LogFragment>>>) {
+pub fn append_entry(fragments: Vec<LogFragment>, log: &LogType) {
     log.lock().unwrap().push(fragments);
 }
 
-pub fn clear_log(log: &Mutex<Vec<Vec<LogFragment>>>) {
+pub fn clear_log(log: &LogType) {
     log.lock().unwrap().clear();
 }
 
@@ -42,7 +44,7 @@ pub fn restore_log(log: &mut Vec<Vec<crate::gamelog::LogFragment>>) {
     FIELD_LOG.lock().unwrap().append(log);
 }
 
-pub fn print_log(log: &Mutex<Vec<Vec<LogFragment>>>, console: &mut Box<dyn Console>, pos: Point) {
+pub fn print_log(log: &LogType, console: &mut Box<dyn Console>, pos: Point) {
     let mut y = pos.y;
     let mut x = pos.x;
 
