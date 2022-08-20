@@ -628,7 +628,7 @@ impl State {
             map::thaw_level_entities(&mut self.ecs);
         }
 
-        gamelog::clear_log(&crate::gamelog::LOG);
+        gamelog::clear_log(&crate::gamelog::FIELD_LOG);
         gamelog::Logger::new()
             .append("Enter the")
             .color(rltk::CYAN)
@@ -726,7 +726,7 @@ fn main() -> rltk::BError {
 
     gs.ecs.insert(player_entity);
     gs.ecs.insert(RunState::MapGeneration {});
-    gamelog::clear_log(&crate::gamelog::LOG);
+    gamelog::clear_log(&crate::gamelog::FIELD_LOG);
     gs.ecs.insert(particle_system::ParticleBuilder::new());
     gs.ecs.insert(rex_assets::RexAssets::new());
 

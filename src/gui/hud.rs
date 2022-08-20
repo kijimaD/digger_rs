@@ -238,7 +238,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     y += consumables(ecs, &mut draw_batch, &player_entity, y);
     status(ecs, &mut draw_batch, &player_entity);
     gamelog::print_log(
-        &crate::gamelog::LOG,
+        &crate::gamelog::FIELD_LOG,
         &mut rltk::BACKEND_INTERNAL.lock().consoles[1].console,
         Point::new(1, 23),
     );

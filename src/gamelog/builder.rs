@@ -28,7 +28,7 @@ impl Logger {
 
     pub fn log(self, logtype: &LogKind) {
         match logtype {
-            LogKind::Field => append_entry(self.fragments, &crate::gamelog::LOG),
+            LogKind::Field => append_entry(self.fragments, &crate::gamelog::FIELD_LOG),
             LogKind::Battle => append_entry(self.fragments, &crate::gamelog::BATTLE_LOG),
         }
     }
