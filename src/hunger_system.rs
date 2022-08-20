@@ -27,7 +27,7 @@ impl<'a> System<'a> for HungerSystem {
                             gamelog::Logger::new()
                                 .color(rltk::ORANGE)
                                 .append("You are no longer well fed.")
-                                .log();
+                                .log(&crate::gamelog::LogKind::Field);
                         }
                     }
                     HungerState::Normal => {
@@ -37,7 +37,7 @@ impl<'a> System<'a> for HungerSystem {
                             gamelog::Logger::new()
                                 .color(rltk::ORANGE)
                                 .append("You are hungry.")
-                                .log();
+                                .log(&crate::gamelog::LogKind::Field);
                         }
                     }
                     HungerState::Hungry => {
@@ -47,13 +47,13 @@ impl<'a> System<'a> for HungerSystem {
                             gamelog::Logger::new()
                                 .color(rltk::RED)
                                 .append("You are starving!")
-                                .log();
+                                .log(&crate::gamelog::LogKind::Field);
                         }
                     }
                     HungerState::Starving => {
                         // Inflict damage from hunger
                         if entity == *player_entity {
-                            gamelog::Logger::new().color(rltk::RED).append("Your hunger pangs are getting painful! You suffer 1 hp damage.").log();
+                            gamelog::Logger::new().color(rltk::RED).append("Your hunger pangs are getting painful! You suffer 1 hp damage.").log(&crate::gamelog::LogKind::Field);
                         }
                         for (entity, _pools) in (&entities, &pools).join() {
                             add_effect(

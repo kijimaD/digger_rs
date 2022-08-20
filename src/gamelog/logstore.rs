@@ -2,26 +2,29 @@ use super::LogFragment;
 use rltk::prelude::*;
 use std::sync::Mutex;
 
+pub type LogType = Mutex<Vec<Vec<LogFragment>>>;
+
 lazy_static! {
-    static ref LOG: Mutex<Vec<Vec<LogFragment>>> = Mutex::new(Vec::new());
+    pub static ref FIELD_LOG: LogType = Mutex::new(Vec::new());
+    pub static ref BATTLE_LOG: LogType = Mutex::new(Vec::new());
 }
 
 pub fn append_fragment(fragment: LogFragment) {
-    LOG.lock().unwrap().push(vec![fragment]);
+    FIELD_LOG.lock().unwrap().push(vec![fragment]);
 }
 
-pub fn append_entry(fragments: Vec<LogFragment>) {
-    LOG.lock().unwrap().push(fragments);
+pub fn append_entry(fragments: Vec<LogFragment>, log: &LogType) {
+    log.lock().unwrap().push(fragments);
 }
 
-pub fn clear_log() {
-    LOG.lock().unwrap().clear();
+pub fn clear_log(log: &LogType) {
+    log.lock().unwrap().clear();
 }
 
 pub fn log_display() -> TextBuilder {
     let mut buf = TextBuilder::empty();
 
-    LOG.lock().unwrap().iter().rev().take(12).for_each(|log| {
+    FIELD_LOG.lock().unwrap().iter().rev().take(12).for_each(|log| {
         log.iter().for_each(|frag| {
             buf.fg(frag.color);
             buf.line_wrap(&frag.text);
@@ -33,18 +36,19 @@ pub fn log_display() -> TextBuilder {
 }
 
 pub fn clone_log() -> Vec<Vec<crate::gamelog::LogFragment>> {
-    LOG.lock().unwrap().clone()
+    FIELD_LOG.lock().unwrap().clone()
 }
 
 pub fn restore_log(log: &mut Vec<Vec<crate::gamelog::LogFragment>>) {
-    LOG.lock().unwrap().clear();
-    LOG.lock().unwrap().append(log);
+    FIELD_LOG.lock().unwrap().clear();
+    FIELD_LOG.lock().unwrap().append(log);
 }
 
-pub fn print_log(console: &mut Box<dyn Console>, pos: Point) {
+pub fn print_log(log: &LogType, console: &mut Box<dyn Console>, pos: Point) {
     let mut y = pos.y;
     let mut x = pos.x;
-    LOG.lock().unwrap().iter().rev().take(6).for_each(|log| {
+
+    log.lock().unwrap().iter().rev().take(6).for_each(|log| {
         log.iter().for_each(|frag| {
             console.print_color(
                 x,

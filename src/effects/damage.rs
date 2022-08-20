@@ -86,7 +86,7 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
                         .color(rltk::MAGENTA)
                         .append("Congratulations, you are now level")
                         .append(format!("{}", player_stats.level))
-                        .log();
+                        .log(&crate::gamelog::LogKind::Field);
                     player_stats.hit_points.max = player_hp_at_level(
                         player_attributes.fitness.base + player_attributes.fitness.modifiers,
                         player_stats.level,

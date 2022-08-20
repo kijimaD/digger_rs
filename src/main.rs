@@ -55,9 +55,6 @@ pub enum VendorMode {
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState {
-    AwaitingInput,
-    PreRun,
-    Ticking,
     BattleEncounter,
     BattleCommand,
     BattleInventory,
@@ -66,6 +63,9 @@ pub enum RunState {
     BattleResult,
     BattleAwaiting,
     BattleTargeting,
+    AwaitingInput,
+    PreRun,
+    Ticking,
     ShowInventory,
     ItemTargeting { item: Entity },
     ShowDropItem,
@@ -98,6 +98,8 @@ impl State {
         initiative.run_now(&self.ecs);
         let mut quipper = ai::QuipSystem {};
         quipper.run_now(&self.ecs);
+        let mut moving = movement_system::MovementSystem {};
+        moving.run_now(&self.ecs);
         let mut visible = ai::VisibleAI {};
         visible.run_now(&self.ecs);
         let mut adjacent = ai::AdjacentAI {};
@@ -126,9 +128,6 @@ impl State {
         encumbrance.run_now(&self.ecs);
         let mut trigger = trigger_system::TriggerSystem {};
         trigger.run_now(&self.ecs);
-        defaultmove.run_now(&self.ecs);
-        let mut moving = movement_system::MovementSystem {};
-        moving.run_now(&self.ecs);
 
         effects::run_effects_queue(&mut self.ecs);
         let mut particles = particle_system::ParticleSpawnSystem {};
@@ -345,7 +344,12 @@ impl GameState for State {
                 let result = gui::show_battle_win_result(self, ctx);
                 match result {
                     gui::BattleResult::NoResponse => {}
-                    gui::BattleResult::Enter => newrunstate = RunState::AwaitingInput,
+                    gui::BattleResult::Enter => {
+                        newrunstate = RunState::AwaitingInput;
+
+                        // MEMO: 倒した敵が消えないため
+                        self.ecs.maintain();
+                    }
                 }
             }
             RunState::ShowInventory => {
@@ -564,9 +568,11 @@ impl GameState for State {
             let mut runwriter = self.ecs.write_resource::<RunState>();
             *runwriter = newrunstate;
         }
-        // FIXME: 勝利しても、1ターン残る
+
+        // 毎ループ最後に実行するため、system化できない
         damage_system::delete_the_dead(&mut self.ecs);
 
+        // TODO: モンスター生成を別のsystemにする
         if encounter_system::is_encounter(&mut self.ecs) {
             spawner::battle_monster(&mut self.ecs, "orcA");
         }
@@ -583,7 +589,7 @@ impl State {
         let current_depth = self.ecs.fetch::<Map>().depth;
         self.generate_world_map(current_depth + offset, offset);
 
-        gamelog::Logger::new().append("You change Lovel.").log();
+        gamelog::Logger::new().append("You change Level.").log(&crate::gamelog::LogKind::Field);
     }
 
     fn game_over_cleanup(&mut self) {
@@ -621,8 +627,12 @@ impl State {
             map::thaw_level_entities(&mut self.ecs);
         }
 
-        gamelog::clear_log();
-        gamelog::Logger::new().append("Enter the").color(rltk::CYAN).append("dungeon...").log();
+        gamelog::clear_log(&crate::gamelog::FIELD_LOG);
+        gamelog::Logger::new()
+            .append("Enter the")
+            .color(rltk::CYAN)
+            .append("dungeon...")
+            .log(&crate::gamelog::LogKind::Field);
 
         gamelog::clear_events();
     }
@@ -668,7 +678,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<NaturalAttackDefense>();
     gs.ecs.register::<WantsToMelee>();
     gs.ecs.register::<WantsToEncounter>();
-    gs.ecs.register::<Battle>();
+    gs.ecs.register::<OnBattle>();
     gs.ecs.register::<Combatant>();
     gs.ecs.register::<Item>();
     gs.ecs.register::<ProvidesHealing>();
@@ -715,8 +725,7 @@ fn main() -> rltk::BError {
 
     gs.ecs.insert(player_entity);
     gs.ecs.insert(RunState::MapGeneration {});
-    gamelog::clear_log();
-    gs.ecs.insert(gamelog::BattleLog { entries: vec!["".to_string()] });
+    gamelog::clear_log(&crate::gamelog::FIELD_LOG);
     gs.ecs.insert(particle_system::ParticleBuilder::new());
     gs.ecs.insert(rex_assets::RexAssets::new());
 

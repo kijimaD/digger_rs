@@ -1,4 +1,4 @@
-Modified version based on the code Roguelike Tutorial - In Rust -> https://bfnightly.bracketproductions.com
+Based on "Roguelike Tutorial - In Rust": https://bfnightly.bracketproductions.com
 
 ![ScreenShot Tool -20220411012818 (1)](https://user-images.githubusercontent.com/11595790/162629624-2c007716-6d6e-4339-a9e1-98baa5395e66.png)
 

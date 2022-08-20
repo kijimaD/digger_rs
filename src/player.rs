@@ -165,7 +165,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
             _item => {
                 gamelog::Logger::new()
                     .append(format!("{} is there.[G]", names.get(target).unwrap().name))
-                    .log();
+                    .log(&crate::gamelog::LogKind::Field);
             }
         },
     }
@@ -173,7 +173,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
     // 足元の地形を表示
     let player_idx = map.xy_idx(player_pos.x, player_pos.y);
     if map.tiles[player_idx] == TileType::DownStairs {
-        gamelog::Logger::new().append(format!("downstairs.")).log();
+        gamelog::Logger::new().append(format!("downstairs.")).log(&crate::gamelog::LogKind::Field);
     }
 
     result
@@ -186,7 +186,9 @@ pub fn try_next_level(ecs: &mut World) -> bool {
     if map.tiles[player_idx] == TileType::DownStairs {
         true
     } else {
-        gamelog::Logger::new().append(format!("There is no way down from here.")).log();
+        gamelog::Logger::new()
+            .append(format!("There is no way down from here."))
+            .log(&crate::gamelog::LogKind::Field);
         false
     }
 }
@@ -198,7 +200,9 @@ pub fn try_previous_level(ecs: &mut World) -> bool {
     if map.tiles[player_idx] == TileType::UpStairs {
         true
     } else {
-        gamelog::Logger::new().append(format!("There is no way up from here.")).log();
+        gamelog::Logger::new()
+            .append(format!("There is no way up from here."))
+            .log(&crate::gamelog::LogKind::Field);
         false
     }
 }
@@ -218,7 +222,9 @@ fn get_item(ecs: &mut World) {
     }
 
     match target_item {
-        None => gamelog::Logger::new().append(format!("There is nothing here to pick up.")).log(),
+        None => gamelog::Logger::new()
+            .append(format!("There is nothing here to pick up."))
+            .log(&crate::gamelog::LogKind::Field),
         Some(item) => {
             let mut pickup = ecs.write_storage::<WantsToPickupItem>();
             pickup

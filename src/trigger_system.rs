@@ -52,7 +52,7 @@ impl<'a> System<'a> for TriggerSystem {
                             if let Some(name) = name {
                                 gamelog::Logger::new()
                                     .append(format!("{} triggers!", &name.name))
-                                    .log();
+                                    .log(&crate::gamelog::LogKind::Field);
                             }
 
                             // Call the effects system

@@ -117,7 +117,7 @@ impl<'a> System<'a> for EncumbranceSystem {
                                 .append(format!(
                                     "You are overburdened, and suffering an initiative penalty."
                                 ))
-                                .log();
+                                .log(&crate::gamelog::LogKind::Field);
                         }
                     }
                 }

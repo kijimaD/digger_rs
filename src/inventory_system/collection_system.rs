@@ -27,7 +27,7 @@ impl<'a> System<'a> for ItemCollectionSystem {
             if pickup.collected_by == *player_entity {
                 gamelog::Logger::new()
                     .append(format!("You pick up the {}.", names.get(pickup.item).unwrap().name))
-                    .log();
+                    .log(&crate::gamelog::LogKind::Field);
             }
         }
 

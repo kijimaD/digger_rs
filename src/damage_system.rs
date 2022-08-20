@@ -1,6 +1,6 @@
 use super::{
-    gamelog::BattleLog, Attributes, Battle, Combatant, Equipped, InBackpack, LootTable, Map,
-    Monster, Name, Player, Pools, Position, RunState,
+    Attributes, Combatant, Equipped, InBackpack, LootTable, Map, Monster, Name, OnBattle, Player,
+    Pools, Position, RunState,
 };
 use specs::prelude::*;
 
@@ -15,7 +15,6 @@ pub fn delete_the_dead(ecs: &mut World) {
         let combatant = ecs.read_storage::<Combatant>();
 
         let entities = ecs.entities();
-        let mut log = ecs.write_resource::<BattleLog>();
         for (entity, pools, _combatant) in (&entities, &pools, &combatant).join() {
             if pools.hit_points.current < 1 {
                 let player = players.get(entity);
@@ -23,7 +22,12 @@ pub fn delete_the_dead(ecs: &mut World) {
                     None => {
                         let victim_name = names.get(entity);
                         if let Some(victim_name) = victim_name {
-                            log.entries.push(format!("{} is dead", &victim_name.name));
+                            crate::gamelog::Logger::new()
+                                .color(rltk::YELLOW)
+                                .append(&victim_name.name)
+                                .color(rltk::RED)
+                                .append("is dead.")
+                                .log(&crate::gamelog::LogKind::Battle);
                         }
                         dead.push(entity);
 
@@ -49,23 +53,38 @@ pub fn delete_the_dead(ecs: &mut World) {
     }
 }
 
-// 戦闘中の敵が残ってないとき、勝利。stateを切り替え、敵のシンボルエンティティ(Battleを持つ)を消す
+/// 戦闘中の敵が残ってないとき、勝利。アイテムドロップ、シンボルエンティティを消す、state切り替えなどをやる
 fn check_battle_win(ecs: &mut World) {
     let mut dead: Vec<Entity> = Vec::new();
+
     {
         let entities = ecs.entities();
         let pools = ecs.read_storage::<Pools>();
         let monster = ecs.read_storage::<Monster>();
         let combatant = ecs.read_storage::<Combatant>();
-        let battle_ecs = ecs.write_storage::<Battle>();
+        let mut on_battle = ecs.write_storage::<OnBattle>();
 
         if (&entities, &pools, &monster, &combatant).join().count() == 0 {
-            for (entity, _battle) in (&entities, &battle_ecs).join() {
-                dead.push(entity);
+            for (_entity, on_battle) in (&entities, &on_battle).join() {
+                dead.push(on_battle.monster);
             }
+        }
+        on_battle.clear();
+    }
+
+    {
+        let entities = ecs.entities();
+
+        for victim in dead.clone() {
+            crate::gamelog::Logger::new().append("You win!").log(&crate::gamelog::LogKind::Battle);
+            entities.delete(victim).expect("Delete failed");
+
+            let mut runstate = ecs.write_resource::<RunState>();
+            *runstate = RunState::BattleResult;
         }
     }
 
+    // アイテムドロップ
     let mut to_spawn: Vec<(String, Position)> = Vec::new();
     {
         let mut to_drop: Vec<(Entity, Position)> = Vec::new();
@@ -124,22 +143,6 @@ fn check_battle_win(ecs: &mut World) {
                 &drop.0,
                 crate::raws::SpawnType::AtPosition { x: drop.1.x, y: drop.1.y },
             );
-        }
-    }
-
-    {
-        let entities = ecs.entities();
-        let mut log = ecs.write_resource::<BattleLog>();
-        let positions = ecs.read_storage::<Position>();
-        let mut map = ecs.write_resource::<Map>();
-
-        for victim in dead {
-            log.entries.push(format!("You win!"));
-
-            entities.delete(victim).expect("Delete failed");
-
-            let mut runstate = ecs.write_resource::<RunState>();
-            *runstate = RunState::BattleResult;
         }
     }
 }

@@ -42,7 +42,7 @@ impl<'a> System<'a> for ItemDropSystem {
             if entity == *player_entity {
                 gamelog::Logger::new()
                     .append(format!("You drop the {}.", names.get(to_drop.item).unwrap().name))
-                    .log();
+                    .log(&crate::gamelog::LogKind::Field);
             }
         }
 

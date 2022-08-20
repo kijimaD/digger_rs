@@ -1,7 +1,7 @@
 use super::{
-    effects::*, gamelog::BattleLog, particle_system::ParticleBuilder, skill_bonus, Attributes,
-    EquipmentSlot, Equipped, HungerClock, HungerState, MeleeWeapon, Name, NaturalAttackDefense,
-    Pools, Position, Skill, Skills, WantsToMelee, WeaponAttribute, Wearable,
+    effects::*, particle_system::ParticleBuilder, skill_bonus, Attributes, EquipmentSlot, Equipped,
+    HungerClock, HungerState, MeleeWeapon, Name, NaturalAttackDefense, Pools, Position, Skill,
+    Skills, WantsToMelee, WeaponAttribute, Wearable,
 };
 use specs::prelude::*;
 
@@ -18,7 +18,6 @@ impl<'a> System<'a> for MeleeCombatSystem {
     #[allow(clippy::type_complexity)]
     type SystemData = (
         Entities<'a>,
-        WriteExpect<'a, BattleLog>,
         WriteStorage<'a, WantsToMelee>,
         ReadStorage<'a, Name>,
         ReadStorage<'a, Attributes>,
@@ -37,7 +36,6 @@ impl<'a> System<'a> for MeleeCombatSystem {
     fn run(&mut self, data: Self::SystemData) {
         let (
             entities,
-            mut log,
             mut wants_melee,
             names,
             attributes,
@@ -146,18 +144,14 @@ impl<'a> System<'a> for MeleeCombatSystem {
                         EffectType::Damage { amount: damage },
                         Targets::Single { target: wants_melee.target },
                     );
-                    log.entries.push(format!(
-                        "{} hits {}, for {} hp.",
-                        &name.name, &target_name.name, damage
-                    ));
-                    // crate::gamelog::Logger::new()
-                    //     .npc_name(&name.name)
-                    //     .append("hits")
-                    //     .npc_name(&target_name.name)
-                    //     .append("for")
-                    //     .damage(damage)
-                    //     .append("hp.")
-                    //     .log();
+                    crate::gamelog::Logger::new()
+                        .npc_name(&name.name)
+                        .append("hits")
+                        .npc_name(&target_name.name)
+                        .append("for")
+                        .damage(damage)
+                        .append("hp.")
+                        .log(&crate::gamelog::LogKind::Battle);
                     if let Some(pos) = positions.get(wants_melee.target) {
                         // TODO: 戦闘モードに対応させる
                         particle_builder.request(
@@ -171,36 +165,28 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     }
                 } else if natural_roll == 1 {
                     // Natural 1 miss
-                    log.entries.push(format!(
-                        "{} considers attacking {}, but misjudges the timing.",
-                        name.name, target_name.name
-                    ));
-                    // crate::gamelog::Logger::new()
-                    //     .color(rltk::CYAN)
-                    //     .append(&name.name)
-                    //     .color(rltk::WHITE)
-                    //     .append("considers attacking")
-                    //     .color(rltk::CYAN)
-                    //     .append(&target_name.name)
-                    //     .color(rltk::WHITE)
-                    //     .append("but misjudges the timing!")
-                    //     .log();
+                    crate::gamelog::Logger::new()
+                        .color(rltk::CYAN)
+                        .append(&name.name)
+                        .color(rltk::WHITE)
+                        .append("considers attacking")
+                        .color(rltk::CYAN)
+                        .append(&target_name.name)
+                        .color(rltk::WHITE)
+                        .append("but misjudges the timing!")
+                        .log(&crate::gamelog::LogKind::Battle);
                 } else {
                     // Miss
-                    log.entries.push(format!(
-                        "{} attacks {}, but can't connect.",
-                        name.name, target_name.name
-                    ));
-                    // crate::gamelog::Logger::new()
-                    //     .color(rltk::CYAN)
-                    //     .append(&name.name)
-                    //     .color(rltk::WHITE)
-                    //     .append("attacks")
-                    //     .color(rltk::CYAN)
-                    //     .append(&target_name.name)
-                    //     .color(rltk::WHITE)
-                    //     .append("but can't connect.")
-                    //     .log();
+                    crate::gamelog::Logger::new()
+                        .color(rltk::CYAN)
+                        .append(&name.name)
+                        .color(rltk::WHITE)
+                        .append("attacks")
+                        .color(rltk::CYAN)
+                        .append(&target_name.name)
+                        .color(rltk::WHITE)
+                        .append("but can't connect.")
+                        .log(&crate::gamelog::LogKind::Battle);
                 }
             }
         }
