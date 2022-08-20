@@ -347,9 +347,8 @@ impl GameState for State {
                     gui::BattleResult::Enter => {
                         newrunstate = RunState::AwaitingInput;
 
-                        // FIXME: 2回やらないと1ターン、敵がいた座標に移動できない
-                        self.run_systems();
-                        self.run_systems();
+                        // MEMO: 倒した敵が消えないため
+                        self.ecs.maintain();
                     }
                 }
             }
