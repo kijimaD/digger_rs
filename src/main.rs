@@ -91,7 +91,7 @@ pub struct State {
 }
 
 impl State {
-    fn run_systems(&mut self) {
+    fn run_field_systems(&mut self) {
         let mut vis = VisibilitySystem {};
         vis.run_now(&self.ecs);
         let mut initiative = ai::InitiativeSystem {};
@@ -219,7 +219,7 @@ impl GameState for State {
                 }
             }
             RunState::PreRun => {
-                self.run_systems();
+                self.run_field_systems();
                 self.ecs.maintain();
                 newrunstate = RunState::AwaitingInput;
             }
@@ -231,7 +231,7 @@ impl GameState for State {
             }
             RunState::Ticking => {
                 while newrunstate == RunState::Ticking {
-                    self.run_systems();
+                    self.run_field_systems();
                     self.ecs.maintain();
                     match *self.ecs.fetch::<RunState>() {
                         RunState::AwaitingInput => newrunstate = RunState::AwaitingInput,
