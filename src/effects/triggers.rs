@@ -29,7 +29,7 @@ fn event_trigger(
         let names = ecs.read_storage::<Name>();
         gamelog::Logger::new()
             .append(format!("You eat the {}.", names.get(entity).unwrap().name))
-            .log();
+            .log(&crate::gamelog::LogKind::Field);
         did_something = true;
     }
 
@@ -37,9 +37,13 @@ fn event_trigger(
     if ecs.read_storage::<TownPortal>().get(entity).is_some() {
         let map = ecs.fetch::<Map>();
         if map.depth == 1 {
-            gamelog::Logger::new().append("You are already in town!").log();
+            gamelog::Logger::new()
+                .append("You are already in town!")
+                .log(&crate::gamelog::LogKind::Field);
         } else {
-            gamelog::Logger::new().append("You are teleported back to town!").log();
+            gamelog::Logger::new()
+                .append("You are teleported back to town!")
+                .log(&crate::gamelog::LogKind::Field);
             let mut runstate = ecs.fetch_mut::<RunState>();
             *runstate = RunState::TownPortal;
             did_something = true;

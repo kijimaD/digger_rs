@@ -55,9 +55,6 @@ pub enum VendorMode {
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum RunState {
-    AwaitingInput,
-    PreRun,
-    Ticking,
     BattleEncounter,
     BattleCommand,
     BattleInventory,
@@ -66,6 +63,9 @@ pub enum RunState {
     BattleResult,
     BattleAwaiting,
     BattleTargeting,
+    AwaitingInput,
+    PreRun,
+    Ticking,
     ShowInventory,
     ItemTargeting { item: Entity },
     ShowDropItem,
@@ -590,7 +590,7 @@ impl State {
         let current_depth = self.ecs.fetch::<Map>().depth;
         self.generate_world_map(current_depth + offset, offset);
 
-        gamelog::Logger::new().append("You change Level.").log();
+        gamelog::Logger::new().append("You change Level.").log(&crate::gamelog::LogKind::Field);
     }
 
     fn game_over_cleanup(&mut self) {
@@ -629,7 +629,11 @@ impl State {
         }
 
         gamelog::clear_log();
-        gamelog::Logger::new().append("Enter the").color(rltk::CYAN).append("dungeon...").log();
+        gamelog::Logger::new()
+            .append("Enter the")
+            .color(rltk::CYAN)
+            .append("dungeon...")
+            .log(&crate::gamelog::LogKind::Field);
 
         gamelog::clear_events();
     }
@@ -723,7 +727,6 @@ fn main() -> rltk::BError {
     gs.ecs.insert(player_entity);
     gs.ecs.insert(RunState::MapGeneration {});
     gamelog::clear_log();
-    gs.ecs.insert(gamelog::BattleLog { entries: vec!["".to_string()] });
     gs.ecs.insert(particle_system::ParticleBuilder::new());
     gs.ecs.insert(rex_assets::RexAssets::new());
 

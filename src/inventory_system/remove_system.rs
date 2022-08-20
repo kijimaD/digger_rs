@@ -23,7 +23,7 @@ impl<'a> System<'a> for ItemRemoveSystem {
                 .expect("Unable to insert backpack");
             gamelog::Logger::new()
                 .append(format!("You unequip {}.", names.get(to_remove.item).unwrap().name))
-                .log();
+                .log(&crate::gamelog::LogKind::Field);
         }
 
         wants_remove.clear();

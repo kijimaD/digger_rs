@@ -1,5 +1,5 @@
 use super::{
-    gamelog::BattleLog, Combatant, Monster, OnBattle, Player, Pools, RunState, WantsToEncounter,
+    Combatant, Monster, OnBattle, Player, Pools, RunState, WantsToEncounter,
 };
 use specs::prelude::*;
 
@@ -16,7 +16,6 @@ pub fn is_encounter(ecs: &mut World) -> bool {
 pub fn invoke_battle(ecs: &mut World) {
     let entities = ecs.entities();
     let mut wants_encounter = ecs.write_storage::<WantsToEncounter>();
-    let mut battlelog = ecs.write_resource::<BattleLog>();
     let mut battle = ecs.write_storage::<OnBattle>();
     let monster = ecs.write_storage::<Monster>();
     let mut combatant = ecs.write_storage::<Combatant>();
@@ -56,8 +55,8 @@ pub fn invoke_battle(ecs: &mut World) {
             combatant.insert(entity, Combatant {}).expect("Unable to insert combatant");
         }
 
-        battlelog.entries = vec![];
-        battlelog.entries.push(format!("Monster appearing!"));
+        // battlelog.entries = vec![];
+        // battlelog.entries.push(format!("Monster appearing!"));
     }
     wants_encounter.clear();
 }

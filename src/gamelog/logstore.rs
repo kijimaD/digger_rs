@@ -3,15 +3,16 @@ use rltk::prelude::*;
 use std::sync::Mutex;
 
 lazy_static! {
-    static ref LOG: Mutex<Vec<Vec<LogFragment>>> = Mutex::new(Vec::new());
+    pub static ref LOG: Mutex<Vec<Vec<LogFragment>>> = Mutex::new(Vec::new());
+    pub static ref BATTLE_LOG: Mutex<Vec<Vec<LogFragment>>> = Mutex::new(Vec::new());
 }
 
 pub fn append_fragment(fragment: LogFragment) {
     LOG.lock().unwrap().push(vec![fragment]);
 }
 
-pub fn append_entry(fragments: Vec<LogFragment>) {
-    LOG.lock().unwrap().push(fragments);
+pub fn append_entry(fragments: Vec<LogFragment>, log: &Mutex<Vec<Vec<LogFragment>>>) {
+    log.lock().unwrap().push(fragments);
 }
 
 pub fn clear_log() {
@@ -41,10 +42,11 @@ pub fn restore_log(log: &mut Vec<Vec<crate::gamelog::LogFragment>>) {
     LOG.lock().unwrap().append(log);
 }
 
-pub fn print_log(console: &mut Box<dyn Console>, pos: Point) {
+pub fn print_log(log: &Mutex<Vec<Vec<LogFragment>>>, console: &mut Box<dyn Console>, pos: Point) {
     let mut y = pos.y;
     let mut x = pos.x;
-    LOG.lock().unwrap().iter().rev().take(6).for_each(|log| {
+
+    log.lock().unwrap().iter().rev().take(6).for_each(|log| {
         log.iter().for_each(|frag| {
             console.print_color(
                 x,

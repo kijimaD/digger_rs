@@ -1,8 +1,8 @@
 use super::{
-    gamelog::BattleLog, show_inventory, Combatant, Consumable, InBackpack, ItemMenuResult, Monster,
-    Name, OnBattle, Pools, State,
+    gamelog, show_inventory, Combatant, Consumable, InBackpack, ItemMenuResult,
+    Monster, Name, OnBattle, Pools, State,
 };
-use rltk::{RandomNumberGenerator, Rltk, VirtualKeyCode, RGB};
+use rltk::prelude::*;
 use specs::prelude::*;
 
 pub fn show_battle_inventory(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Option<Entity>) {
@@ -60,14 +60,11 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
     // メッセージボックス
     ctx.draw_box(0, 43, 79, 6, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
 
-    let log = ecs.fetch::<BattleLog>();
-    let mut y = 48;
-    for s in log.entries.iter().rev() {
-        if y > 43 {
-            ctx.print(2, y, s);
-        }
-        y -= 1;
-    }
+    gamelog::print_log(
+        &crate::gamelog::BATTLE_LOG,
+        &mut rltk::BACKEND_INTERNAL.lock().consoles[1].console,
+        Point::new(1, 23),
+    );
 
     // 敵一覧
     let names = ecs.read_storage::<Name>();
@@ -115,8 +112,7 @@ pub fn battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResult {
                     return BattleCommandResult::RunAway;
                 } else {
                     // 逃走失敗
-                    let mut log = ecs.write_resource::<BattleLog>();
-                    log.entries.push(format!("Failed run away!"));
+                    // log.entries.push(format!("Failed run away!"));
                     return BattleCommandResult::RunAwayFailed;
                 }
             }
@@ -141,8 +137,7 @@ fn run_away_battle(ecs: &mut World) {
     let mut battle = ecs.write_storage::<OnBattle>();
     battle.clear();
 
-    let mut log = ecs.write_resource::<BattleLog>();
-    log.entries.push(format!("Run away!"));
+    // log.entries.push(format!("Run away!"));
 }
 
 pub enum BattleTargetingResult {

@@ -1,5 +1,5 @@
 use super::{
-    gamelog::BattleLog, Attributes, Combatant, Equipped, InBackpack, LootTable, Map, Monster, Name,
+    Attributes, Combatant, Equipped, InBackpack, LootTable, Map, Monster, Name,
     OnBattle, Player, Pools, Position, RunState,
 };
 use specs::prelude::*;
@@ -15,7 +15,6 @@ pub fn delete_the_dead(ecs: &mut World) {
         let combatant = ecs.read_storage::<Combatant>();
 
         let entities = ecs.entities();
-        let mut log = ecs.write_resource::<BattleLog>();
         for (entity, pools, _combatant) in (&entities, &pools, &combatant).join() {
             if pools.hit_points.current < 1 {
                 let player = players.get(entity);
@@ -23,7 +22,12 @@ pub fn delete_the_dead(ecs: &mut World) {
                     None => {
                         let victim_name = names.get(entity);
                         if let Some(victim_name) = victim_name {
-                            log.entries.push(format!("{} is dead", &victim_name.name));
+                            crate::gamelog::Logger::new()
+                                .color(rltk::YELLOW)
+                                .append(&victim_name.name)
+                                .color(rltk::RED)
+                                .append("is dead.")
+                                .log(&crate::gamelog::LogKind::Battle);
                         }
                         dead.push(entity);
 
@@ -70,10 +74,9 @@ fn check_battle_win(ecs: &mut World) {
 
     {
         let entities = ecs.entities();
-        let mut log = ecs.write_resource::<BattleLog>();
 
         for victim in dead.clone() {
-            log.entries.push(format!("You win!"));
+            crate::gamelog::Logger::new().append("You win!").log(&crate::gamelog::LogKind::Battle);
             entities.delete(victim).expect("Delete failed");
 
             let mut runstate = ecs.write_resource::<RunState>();

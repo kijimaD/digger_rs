@@ -6,6 +6,11 @@ pub struct Logger {
     fragments: Vec<LogFragment>,
 }
 
+pub enum LogKind {
+    Field,
+    Battle,
+}
+
 impl Logger {
     pub fn new() -> Self {
         Logger { current_color: RGB::named(rltk::WHITE), fragments: Vec::new() }
@@ -21,8 +26,11 @@ impl Logger {
         self
     }
 
-    pub fn log(self) {
-        append_entry(self.fragments)
+    pub fn log(self, logtype: &LogKind) {
+        match logtype {
+            LogKind::Field => append_entry(self.fragments, &crate::gamelog::LOG),
+            LogKind::Battle => append_entry(self.fragments, &crate::gamelog::BATTLE_LOG),
+        }
     }
 
     pub fn npc_name<T: ToString>(mut self, text: T) -> Self {

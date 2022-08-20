@@ -44,7 +44,7 @@ impl<'a> System<'a> for ItemEquipOnUse {
                                 .append("You unequip")
                                 .color(rltk::CYAN)
                                 .append(&name.name)
-                                .log();
+                                .log(&crate::gamelog::LogKind::Field);
                         }
                     }
                 }
@@ -66,7 +66,7 @@ impl<'a> System<'a> for ItemEquipOnUse {
                         .append("You equip")
                         .color(rltk::CYAN)
                         .append(&names.get(useitem.item).unwrap().name)
-                        .log();
+                        .log(&crate::gamelog::LogKind::Field);
                 }
 
                 // Done with item
