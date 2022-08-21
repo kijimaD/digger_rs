@@ -2,8 +2,33 @@ use super::{
     OnBattle, Combatant, Monster, gamelog
 };
 use specs::prelude::*;
+use rltk::prelude::*;
 
-pub fn run_away_battle(ecs: &mut World) {
+pub enum RunAwayResult {
+    Success,
+    Fail
+}
+
+pub fn run_away_roll(ecs: &mut World) -> RunAwayResult {
+    let mut rng = RandomNumberGenerator::new();
+    let num = rng.range(0, 2);
+
+    if num == 0 {
+        run_away_battle(ecs);
+        gamelog::Logger::new()
+            .color(rltk::GREEN)
+            .append("Run away!")
+            .log(&crate::gamelog::LogKind::Battle);
+        return RunAwayResult::Success;
+    } else {
+        gamelog::Logger::new()
+            .append("Failed run away!")
+            .log(&crate::gamelog::LogKind::Battle);
+        return RunAwayResult::Fail;
+    }
+}
+
+fn run_away_battle(ecs: &mut World) {
     let combatants = ecs.write_storage::<Combatant>();
     let monsters = ecs.read_storage::<Monster>();
     let entities = ecs.entities();
@@ -15,9 +40,4 @@ pub fn run_away_battle(ecs: &mut World) {
     // battle削除
     let mut battle = ecs.write_storage::<OnBattle>();
     battle.clear();
-
-    gamelog::Logger::new()
-        .color(rltk::GREEN)
-        .append("Run away!")
-        .log(&crate::gamelog::LogKind::Battle);
 }

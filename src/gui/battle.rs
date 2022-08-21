@@ -104,18 +104,9 @@ pub fn battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResult {
             VirtualKeyCode::A => BattleCommandResult::Attack,
             VirtualKeyCode::I => BattleCommandResult::ShowInventory,
             VirtualKeyCode::R => {
-                let mut rng = RandomNumberGenerator::new();
-                let num = rng.range(0, 2);
-                if num == 0 {
-                    // 逃走成功
-                    run_away_system::run_away_battle(ecs);
-                    return BattleCommandResult::RunAway;
-                } else {
-                    // 逃走失敗
-                    gamelog::Logger::new()
-                        .append("Failed run away!")
-                        .log(&crate::gamelog::LogKind::Battle);
-                    return BattleCommandResult::RunAwayFailed;
+                match run_away_system::run_away_roll(ecs) {
+                    run_away_system::RunAwayResult::Success => {return BattleCommandResult::RunAway}
+                    run_away_system::RunAwayResult::Fail => {return BattleCommandResult::RunAwayFailed}
                 }
             }
             _ => BattleCommandResult::NoResponse,
