@@ -57,7 +57,7 @@ impl<'a> System<'a> for HungerSystem {
                         }
                         for (entity, _pools) in (&entities, &pools).join() {
                             add_effect(
-                                Some(entity),
+                                None,
                                 EffectType::Damage { amount: 1 },
                                 Targets::Single { target: entity },
                             );
