@@ -1,4 +1,4 @@
-use super::{
+use crate::{
     effects::*, gamelog, ApplyTeleport, EntityMoved, EntryTrigger, Map, Name, Position,
     SingleActivation, TeleportTo,
 };
