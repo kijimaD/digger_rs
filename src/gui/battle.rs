@@ -1,6 +1,6 @@
 use super::{
     gamelog, show_inventory, Combatant, Consumable, InBackpack, ItemMenuResult, Monster, Name,
-    OnBattle, Pools, State,
+    OnBattle, Pools, State, run_away_system
 };
 use rltk::prelude::*;
 use specs::prelude::*;
@@ -108,7 +108,7 @@ pub fn battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResult {
                 let num = rng.range(0, 2);
                 if num == 0 {
                     // 逃走成功
-                    run_away_battle(ecs);
+                    run_away_system::run_away_battle(ecs);
                     return BattleCommandResult::RunAway;
                 } else {
                     // 逃走失敗
@@ -121,28 +121,6 @@ pub fn battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResult {
             _ => BattleCommandResult::NoResponse,
         },
     }
-}
-
-// 逃走。
-// 敵シンボルは消さずに、戦闘用エンティティだけ削除する
-// TODO: このファイルにあるべき関数ではない
-fn run_away_battle(ecs: &mut World) {
-    let combatants = ecs.write_storage::<Combatant>();
-    let monsters = ecs.read_storage::<Monster>();
-    let entities = ecs.entities();
-
-    for (entity, _combatant, _monster) in (&entities, &combatants, &monsters).join() {
-        entities.delete(entity).expect("Delete failed")
-    }
-
-    // battle削除
-    let mut battle = ecs.write_storage::<OnBattle>();
-    battle.clear();
-
-    gamelog::Logger::new()
-        .color(rltk::GREEN)
-        .append("Run away!")
-        .log(&crate::gamelog::LogKind::Battle);
 }
 
 pub enum BattleTargetingResult {

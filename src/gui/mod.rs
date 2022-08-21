@@ -1,7 +1,7 @@
 use super::{
     camera, gamelog, Attribute, Attributes, Combatant, Consumable, Equipped, HungerClock,
     HungerState, InBackpack, Item, Map, Monster, Name, OnBattle, Player, Point, Pools, Position,
-    RunState, State, Vendor, VendorMode,
+    RunState, State, Vendor, VendorMode, run_away_system
 };
 use specs::prelude::*;
 mod hud;

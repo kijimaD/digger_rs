@@ -19,6 +19,7 @@ mod melee_combat_system;
 use melee_combat_system::MeleeCombatSystem;
 mod battle_action_system;
 mod damage_system;
+mod run_away_system;
 use battle_action_system::BattleActionSystem;
 mod ai;
 pub mod effects;
