@@ -1,6 +1,6 @@
 use super::{
-    gamelog, show_inventory, Combatant, Consumable, InBackpack, ItemMenuResult, Monster, Name,
-    OnBattle, Pools, State, run_away_system
+    gamelog, run_away_system, show_inventory, Combatant, Consumable, InBackpack, ItemMenuResult,
+    Monster, Name, OnBattle, Pools, State,
 };
 use rltk::prelude::*;
 use specs::prelude::*;
@@ -103,12 +103,10 @@ pub fn battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResult {
         Some(key) => match key {
             VirtualKeyCode::A => BattleCommandResult::Attack,
             VirtualKeyCode::I => BattleCommandResult::ShowInventory,
-            VirtualKeyCode::R => {
-                match run_away_system::run_away_roll(ecs) {
-                    run_away_system::RunAwayResult::Success => {return BattleCommandResult::RunAway}
-                    run_away_system::RunAwayResult::Fail => {return BattleCommandResult::RunAwayFailed}
-                }
-            }
+            VirtualKeyCode::R => match run_away_system::run_away_roll(ecs) {
+                run_away_system::RunAwayResult::Success => return BattleCommandResult::RunAway,
+                run_away_system::RunAwayResult::Fail => return BattleCommandResult::RunAwayFailed,
+            },
             _ => BattleCommandResult::NoResponse,
         },
     }

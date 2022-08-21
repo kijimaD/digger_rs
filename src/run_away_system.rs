@@ -1,12 +1,10 @@
-use super::{
-    OnBattle, Combatant, Monster, gamelog
-};
-use specs::prelude::*;
+use super::{gamelog, Combatant, Monster, OnBattle};
 use rltk::prelude::*;
+use specs::prelude::*;
 
 pub enum RunAwayResult {
     Success,
-    Fail
+    Fail,
 }
 
 pub fn run_away_roll(ecs: &mut World) -> RunAwayResult {
@@ -21,9 +19,7 @@ pub fn run_away_roll(ecs: &mut World) -> RunAwayResult {
             .log(&crate::gamelog::LogKind::Battle);
         return RunAwayResult::Success;
     } else {
-        gamelog::Logger::new()
-            .append("Failed run away!")
-            .log(&crate::gamelog::LogKind::Battle);
+        gamelog::Logger::new().append("Failed run away!").log(&crate::gamelog::LogKind::Battle);
         return RunAwayResult::Fail;
     }
 }
