@@ -1,6 +1,6 @@
 use super::{
-    gamelog, show_inventory, Combatant, Consumable, InBackpack, ItemMenuResult, Monster, Name,
-    OnBattle, Pools, State,
+    gamelog, run_away_system, show_inventory, Combatant, Consumable, InBackpack, ItemMenuResult,
+    Monster, Name, OnBattle, Pools, State,
 };
 use rltk::prelude::*;
 use specs::prelude::*;
@@ -103,46 +103,13 @@ pub fn battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResult {
         Some(key) => match key {
             VirtualKeyCode::A => BattleCommandResult::Attack,
             VirtualKeyCode::I => BattleCommandResult::ShowInventory,
-            VirtualKeyCode::R => {
-                let mut rng = RandomNumberGenerator::new();
-                let num = rng.range(0, 2);
-                if num == 0 {
-                    // 逃走成功
-                    run_away_battle(ecs);
-                    return BattleCommandResult::RunAway;
-                } else {
-                    // 逃走失敗
-                    gamelog::Logger::new()
-                        .append("Failed run away!")
-                        .log(&crate::gamelog::LogKind::Battle);
-                    return BattleCommandResult::RunAwayFailed;
-                }
-            }
+            VirtualKeyCode::R => match run_away_system::run_away_roll(ecs) {
+                run_away_system::RunAwayResult::Success => return BattleCommandResult::RunAway,
+                run_away_system::RunAwayResult::Fail => return BattleCommandResult::RunAwayFailed,
+            },
             _ => BattleCommandResult::NoResponse,
         },
     }
-}
-
-// 逃走。
-// 敵シンボルは消さずに、戦闘用エンティティだけ削除する
-// TODO: このファイルにあるべき関数ではない
-fn run_away_battle(ecs: &mut World) {
-    let combatants = ecs.write_storage::<Combatant>();
-    let monsters = ecs.read_storage::<Monster>();
-    let entities = ecs.entities();
-
-    for (entity, _combatant, _monster) in (&entities, &combatants, &monsters).join() {
-        entities.delete(entity).expect("Delete failed")
-    }
-
-    // battle削除
-    let mut battle = ecs.write_storage::<OnBattle>();
-    battle.clear();
-
-    gamelog::Logger::new()
-        .color(rltk::GREEN)
-        .append("Run away!")
-        .log(&crate::gamelog::LogKind::Battle);
 }
 
 pub enum BattleTargetingResult {

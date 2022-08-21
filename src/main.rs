@@ -19,6 +19,7 @@ mod melee_combat_system;
 use melee_combat_system::MeleeCombatSystem;
 mod battle_action_system;
 mod damage_system;
+mod run_away_system;
 use battle_action_system::BattleActionSystem;
 mod ai;
 pub mod effects;
@@ -91,7 +92,7 @@ pub struct State {
 }
 
 impl State {
-    fn run_systems(&mut self) {
+    fn run_field_systems(&mut self) {
         let mut vis = VisibilitySystem {};
         vis.run_now(&self.ecs);
         let mut initiative = ai::InitiativeSystem {};
@@ -200,49 +201,6 @@ impl GameState for State {
 
         // 全体処理
         match newrunstate {
-            RunState::MapGeneration => {
-                if !SHOW_MAPGEN_VISUALIZER {
-                    newrunstate = self.mapgen_next_state.unwrap();
-                }
-                ctx.cls();
-                if self.mapgen_index < self.mapgen_history.len() {
-                    camera::render_debug_map(&self.mapgen_history[self.mapgen_index], ctx);
-                }
-
-                self.mapgen_timer += ctx.frame_time_ms;
-                if self.mapgen_timer > 300.0 {
-                    self.mapgen_timer = 0.0;
-                    self.mapgen_index += 1;
-                    if self.mapgen_index >= self.mapgen_history.len() {
-                        newrunstate = self.mapgen_next_state.unwrap();
-                    }
-                }
-            }
-            RunState::PreRun => {
-                self.run_systems();
-                self.ecs.maintain();
-                newrunstate = RunState::AwaitingInput;
-            }
-            RunState::AwaitingInput => {
-                newrunstate = player_input(self, ctx);
-                if newrunstate != RunState::AwaitingInput {
-                    crate::gamelog::record_event("Turn", 1);
-                }
-            }
-            RunState::Ticking => {
-                while newrunstate == RunState::Ticking {
-                    self.run_systems();
-                    self.ecs.maintain();
-                    match *self.ecs.fetch::<RunState>() {
-                        RunState::AwaitingInput => newrunstate = RunState::AwaitingInput,
-                        RunState::TownPortal => newrunstate = RunState::TownPortal,
-                        RunState::TeleportingToOtherLevel { x, y, depth } => {
-                            newrunstate = RunState::TeleportingToOtherLevel { x, y, depth }
-                        }
-                        _ => newrunstate = RunState::Ticking,
-                    }
-                }
-            }
             RunState::BattleEncounter => {
                 newrunstate = RunState::BattleAwaiting;
             }
@@ -349,6 +307,50 @@ impl GameState for State {
 
                         // MEMO: 倒した敵が消えないため
                         self.ecs.maintain();
+                        self.run_field_systems();
+                    }
+                }
+            }
+            RunState::MapGeneration => {
+                if !SHOW_MAPGEN_VISUALIZER {
+                    newrunstate = self.mapgen_next_state.unwrap();
+                }
+                ctx.cls();
+                if self.mapgen_index < self.mapgen_history.len() {
+                    camera::render_debug_map(&self.mapgen_history[self.mapgen_index], ctx);
+                }
+
+                self.mapgen_timer += ctx.frame_time_ms;
+                if self.mapgen_timer > 300.0 {
+                    self.mapgen_timer = 0.0;
+                    self.mapgen_index += 1;
+                    if self.mapgen_index >= self.mapgen_history.len() {
+                        newrunstate = self.mapgen_next_state.unwrap();
+                    }
+                }
+            }
+            RunState::PreRun => {
+                self.run_field_systems();
+                self.ecs.maintain();
+                newrunstate = RunState::AwaitingInput;
+            }
+            RunState::AwaitingInput => {
+                newrunstate = player_input(self, ctx);
+                if newrunstate != RunState::AwaitingInput {
+                    crate::gamelog::record_event("Turn", 1);
+                }
+            }
+            RunState::Ticking => {
+                while newrunstate == RunState::Ticking {
+                    self.run_field_systems();
+                    self.ecs.maintain();
+                    match *self.ecs.fetch::<RunState>() {
+                        RunState::AwaitingInput => newrunstate = RunState::AwaitingInput,
+                        RunState::TownPortal => newrunstate = RunState::TownPortal,
+                        RunState::TeleportingToOtherLevel { x, y, depth } => {
+                            newrunstate = RunState::TeleportingToOtherLevel { x, y, depth }
+                        }
+                        _ => newrunstate = RunState::Ticking,
                     }
                 }
             }
