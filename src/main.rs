@@ -11,36 +11,31 @@ mod player;
 use player::*;
 mod rect;
 pub use rect::Rect;
-mod visibility_system;
-use visibility_system::VisibilitySystem;
-mod map_indexing_system;
-use map_indexing_system::MapIndexingSystem;
-mod melee_combat_system;
-use melee_combat_system::MeleeCombatSystem;
-mod battle_action_system;
-mod damage_system;
-mod run_away_system;
-use battle_action_system::BattleActionSystem;
 mod ai;
+mod damage_system;
 pub mod effects;
 mod encounter_system;
 mod gamelog;
 mod gui;
-mod inventory_system;
-mod movement_system;
+mod run_away_system;
 mod spawner;
-mod trigger_system;
-use inventory_system::{ItemCollectionSystem, ItemDropSystem, ItemRemoveSystem, ItemUseSystem};
+mod systems;
+use systems::{
+    cull_dead_particles, BattleActionSystem, HungerSystem, LightingSystem, MapIndexingSystem,
+    MeleeCombatSystem, MovementSystem, ParticleBuilder, ParticleSpawnSystem, TriggerSystem,
+    VisibilitySystem,
+};
+mod inventory_system;
+use inventory_system::{
+    ItemCollectionSystem, ItemDropSystem, ItemEquipOnUse, ItemRemoveSystem, ItemUseSystem,
+};
 mod gamesystem;
-mod hunger_system;
 pub mod map_builders;
-mod particle_system;
 pub mod random_table;
 pub mod raws;
 pub mod rex_assets;
 pub mod saveload_system;
 pub use gamesystem::*;
-mod lighting_system;
 mod spatial;
 
 #[macro_use]
@@ -99,7 +94,7 @@ impl State {
         initiative.run_now(&self.ecs);
         let mut quipper = ai::QuipSystem {};
         quipper.run_now(&self.ecs);
-        let mut moving = movement_system::MovementSystem {};
+        let mut moving = MovementSystem {};
         moving.run_now(&self.ecs);
         let mut visible = ai::VisibleAI {};
         visible.run_now(&self.ecs);
@@ -115,7 +110,7 @@ impl State {
         mapindex.run_now(&self.ecs);
         let mut pickup = ItemCollectionSystem {};
         pickup.run_now(&self.ecs);
-        let mut itemequip = inventory_system::ItemEquipOnUse {};
+        let mut itemequip = ItemEquipOnUse {};
         itemequip.run_now(&self.ecs);
         let mut itemuse = ItemUseSystem {};
         itemuse.run_now(&self.ecs);
@@ -123,17 +118,17 @@ impl State {
         drop_items.run_now(&self.ecs);
         let mut item_remove = ItemRemoveSystem {};
         item_remove.run_now(&self.ecs);
-        let mut hunger = hunger_system::HungerSystem {};
+        let mut hunger = HungerSystem {};
         hunger.run_now(&self.ecs);
         let mut encumbrance = ai::EncumbranceSystem {};
         encumbrance.run_now(&self.ecs);
-        let mut trigger = trigger_system::TriggerSystem {};
+        let mut trigger = TriggerSystem {};
         trigger.run_now(&self.ecs);
 
         effects::run_effects_queue(&mut self.ecs);
-        let mut particles = particle_system::ParticleSpawnSystem {};
+        let mut particles = ParticleSpawnSystem {};
         particles.run_now(&self.ecs);
-        let mut lighting = lighting_system::LightingSystem {};
+        let mut lighting = LightingSystem {};
         lighting.run_now(&self.ecs);
 
         self.ecs.maintain();
@@ -165,7 +160,7 @@ impl GameState for State {
         ctx.cls();
         ctx.set_active_console(0);
         ctx.cls();
-        particle_system::cull_dead_particles(&mut self.ecs, ctx);
+        cull_dead_particles(&mut self.ecs, ctx);
 
         // マップUI表示
         match newrunstate {
@@ -728,7 +723,7 @@ fn main() -> rltk::BError {
     gs.ecs.insert(player_entity);
     gs.ecs.insert(RunState::MapGeneration {});
     gamelog::clear_log(&crate::gamelog::FIELD_LOG);
-    gs.ecs.insert(particle_system::ParticleBuilder::new());
+    gs.ecs.insert(ParticleBuilder::new());
     gs.ecs.insert(rex_assets::RexAssets::new());
 
     gs.generate_world_map(1, 0);

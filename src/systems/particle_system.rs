@@ -1,4 +1,4 @@
-use super::{ParticleLifetime, Position, Renderable, Rltk, RGB};
+use crate::{ParticleLifetime, Position, Renderable, Rltk, RGB};
 use specs::prelude::*;
 
 // map field用。

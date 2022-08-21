@@ -1,4 +1,4 @@
-use super::{effects::*, gamelog, HungerClock, HungerState, MyTurn, Pools};
+use crate::{effects::*, gamelog, HungerClock, HungerState, MyTurn, Pools};
 use specs::prelude::*;
 
 pub struct HungerSystem {}

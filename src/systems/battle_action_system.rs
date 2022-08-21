@@ -1,5 +1,5 @@
 /// 戦闘用entityごとに、wants_to_meleeを生成する
-use super::{Combatant, Monster, Player, Pools, WantsToMelee};
+use crate::{Combatant, Monster, Player, Pools, WantsToMelee};
 use specs::prelude::*;
 
 pub struct BattleActionSystem {}
