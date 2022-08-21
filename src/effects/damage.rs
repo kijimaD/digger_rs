@@ -10,6 +10,7 @@ pub fn inflict_damage(ecs: &mut World, damage: &EffectSpawner, target: Entity) {
     let player_entity = ecs.fetch::<Entity>();
     if let Some(pool) = pools.get_mut(target) {
         if !pool.god_mode {
+            // 攻撃主と攻撃対象が同じである場合はダメージを与えない
             if let Some(creator) = damage.creator {
                 if creator == target {
                     return;
