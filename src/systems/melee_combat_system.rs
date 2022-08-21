@@ -1,4 +1,4 @@
-use crate::systems::particle_system::ParticleBuilder;
+use crate::systems::ParticleBuilder;
 use crate::{
     effects::*, skill_bonus, Attributes, EquipmentSlot, Equipped, HungerClock, HungerState,
     MeleeWeapon, Name, NaturalAttackDefense, Pools, Position, Skill, Skills, WantsToMelee,
