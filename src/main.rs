@@ -195,7 +195,7 @@ impl GameState for State {
                 // 戦闘コマンド
                 let result = gui::battle_command(&mut self.ecs, ctx);
 
-                // メインメニュー表示
+                // コマンドメニュー表示
                 match result {
                     gui::BattleCommandResult::NoResponse => {}
                     gui::BattleCommandResult::Attack => newrunstate = RunState::BattleTargeting,
@@ -207,7 +207,7 @@ impl GameState for State {
                 }
             }
             RunState::BattleInventory => {
-                let result = gui::show_battle_inventory(self, ctx);
+                let result = gui::show_inventory(self, ctx);
                 match result.0 {
                     gui::ItemMenuResult::Cancel => newrunstate = RunState::BattleCommand,
                     gui::ItemMenuResult::NoResponse => {}
@@ -342,7 +342,7 @@ impl GameState for State {
                 }
             }
             RunState::ShowInventory => {
-                let result = gui::show_field_inventory(self, ctx);
+                let result = gui::show_inventory(self, ctx);
                 match result.0 {
                     gui::ItemMenuResult::Cancel => newrunstate = RunState::AwaitingInput,
                     gui::ItemMenuResult::NoResponse => {}
