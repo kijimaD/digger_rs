@@ -275,9 +275,9 @@ impl GameState for State {
                 // TODO: 複数キャラのコマンドに対応してない
                 for (entity, _player, _pools) in (&entities, &player, &pools).join() {
                     match result.0 {
-                        gui::BattleTargetingResult::Cancel => newrunstate = RunState::BattleCommand,
-                        gui::BattleTargetingResult::NoResponse => {}
-                        gui::BattleTargetingResult::Selected => {
+                        gui::BattleAttackTargetingResult::Cancel => newrunstate = RunState::BattleCommand,
+                        gui::BattleAttackTargetingResult::NoResponse => {}
+                        gui::BattleAttackTargetingResult::Selected => {
                             let target_entity = result.1.unwrap();
                             wants_to_melee
                                 .insert(entity, WantsToMelee { target: target_entity })
