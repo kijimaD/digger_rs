@@ -156,21 +156,25 @@ impl GameState for State {
 
         // マップUI表示
         match newrunstate {
-            // 除外
-            RunState::MainMenu { .. }
-            | RunState::GameOver
-            | RunState::BattleEncounter
-            | RunState::BattleCommand
-            | RunState::BattleInventory
-            | RunState::BattleItemTargeting { .. }
-            | RunState::BattleTurn
-            | RunState::BattleAwaiting
-            | RunState::BattleTargeting
-            | RunState::BattleResult => {}
-            _ => {
+            RunState::AwaitingInput
+            | RunState::PreRun
+            | RunState::Ticking
+            | RunState::ShowInventory
+            | RunState::ItemTargeting { .. }
+            | RunState::ShowDropItem
+            | RunState::SaveGame
+            | RunState::NextLevel
+            | RunState::PreviousLevel
+            | RunState::TownPortal
+            | RunState::ShowRemoveItem
+            | RunState::MapGeneration
+            | RunState::ShowCheatMenu
+            | RunState::ShowVendor { .. }
+            | RunState::TeleportingToOtherLevel { .. } => {
                 camera::render_camera(&self.ecs, ctx);
                 gui::draw_ui(&self.ecs, ctx);
             }
+            _ => {}
         }
 
         // 戦闘UI表示

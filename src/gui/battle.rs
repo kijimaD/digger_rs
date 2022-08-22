@@ -1,7 +1,4 @@
-use super::{
-    gamelog, run_away_system, show_inventory, Combatant, Consumable, InBackpack, ItemMenuResult,
-    Monster, Name, OnBattle, Pools, State,
-};
+use super::{gamelog, run_away_system, Combatant, Monster, Name, Pools, State};
 use rltk::prelude::*;
 use specs::prelude::*;
 
