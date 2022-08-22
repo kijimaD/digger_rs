@@ -156,21 +156,25 @@ impl GameState for State {
 
         // マップUI表示
         match newrunstate {
-            // 除外
-            RunState::MainMenu { .. }
-            | RunState::GameOver
-            | RunState::BattleEncounter
-            | RunState::BattleCommand
-            | RunState::BattleInventory
-            | RunState::BattleItemTargeting { .. }
-            | RunState::BattleTurn
-            | RunState::BattleAwaiting
-            | RunState::BattleTargeting
-            | RunState::BattleResult => {}
-            _ => {
+            RunState::AwaitingInput
+            | RunState::PreRun
+            | RunState::Ticking
+            | RunState::ShowInventory
+            | RunState::ItemTargeting { .. }
+            | RunState::ShowDropItem
+            | RunState::SaveGame
+            | RunState::NextLevel
+            | RunState::PreviousLevel
+            | RunState::TownPortal
+            | RunState::ShowRemoveItem
+            | RunState::MapGeneration
+            | RunState::ShowCheatMenu
+            | RunState::ShowVendor { .. }
+            | RunState::TeleportingToOtherLevel { .. } => {
                 camera::render_camera(&self.ecs, ctx);
                 gui::draw_ui(&self.ecs, ctx);
             }
+            _ => {}
         }
 
         // 戦闘UI表示
@@ -193,7 +197,7 @@ impl GameState for State {
             }
             RunState::BattleCommand => {
                 // 戦闘コマンド
-                let result = gui::battle_command(&mut self.ecs, ctx);
+                let result = gui::show_battle_command(&mut self.ecs, ctx);
 
                 // コマンドメニュー表示
                 match result {
@@ -262,7 +266,7 @@ impl GameState for State {
             }
             RunState::BattleTargeting => {
                 // 攻撃目標選択
-                let result = gui::battle_target(self, ctx);
+                let result = gui::show_attack_target(self, ctx);
                 let entities = self.ecs.entities();
                 let player = self.ecs.read_storage::<Player>();
                 let pools = self.ecs.write_storage::<Pools>();
@@ -271,9 +275,9 @@ impl GameState for State {
                 // TODO: 複数キャラのコマンドに対応してない
                 for (entity, _player, _pools) in (&entities, &player, &pools).join() {
                     match result.0 {
-                        gui::BattleTargetingResult::Cancel => newrunstate = RunState::BattleCommand,
-                        gui::BattleTargetingResult::NoResponse => {}
-                        gui::BattleTargetingResult::Selected => {
+                        gui::BattleAttackTargetingResult::Cancel => newrunstate = RunState::BattleCommand,
+                        gui::BattleAttackTargetingResult::NoResponse => {}
+                        gui::BattleAttackTargetingResult::Selected => {
                             let target_entity = result.1.unwrap();
                             wants_to_melee
                                 .insert(entity, WantsToMelee { target: target_entity })
@@ -286,7 +290,7 @@ impl GameState for State {
             }
             RunState::BattleResult => {
                 // 戦闘終了(勝利 or 逃走)
-                let result = gui::show_battle_win_result(self, ctx);
+                let result = gui::show_battle_result(self, ctx);
                 match result {
                     gui::BattleResult::NoResponse => {}
                     gui::BattleResult::Enter => {
