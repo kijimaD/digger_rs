@@ -15,18 +15,23 @@ pub fn show_battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResu
     let mut draw_batch = DrawBatch::new();
 
     let y = 30;
+
+    draw_batch.draw_box(
+        Rect::with_size(15, y - 2, 31, 6 as i32),
+        ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
+    );
     draw_batch.print_color(
-        Point::new(2, y),
+        Point::new(16, y),
         "[a] Attack",
         ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
     );
     draw_batch.print_color(
-        Point::new(2, y + 1),
+        Point::new(16, y + 1),
         "[i] Inventory",
         ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
     );
     draw_batch.print_color(
-        Point::new(2, y + 2),
+        Point::new(16, y + 2),
         "[r] Run away",
         ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
     );
