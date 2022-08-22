@@ -20,12 +20,12 @@ pub fn npc_hp(fitness: i32, level: i32) -> i32 {
     total
 }
 
-pub fn mana_per_level(intelligence: i32) -> i32 {
+pub fn sp_per_level(intelligence: i32) -> i32 {
     i32::max(1, 4 + attr_bonus(intelligence))
 }
 
-pub fn mana_at_level(intelligence: i32, level: i32) -> i32 {
-    mana_per_level(intelligence) * level
+pub fn sp_at_level(intelligence: i32, level: i32) -> i32 {
+    sp_per_level(intelligence) * level
 }
 
 pub fn skill_bonus(skill: Skill, skills: &Skills) -> i32 {

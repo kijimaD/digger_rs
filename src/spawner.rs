@@ -6,7 +6,7 @@ use super::{
     Player, Pool, Pools, Position, Rect, Renderable, SerializeMe, SingleActivation, Skill, Skills,
     TeleportTo, TileType, Viewshed,
 };
-use crate::{attr_bonus, mana_at_level, player_hp_at_level};
+use crate::{attr_bonus, player_hp_at_level, sp_at_level};
 use rltk::{RandomNumberGenerator, RGB};
 use specs::prelude::*;
 use specs::saveload::{MarkedBuilder, SimpleMarker};
@@ -36,7 +36,7 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
         })
         .with(Pools {
             hit_points: Pool { current: player_hp_at_level(1, 1), max: player_hp_at_level(1, 1) },
-            mana: Pool { current: mana_at_level(11, 1), max: mana_at_level(11, 1) },
+            sp: Pool { current: sp_at_level(11, 1), max: sp_at_level(11, 1) },
             xp: 0,
             level: 1,
             total_weight: 0.0,
@@ -196,7 +196,7 @@ pub fn battle_monster<S: ToString>(ecs: &mut World, name: S) {
         })
         .with(Pools {
             hit_points: Pool { current: player_hp_at_level(1, 1), max: player_hp_at_level(1, 1) },
-            mana: Pool { current: mana_at_level(11, 1), max: mana_at_level(11, 1) },
+            sp: Pool { current: sp_at_level(11, 1), max: sp_at_level(11, 1) },
             xp: 0,
             level: 1,
             total_weight: 0.0,
