@@ -147,7 +147,11 @@ pub enum BattleResult {
 }
 
 pub fn show_battle_win_result(_gs: &mut State, ctx: &mut Rltk) -> BattleResult {
-    ctx.print_color(70, 44, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK), "[Enter]");
+    let mut draw_batch = DrawBatch::new();
+
+    draw_batch.print_color(Point::new(70, 44), "[Enter]", ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)));
+
+    draw_batch.submit(5000);
 
     match ctx.key {
         None => (BattleResult::NoResponse),
