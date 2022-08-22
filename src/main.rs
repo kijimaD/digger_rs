@@ -195,7 +195,7 @@ impl GameState for State {
                 // 戦闘コマンド
                 let result = gui::battle_command(&mut self.ecs, ctx);
 
-                // メインメニュー表示
+                // コマンドメニュー表示
                 match result {
                     gui::BattleCommandResult::NoResponse => {}
                     gui::BattleCommandResult::Attack => newrunstate = RunState::BattleTargeting,

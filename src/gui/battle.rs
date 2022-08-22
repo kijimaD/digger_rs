@@ -6,9 +6,13 @@ use rltk::prelude::*;
 use specs::prelude::*;
 
 pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
-    // メッセージボックス
-    ctx.draw_box(0, 43, 79, 6, RGB::named(rltk::WHITE), RGB::named(rltk::BLACK));
+    let mut draw_batch = DrawBatch::new();
 
+    // ログ
+    draw_batch.draw_box(
+        Rect::with_size(0, 45, 79, 14),
+        ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
+    );
     gamelog::print_log(
         &crate::gamelog::BATTLE_LOG,
         &mut rltk::BACKEND_INTERNAL.lock().consoles[1].console,
@@ -23,13 +27,15 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
 
     let mut i = 1;
     for (name, pools, _combatant, _monster) in (&names, &pools, &combatants, &monsters).join() {
-        ctx.print(
-            (80 * i) / (1 + combatants.count()),
-            20,
+        draw_batch.print_color(
+            Point::new((80 * i) / (1 + combatants.count()), 20),
             format!("[{}]({})", name.name, pools.hit_points.current),
+            ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
         );
         i += 1;
     }
+
+    draw_batch.submit(5000);
 }
 
 #[derive(PartialEq, Copy, Clone)]
