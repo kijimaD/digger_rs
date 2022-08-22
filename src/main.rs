@@ -275,7 +275,9 @@ impl GameState for State {
                 // TODO: 複数キャラのコマンドに対応してない
                 for (entity, _player, _pools) in (&entities, &player, &pools).join() {
                     match result.0 {
-                        gui::BattleAttackTargetingResult::Cancel => newrunstate = RunState::BattleCommand,
+                        gui::BattleAttackTargetingResult::Cancel => {
+                            newrunstate = RunState::BattleCommand
+                        }
                         gui::BattleAttackTargetingResult::NoResponse => {}
                         gui::BattleAttackTargetingResult::Selected => {
                             let target_entity = result.1.unwrap();
@@ -552,6 +554,15 @@ impl GameState for State {
                         self.goto_level(1);
                         self.mapgen_next_state = Some(RunState::PreRun);
                         newrunstate = RunState::MapGeneration;
+                    }
+                    gui::CheatMenuResult::SpawnMonster { monster_x, monster_y } => {
+                        raws::spawn_named_entity(
+                            &raws::RAWS.lock().unwrap(),
+                            &mut self.ecs,
+                            "Goblin",
+                            raws::SpawnType::AtPosition { x: monster_x, y: monster_y },
+                        );
+                        newrunstate = RunState::AwaitingInput;
                     }
                 }
             }

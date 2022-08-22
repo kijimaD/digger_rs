@@ -56,7 +56,10 @@ pub fn show_attack_target(
             _ => {
                 let selection = rltk::letter_to_option(key);
                 if selection > -1 && selection < targets.len() as i32 {
-                    return (BattleAttackTargetingResult::Selected, Some(targets[selection as usize]));
+                    return (
+                        BattleAttackTargetingResult::Selected,
+                        Some(targets[selection as usize]),
+                    );
                 }
                 (BattleAttackTargetingResult::NoResponse, None)
             }
