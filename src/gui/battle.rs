@@ -5,6 +5,7 @@ use super::{
 use rltk::prelude::*;
 use specs::prelude::*;
 
+/// すべての戦闘系stateで共通表示するUI
 pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
     let mut draw_batch = DrawBatch::new();
 
@@ -48,10 +49,26 @@ pub enum BattleCommandResult {
 }
 
 pub fn battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResult {
+    let mut draw_batch = DrawBatch::new();
+
     let y = 30;
-    ctx.print(2, y, "[a] Attack");
-    ctx.print(2, y + 1, "[i] Inventory");
-    ctx.print(2, y + 2, "[r] Run away");
+    draw_batch.print_color(
+        Point::new(2, y),
+        "[a] Attack",
+        ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
+    );
+    draw_batch.print_color(
+        Point::new(2, y + 1),
+        "[i] Inventory",
+        ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
+    );
+    draw_batch.print_color(
+        Point::new(2, y + 2),
+        "[r] Run away",
+        ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
+    );
+
+    draw_batch.submit(5000);
 
     match ctx.key {
         None => BattleCommandResult::NoResponse,
@@ -74,6 +91,8 @@ pub enum BattleTargetingResult {
 }
 
 pub fn battle_target(gs: &mut State, ctx: &mut Rltk) -> (BattleTargetingResult, Option<Entity>) {
+    let mut draw_batch = DrawBatch::new();
+
     let entities = gs.ecs.entities();
     let pools = gs.ecs.write_storage::<Pools>();
     let monsters = gs.ecs.read_storage::<Monster>();
@@ -86,25 +105,19 @@ pub fn battle_target(gs: &mut State, ctx: &mut Rltk) -> (BattleTargetingResult, 
     for (entity, _pools, _combatant, _monster) in (&entities, &pools, &combatants, &monsters).join()
     {
         let base = 2 + (80 * x) / (1 + pools.count());
-        ctx.set(
-            base + 0,
-            22,
-            RGB::named(rltk::WHITE),
-            RGB::named(rltk::BLACK),
+        draw_batch.set(
+            Point::new(base + 0, 22),
+            ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
             rltk::to_cp437('('),
         );
-        ctx.set(
-            base + 1,
-            22,
-            RGB::named(rltk::YELLOW),
-            RGB::named(rltk::BLACK),
+        draw_batch.set(
+            Point::new(base + 1, 22),
+            ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
             97 + j as rltk::FontCharType,
         );
-        ctx.set(
-            base + 2,
-            22,
-            RGB::named(rltk::WHITE),
-            RGB::named(rltk::BLACK),
+        draw_batch.set(
+            Point::new(base + 2, 22),
+            ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
             rltk::to_cp437(')'),
         );
 
@@ -112,6 +125,8 @@ pub fn battle_target(gs: &mut State, ctx: &mut Rltk) -> (BattleTargetingResult, 
         x += 1;
         j += 1;
     }
+
+    draw_batch.submit(5000);
 
     match ctx.key {
         None => (BattleTargetingResult::NoResponse, None),
