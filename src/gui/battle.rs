@@ -45,7 +45,7 @@ pub enum BattleCommandResult {
     RunAwayFailed,
 }
 
-pub fn battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResult {
+pub fn show_battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResult {
     let mut draw_batch = DrawBatch::new();
 
     let y = 30;
@@ -87,7 +87,10 @@ pub enum BattleTargetingResult {
     Selected,
 }
 
-pub fn battle_target(gs: &mut State, ctx: &mut Rltk) -> (BattleTargetingResult, Option<Entity>) {
+pub fn show_attack_target(
+    gs: &mut State,
+    ctx: &mut Rltk,
+) -> (BattleTargetingResult, Option<Entity>) {
     let mut draw_batch = DrawBatch::new();
 
     let entities = gs.ecs.entities();
@@ -146,10 +149,14 @@ pub enum BattleResult {
     Enter,
 }
 
-pub fn show_battle_win_result(_gs: &mut State, ctx: &mut Rltk) -> BattleResult {
+pub fn show_battle_result(_gs: &mut State, ctx: &mut Rltk) -> BattleResult {
     let mut draw_batch = DrawBatch::new();
 
-    draw_batch.print_color(Point::new(70, 44), "[Enter]", ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)));
+    draw_batch.print_color(
+        Point::new(70, 44),
+        "[Enter]",
+        ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
+    );
 
     draw_batch.submit(5000);
 

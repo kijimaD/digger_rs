@@ -197,7 +197,7 @@ impl GameState for State {
             }
             RunState::BattleCommand => {
                 // 戦闘コマンド
-                let result = gui::battle_command(&mut self.ecs, ctx);
+                let result = gui::show_battle_command(&mut self.ecs, ctx);
 
                 // コマンドメニュー表示
                 match result {
@@ -266,7 +266,7 @@ impl GameState for State {
             }
             RunState::BattleTargeting => {
                 // 攻撃目標選択
-                let result = gui::battle_target(self, ctx);
+                let result = gui::show_attack_target(self, ctx);
                 let entities = self.ecs.entities();
                 let player = self.ecs.read_storage::<Player>();
                 let pools = self.ecs.write_storage::<Pools>();
@@ -290,7 +290,7 @@ impl GameState for State {
             }
             RunState::BattleResult => {
                 // 戦闘終了(勝利 or 逃走)
-                let result = gui::show_battle_win_result(self, ctx);
+                let result = gui::show_battle_result(self, ctx);
                 match result {
                     gui::BattleResult::NoResponse => {}
                     gui::BattleResult::Enter => {
