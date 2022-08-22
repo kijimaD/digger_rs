@@ -26,13 +26,18 @@ pub fn show_item_targeting(
     let mut targets: Vec<Entity> = Vec::new();
 
     // とりあえず味方用アイテムだけ
-    // TODO: 対象指定が必要ないもの…食料とか…では表示しないようにしたい
-    for (entity, _pools, name) in (&entities, &pools, &name).join() {
+    // TODO: アイテムによって対象選択画面を変えたい。敵単体や味方単体の場合には対象選択を表示し、敵全体、味方全体の場合は表示しない
+    for (entity, _pools, name, player) in (&entities, &pools, &name, &player).join() {
         targets.push(entity);
 
         draw_batch.draw_box(
             Rect::with_size(15, y - 2, 31, (count + 3) as i32),
             ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
+        );
+        draw_batch.print_color(
+            Point::new(18, y - 2),
+            "Select target",
+            ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
         );
         draw_batch.set(
             Point::new(17, y),
@@ -52,6 +57,11 @@ pub fn show_item_targeting(
         draw_batch.print_color(
             Point::new(21, y),
             &name.name,
+            ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
+        );
+        draw_batch.print_color(
+            Point::new(18, y + count as i32 + 1),
+            "ESCAPE to cancel",
             ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
         );
 
