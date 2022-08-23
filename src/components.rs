@@ -153,7 +153,7 @@ pub struct Pool {
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Pools {
     pub hit_points: Pool,
-    pub mana: Pool,
+    pub sp: Pool,
     pub xp: i32,
     pub level: i32,
     pub total_weight: f32,

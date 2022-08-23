@@ -76,12 +76,11 @@ fn draw_stats(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) {
     let player_entity = ecs.fetch::<Entity>();
     let pools = ecs.read_storage::<Pools>();
     let player_pools = pools.get(*player_entity).unwrap();
-    let health =
-        format!("Health:{}/{}", player_pools.hit_points.current, player_pools.hit_points.max);
-    let mana = format!("Mana:{}/{}", player_pools.mana.current, player_pools.mana.max);
+    let health = format!("HP: {}/{}", player_pools.hit_points.current, player_pools.hit_points.max);
+    let sp = format!("SP: {}/{}", player_pools.sp.current, player_pools.sp.max);
 
     draw_batch.print_color(Point::new(50, 1), &health, ColorPair::new(white, black));
-    draw_batch.print_color(Point::new(50, 2), &mana, ColorPair::new(white, black));
+    draw_batch.print_color(Point::new(50, 2), &sp, ColorPair::new(white, black));
     draw_batch.bar_horizontal(
         Point::new(64, 1),
         14,
@@ -92,12 +91,12 @@ fn draw_stats(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) {
     draw_batch.bar_horizontal(
         Point::new(64, 2),
         14,
-        player_pools.mana.current,
-        player_pools.mana.max,
+        player_pools.sp.current,
+        player_pools.sp.max,
         ColorPair::new(RGB::named(rltk::BLUE), RGB::named(rltk::BLACK)),
     );
 
-    let xp = format!("Level:  {}", player_pools.level);
+    let xp = format!("Level: {}", player_pools.level);
     draw_batch.print_color(Point::new(50, 3), &xp, ColorPair::new(white, black));
     let xp_level_start = (player_pools.level - 1) * 1000;
     draw_batch.bar_horizontal(

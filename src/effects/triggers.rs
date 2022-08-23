@@ -1,7 +1,7 @@
 use super::*;
 use crate::components::*;
 use crate::gamelog;
-use crate::gamesystem::{mana_at_level, player_hp_at_level};
+use crate::gamesystem::{player_hp_at_level, sp_at_level};
 use crate::RunState;
 use specs::prelude::*;
 

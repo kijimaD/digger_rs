@@ -1,7 +1,7 @@
 use super::*;
 use crate::components::{Attributes, Player, Pools};
 use crate::gamelog;
-use crate::gamesystem::{mana_at_level, player_hp_at_level};
+use crate::gamesystem::{player_hp_at_level, sp_at_level};
 use crate::map::Map;
 use specs::prelude::*;
 
@@ -93,12 +93,12 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
                         player_stats.level,
                     );
                     player_stats.hit_points.current = player_stats.hit_points.max;
-                    player_stats.mana.max = mana_at_level(
+                    player_stats.sp.max = sp_at_level(
                         player_attributes.intelligence.base
                             + player_attributes.intelligence.modifiers,
                         player_stats.level,
                     );
-                    player_stats.mana.current = player_stats.mana.max;
+                    player_stats.sp.current = player_stats.sp.max;
 
                     let player_pos = ecs.fetch::<rltk::Point>();
                     let map = ecs.fetch::<Map>();

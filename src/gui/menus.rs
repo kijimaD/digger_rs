@@ -1,4 +1,4 @@
-use super::{Entity, ItemMenuResult};
+use super::{Entity, ItemMenuResult, ASCII_ALPHABET_OFFSET};
 use rltk::prelude::*;
 use specs::prelude::*;
 
@@ -69,7 +69,7 @@ pub fn item_result_menu<S: ToString>(
     let mut item_list: Vec<Entity> = Vec::new();
     let mut j = 0;
     for item in items {
-        menu_option(draw_batch, 17, y, 97 + j as rltk::FontCharType, &item.1);
+        menu_option(draw_batch, 17, y, ASCII_ALPHABET_OFFSET + j as rltk::FontCharType, &item.1);
         item_list.push(item.0);
         y += 1;
         j += 1;

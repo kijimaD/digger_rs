@@ -6,6 +6,43 @@ use specs::prelude::*;
 pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
     let mut draw_batch = DrawBatch::new();
 
+    // トップバー
+    let black = RGB::named(rltk::BLACK).to_rgba(1.0);
+    let white = RGB::named(rltk::WHITE).to_rgba(1.0);
+    let player_entity = ecs.fetch::<Entity>();
+    let pools = ecs.read_storage::<Pools>();
+    let player_pools = pools.get(*player_entity).unwrap();
+    let health = format!("HP: {}/{}", player_pools.hit_points.current, player_pools.hit_points.max);
+    let sp = format!("SP: {}/{}", player_pools.sp.current, player_pools.sp.max);
+
+    draw_batch.print_color(Point::new(1, 1), &health, ColorPair::new(white, black));
+    draw_batch.print_color(Point::new(1, 2), &sp, ColorPair::new(white, black));
+    draw_batch.bar_horizontal(
+        Point::new(14, 1),
+        14,
+        player_pools.hit_points.current,
+        player_pools.hit_points.max,
+        ColorPair::new(RGB::named(rltk::RED), RGB::named(rltk::BLACK)),
+    );
+    draw_batch.bar_horizontal(
+        Point::new(14, 2),
+        14,
+        player_pools.sp.current,
+        player_pools.sp.max,
+        ColorPair::new(RGB::named(rltk::BLUE), RGB::named(rltk::BLACK)),
+    );
+
+    let xp = format!("Level: {}", player_pools.level);
+    draw_batch.print_color(Point::new(1, 3), &xp, ColorPair::new(white, black));
+    let xp_level_start = (player_pools.level - 1) * 1000;
+    draw_batch.bar_horizontal(
+        Point::new(14, 3),
+        14,
+        player_pools.xp - xp_level_start,
+        1000,
+        ColorPair::new(RGB::named(rltk::GOLD), RGB::named(rltk::BLACK)),
+    );
+
     // ログ
     draw_batch.draw_box(
         Rect::with_size(0, 45, 79, 14),
