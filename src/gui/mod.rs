@@ -1,8 +1,11 @@
 use super::{
     camera, gamelog, run_away_system, Attribute, Attributes, Combatant, Consumable, Equipped,
-    HungerClock, HungerState, InBackpack, Item, Map, MeleeWeapon, Monster, Name, OnBattle, Player,
-    Point, Pools, Position, RunState, State, Vendor, VendorMode, ASCII_ALPHABET_OFFSET,
+    HungerClock, HungerState, InBackpack, Item, Map, MeleeWeapon, Monster, Name, Player, Point,
+    Pools, Position, RunState, State, Vendor, VendorMode,
 };
+
+const ASCII_ALPHABET_OFFSET: u16 = 97;
+
 use specs::prelude::*;
 mod hud;
 pub use hud::*;

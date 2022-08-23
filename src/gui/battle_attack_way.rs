@@ -19,7 +19,7 @@ pub fn show_attack_way(gs: &mut State, ctx: &mut Rltk) -> (BattleAttackWayResult
     let player_entity = gs.ecs.fetch::<Entity>();
 
     let base_x = 18;
-    let mut y = 32;
+    let mut y = 30;
     let mut j = 0;
 
     draw_batch.draw_box(
