@@ -50,6 +50,7 @@ pub enum RunState {
     BattleTurn,
     BattleResult,
     BattleAwaiting,
+    BattleAttackWay,
     BattleAttackTargeting,
     AwaitingInput,
     PreRun,
@@ -185,6 +186,7 @@ impl GameState for State {
             | RunState::BattleItemTargeting { .. }
             | RunState::BattleTurn
             | RunState::BattleAwaiting
+            | RunState::BattleAttackWay
             | RunState::BattleAttackTargeting
             | RunState::BattleResult => gui::draw_battle_ui(&self.ecs, ctx),
             _ => {}
@@ -202,7 +204,7 @@ impl GameState for State {
                 // コマンドメニュー表示
                 match result {
                     gui::BattleCommandResult::NoResponse => {}
-                    gui::BattleCommandResult::Attack => newrunstate = RunState::BattleAttackTargeting,
+                    gui::BattleCommandResult::Attack => newrunstate = RunState::BattleAttackWay,
                     gui::BattleCommandResult::ShowInventory => {
                         newrunstate = RunState::BattleInventory
                     }
@@ -264,6 +266,18 @@ impl GameState for State {
                     "[Enter]",
                 );
             }
+            RunState::BattleAttackWay => {
+                // 攻撃方法選択
+                let result = gui::show_attack_way(self, ctx);
+
+                match result.0 {
+                    gui::BattleAttackWayResult::Cancel => newrunstate = RunState::BattleCommand,
+                    gui::BattleAttackWayResult::NoResponse => {}
+                    gui::BattleAttackWayResult::Selected => {
+                        newrunstate = RunState::BattleAttackTargeting
+                    }
+                }
+            }
             RunState::BattleAttackTargeting => {
                 // 攻撃目標選択
                 let result = gui::show_attack_target(self, ctx);
@@ -276,7 +290,7 @@ impl GameState for State {
                 for (entity, _player, _pools) in (&entities, &player, &pools).join() {
                     match result.0 {
                         gui::BattleAttackTargetingResult::Cancel => {
-                            newrunstate = RunState::BattleCommand
+                            newrunstate = RunState::BattleAttackWay
                         }
                         gui::BattleAttackTargetingResult::NoResponse => {}
                         gui::BattleAttackTargetingResult::Selected => {

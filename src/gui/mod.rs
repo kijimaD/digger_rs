@@ -1,7 +1,7 @@
 use super::{
     camera, gamelog, run_away_system, Attribute, Attributes, Combatant, Consumable, Equipped,
-    HungerClock, HungerState, InBackpack, Item, Map, Monster, Name, OnBattle, Player, Point, Pools,
-    Position, RunState, State, Vendor, VendorMode,
+    HungerClock, HungerState, InBackpack, Item, Map, MeleeWeapon, Monster, Name, OnBattle, Player,
+    Point, Pools, Position, RunState, State, Vendor, VendorMode,
 };
 use specs::prelude::*;
 mod hud;
@@ -35,3 +35,5 @@ mod battle_result;
 pub use battle_result::*;
 mod battle_attack_targeting;
 pub use battle_attack_targeting::*;
+mod battle_attack_way;
+pub use battle_attack_way::*;

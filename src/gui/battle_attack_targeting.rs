@@ -29,7 +29,7 @@ pub fn show_attack_target(
         draw_batch.set(
             Point::new(base + 0, 22),
             ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
-            rltk::to_cp437('('),
+            rltk::to_cp437('['),
         );
         draw_batch.set(
             Point::new(base + 1, 22),
@@ -39,7 +39,7 @@ pub fn show_attack_target(
         draw_batch.set(
             Point::new(base + 2, 22),
             ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
-            rltk::to_cp437(')'),
+            rltk::to_cp437(']'),
         );
 
         targets.push(entity);
