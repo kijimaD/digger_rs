@@ -576,7 +576,7 @@ impl GameState for State {
                         raws::spawn_named_entity(
                             &raws::RAWS.lock().unwrap(),
                             &mut self.ecs,
-                            "Goblin",
+                            "Lime",
                             raws::SpawnType::AtPosition { x: monster_x, y: monster_y },
                         );
                         newrunstate = RunState::AwaitingInput;

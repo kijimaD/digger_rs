@@ -1,23 +1,74 @@
 {
   "spawn_table": [
     {
-      "name": "Goblin",
+      "name": "Human",
       "weight": 10,
       "min_depth": 3,
-      "max_depth": 100
+      "max_depth": 100,
+      "add_map_depth_to_weight": false
     },
     {
-      "name": "Orc",
-      "weight": 1,
+      "name": "Dog",
+      "weight": 5,
       "min_depth": 3,
       "max_depth": 100,
-      "add_map_depth_to_weight": true
+      "add_map_depth_to_weight": false
     },
     {
-      "name": "Kobold",
-      "weight": 15,
+      "name": "UFO",
+      "weight": 5,
       "min_depth": 3,
-      "max_depth": 3
+      "max_depth": 100,
+      "add_map_depth_to_weight": false
+    },
+    {
+      "name": "Insect",
+      "weight": 5,
+      "min_depth": 2,
+      "max_depth": 100,
+      "add_map_depth_to_weight": false
+    },
+    {
+      "name": "Lime",
+      "weight": 5,
+      "min_depth": 2,
+      "max_depth": 100,
+      "add_map_depth_to_weight": false
+    },
+    {
+      "name": "Robot",
+      "weight": 5,
+      "min_depth": 2,
+      "max_depth": 100,
+      "add_map_depth_to_weight": false
+    },
+    {
+      "name": "Battery",
+      "weight": 5,
+      "min_depth": 2,
+      "max_depth": 100,
+      "add_map_depth_to_weight": false
+    },
+    {
+      "name": "Tank",
+      "weight": 5,
+      "min_depth": 2,
+      "max_depth": 100,
+      "add_map_depth_to_weight": false
+    },
+    {
+      "name": "Dragon",
+      "weight": 5,
+      "min_depth": 2,
+      "max_depth": 100,
+      "add_map_depth_to_weight": false
+    },
+    {
+      "name": "Deer",
+      "weight": 5,
+      "min_depth": 2,
+      "max_depth": 100,
+      "add_map_depth_to_weight": false
     },
     {
       "name": "Health Potion",
@@ -66,24 +117,6 @@
       "weight": 10,
       "min_depth": 0,
       "max_depth": 100
-    },
-    {
-      "name": "Rat",
-      "weight": 15,
-      "min_depth": 2,
-      "max_depth": 3
-    },
-    {
-      "name": "Deer",
-      "weight": 14,
-      "min_depth": 2,
-      "max_depth": 3
-    },
-    {
-      "name": "Bandit",
-      "weight": 9,
-      "min_depth": 2,
-      "max_depth": 3
     },
     {
       "name": "Town Portal Stone",
@@ -415,60 +448,7 @@
   ],
   "mobs": [
     {
-      "name": "Orc",
-      "renderable": {
-        "glyph": "o",
-        "fg": "#FF0000",
-        "bg": "#000000",
-        "order": 1
-      },
-      "blocks_tile": true,
-      "vision_range": 8,
-      "movement": "random_waypoint",
-      "faction": "Carnivores"
-    },
-    {
-      "name": "Goblin",
-      "renderable": {
-        "glyph": "g",
-        "fg": "#FF0000",
-        "bg": "#000000",
-        "order": 1
-      },
-      "blocks_tile": true,
-      "vision_range": 8,
-      "movement": "random_waypoint",
-      "faction": "Carnivores"
-    },
-    {
-      "name": "Kobold",
-      "renderable": {
-        "glyph": "k",
-        "fg": "#FF0000",
-        "bg": "#000000",
-        "order": 1
-      },
-      "blocks_tile": true,
-      "vision_range": 8,
-      "movement": "random_waypoint",
-      "faction": "Carnivores"
-    },
-    {
-      "name": "Rat",
-      "renderable": {
-        "glyph": "r",
-        "fg": "#FF0000",
-        "bg": "#000000",
-        "order": 1
-      },
-      "blocks_tile": true,
-      "vision_range": 8,
-      "movement": "random_waypoint",
-      "loot_table": "Animal",
-      "faction": "Carnivores"
-    },
-    {
-      "name": "Bandit",
+      "name": "Human",
       "renderable": {
         "glyph": "☻",
         "fg": "#FF0000",
@@ -491,6 +471,118 @@
         "color": "#550000"
       },
       "faction": "Bandits"
+    },
+    {
+      "name": "Dog",
+      "renderable": {
+        "glyph": "d",
+        "fg": "#FF0000",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "vision_range": 8,
+      "movement": "random_waypoint",
+      "loot_table": "Animal",
+      "faction": "Carnivores"
+    },
+    {
+      "name": "UFO",
+      "renderable": {
+        "glyph": "o",
+        "fg": "#FF0000",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "vision_range": 8,
+      "movement": "random_waypoint",
+      "loot_table": "Animal",
+      "faction": "Carnivores"
+    },
+    {
+      "name": "Insect",
+      "renderable": {
+        "glyph": "i",
+        "fg": "#FF0000",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "vision_range": 8,
+      "movement": "random_waypoint",
+      "loot_table": "Animal",
+      "faction": "Carnivores"
+    },
+    {
+      "name": "Lime",
+      "renderable": {
+        "glyph": "l",
+        "fg": "#FF0000",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "vision_range": 8,
+      "movement": "random_waypoint",
+      "loot_table": "Animal",
+      "faction": "Carnivores"
+    },
+    {
+      "name": "Robot",
+      "renderable": {
+        "glyph": "r",
+        "fg": "#FF0000",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "vision_range": 8,
+      "movement": "random_waypoint",
+      "loot_table": "Animal",
+      "faction": "Carnivores"
+    },
+    {
+      "name": "Battery",
+      "renderable": {
+        "glyph": "b",
+        "fg": "#FF0000",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "vision_range": 8,
+      "movement": "random_waypoint",
+      "loot_table": "Animal",
+      "faction": "Carnivores"
+    },
+    {
+      "name": "Tank",
+      "renderable": {
+        "glyph": "t",
+        "fg": "#FF0000",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "vision_range": 8,
+      "movement": "random_waypoint",
+      "loot_table": "Animal",
+      "faction": "Carnivores"
+    },
+    {
+      "name": "Dragon",
+      "renderable": {
+        "glyph": "D",
+        "fg": "#FF0000",
+        "bg": "#000000",
+        "order": 1
+      },
+      "blocks_tile": true,
+      "vision_range": 8,
+      "movement": "random_waypoint",
+      "loot_table": "Animal",
+      "faction": "Carnivores"
     },
     {
       "name": "Deer",
