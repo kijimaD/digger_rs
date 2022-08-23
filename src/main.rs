@@ -50,7 +50,7 @@ pub enum RunState {
     BattleTurn,
     BattleResult,
     BattleAwaiting,
-    BattleTargeting,
+    BattleAttackTargeting,
     AwaitingInput,
     PreRun,
     Ticking,
@@ -185,7 +185,7 @@ impl GameState for State {
             | RunState::BattleItemTargeting { .. }
             | RunState::BattleTurn
             | RunState::BattleAwaiting
-            | RunState::BattleTargeting
+            | RunState::BattleAttackTargeting
             | RunState::BattleResult => gui::draw_battle_ui(&self.ecs, ctx),
             _ => {}
         }
@@ -202,7 +202,7 @@ impl GameState for State {
                 // コマンドメニュー表示
                 match result {
                     gui::BattleCommandResult::NoResponse => {}
-                    gui::BattleCommandResult::Attack => newrunstate = RunState::BattleTargeting,
+                    gui::BattleCommandResult::Attack => newrunstate = RunState::BattleAttackTargeting,
                     gui::BattleCommandResult::ShowInventory => {
                         newrunstate = RunState::BattleInventory
                     }
@@ -264,7 +264,7 @@ impl GameState for State {
                     "[Enter]",
                 );
             }
-            RunState::BattleTargeting => {
+            RunState::BattleAttackTargeting => {
                 // 攻撃目標選択
                 let result = gui::show_attack_target(self, ctx);
                 let entities = self.ecs.entities();
