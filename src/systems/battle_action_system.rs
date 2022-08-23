@@ -34,6 +34,7 @@ impl<'a> System<'a> for BattleActionSystem {
                         m_entity,
                         WantsToMelee {
                             target: p_entity, // player
+                            way: None,        // 自動で攻撃選択できるようにすればoptionをやめる
                         },
                     )
                     .expect("Unable to insert WantsToMelee");

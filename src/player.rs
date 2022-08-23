@@ -74,14 +74,6 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
                     ppos.x = pos.x;
                     ppos.y = pos.y;
                     return Some(RunState::Ticking);
-                } else {
-                    let target = combat_stats.get(potential_target);
-                    if let Some(_target) = target {
-                        wants_to_melee
-                            .insert(entity, WantsToMelee { target: potential_target })
-                            .expect("Add target failed");
-                        return Some(RunState::Ticking);
-                    }
                 }
                 let door = doors.get_mut(potential_target);
                 if let Some(door) = door {

@@ -62,6 +62,12 @@ impl<'a> System<'a> for MeleeCombatSystem {
             if attacker_pools.hit_points.current > 0 && target_pools.hit_points.current > 0 {
                 let target_name = names.get(wants_melee.target).unwrap();
 
+                // MEMO: プレイヤーの場合、コマンドで選択した武器やスキル。モンスターの場合、natural attackやnatural skill。今のところセットされてない場合があるのでデフォルト値punchを設定する
+                let mut weapon_name = &Name { name: "punch".to_string() };
+                if let Some(way) = wants_melee.way {
+                    weapon_name = names.get(way).unwrap();
+                }
+
                 let mut weapon_info = MeleeWeapon {
                     attribute: WeaponAttribute::Might,
                     hit_bonus: 0,
@@ -147,7 +153,8 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     );
                     crate::gamelog::Logger::new()
                         .npc_name(&name.name)
-                        .append("hits")
+                        .append(&weapon_name.name)
+                        .append("->")
                         .npc_name(&target_name.name)
                         .append("for")
                         .damage(damage)

@@ -51,7 +51,7 @@ pub enum RunState {
     BattleResult,
     BattleAwaiting,
     BattleAttackWay,
-    BattleAttackTargeting,
+    BattleAttackTargeting { way: Entity },
     AwaitingInput,
     PreRun,
     Ticking,
@@ -187,7 +187,7 @@ impl GameState for State {
             | RunState::BattleTurn
             | RunState::BattleAwaiting
             | RunState::BattleAttackWay
-            | RunState::BattleAttackTargeting
+            | RunState::BattleAttackTargeting { .. }
             | RunState::BattleResult => gui::draw_battle_ui(&self.ecs, ctx),
             _ => {}
         }
@@ -274,11 +274,11 @@ impl GameState for State {
                     gui::BattleAttackWayResult::Cancel => newrunstate = RunState::BattleCommand,
                     gui::BattleAttackWayResult::NoResponse => {}
                     gui::BattleAttackWayResult::Selected => {
-                        newrunstate = RunState::BattleAttackTargeting
+                        newrunstate = RunState::BattleAttackTargeting { way: result.1.unwrap() }
                     }
                 }
             }
-            RunState::BattleAttackTargeting => {
+            RunState::BattleAttackTargeting { way } => {
                 // 攻撃目標選択
                 let result = gui::show_attack_target(self, ctx);
                 let entities = self.ecs.entities();
@@ -296,7 +296,10 @@ impl GameState for State {
                         gui::BattleAttackTargetingResult::Selected => {
                             let target_entity = result.1.unwrap();
                             wants_to_melee
-                                .insert(entity, WantsToMelee { target: target_entity })
+                                .insert(
+                                    entity,
+                                    WantsToMelee { target: target_entity, way: Some(way) },
+                                )
                                 .expect("Unable to insert WantsToMelee");
 
                             newrunstate = RunState::BattleTurn
