@@ -1,4 +1,4 @@
-use super::{Equipped, MeleeWeapon, Name, State};
+use super::{Equipped, MeleeWeapon, Name, State, ASCII_ALPHABET_OFFSET};
 use rltk::prelude::*;
 use specs::prelude::*;
 
@@ -44,7 +44,7 @@ pub fn show_attack_way(gs: &mut State, ctx: &mut Rltk) -> (BattleAttackWayResult
             draw_batch.set(
                 Point::new(base_x, y),
                 ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
-                97 + j as rltk::FontCharType,
+                ASCII_ALPHABET_OFFSET + j as rltk::FontCharType,
             );
             draw_batch.set(
                 Point::new(base_x + 1, y),

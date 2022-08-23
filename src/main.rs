@@ -34,6 +34,7 @@ mod spatial;
 extern crate lazy_static;
 
 const SHOW_MAPGEN_VISUALIZER: bool = false;
+const ASCII_ALPHABET_OFFSET: u16 = 97;
 
 #[derive(PartialEq, Copy, Clone)]
 pub enum VendorMode {

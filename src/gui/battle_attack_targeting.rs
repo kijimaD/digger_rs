@@ -1,4 +1,4 @@
-use super::{Combatant, Monster, Pools, State};
+use super::{Combatant, Monster, Pools, State, ASCII_ALPHABET_OFFSET};
 use rltk::prelude::*;
 use specs::prelude::*;
 
@@ -34,7 +34,7 @@ pub fn show_attack_target(
         draw_batch.set(
             Point::new(base + 1, 22),
             ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
-            97 + j as rltk::FontCharType,
+            ASCII_ALPHABET_OFFSET + j as rltk::FontCharType,
         );
         draw_batch.set(
             Point::new(base + 2, 22),

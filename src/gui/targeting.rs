@@ -1,4 +1,4 @@
-use super::{show_inventory, Name, Player, Pools, State};
+use super::{show_inventory, Name, Player, Pools, State, ASCII_ALPHABET_OFFSET};
 use rltk::prelude::*;
 use specs::prelude::*;
 
@@ -47,7 +47,7 @@ pub fn show_item_targeting(
         draw_batch.set(
             Point::new(18, y),
             ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
-            97 + j as rltk::FontCharType,
+            ASCII_ALPHABET_OFFSET + j as rltk::FontCharType,
         );
         draw_batch.set(
             Point::new(19, y),
