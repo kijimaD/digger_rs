@@ -184,7 +184,7 @@ pub struct NaturalAttackDefense {
 #[derive(Component, Debug, Clone)]
 pub struct WantsToMelee {
     pub target: Entity,
-    pub way: String,
+    pub way: Option<Entity>,
 }
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]

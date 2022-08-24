@@ -283,14 +283,11 @@ impl GameState for State {
                 let result = gui::show_attack_target(self, ctx);
                 let entities = self.ecs.entities();
                 let player = self.ecs.read_storage::<Player>();
-                let names = self.ecs.read_storage::<Name>();
                 let pools = self.ecs.write_storage::<Pools>();
                 let mut wants_to_melee = self.ecs.write_storage::<WantsToMelee>();
 
                 // TODO: 複数キャラのコマンドに対応してない
                 for (entity, _player, _pools) in (&entities, &player, &pools).join() {
-                    let way_name = names.get(way).unwrap().name.clone();
-
                     match result.0 {
                         gui::BattleAttackTargetingResult::Cancel => {
                             newrunstate = RunState::BattleAttackWay
@@ -301,7 +298,7 @@ impl GameState for State {
                             wants_to_melee
                                 .insert(
                                     entity,
-                                    WantsToMelee { target: target_entity, way: way_name },
+                                    WantsToMelee { target: target_entity, way: Some(way) },
                                 )
                                 .expect("Unable to insert WantsToMelee");
 

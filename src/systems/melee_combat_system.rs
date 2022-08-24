@@ -59,8 +59,10 @@ impl<'a> System<'a> for MeleeCombatSystem {
             let target_pools = pools.get(wants_melee.target).unwrap();
             let target_attributes = attributes.get(wants_melee.target).unwrap();
             let target_skills = skills.get(wants_melee.target).unwrap();
+            let target_name = names.get(wants_melee.target).unwrap();
+
             if attacker_pools.hit_points.current > 0 && target_pools.hit_points.current > 0 {
-                let target_name = names.get(wants_melee.target).unwrap();
+                let mut attack_name = "punch".to_string(); // initialize
                 let mut weapon_info = MeleeWeapon {
                     attribute: WeaponAttribute::Might,
                     hit_bonus: 0,
@@ -80,13 +82,14 @@ impl<'a> System<'a> for MeleeCombatSystem {
                         weapon_info.damage_n_dice = nat.attacks[attack_index].damage_n_dice;
                         weapon_info.damage_die_type = nat.attacks[attack_index].damage_die_type;
                         weapon_info.damage_bonus = nat.attacks[attack_index].damage_bonus;
+                        attack_name = nat.attacks[attack_index].name.clone();
                     }
                 }
 
-                for (wielded, melee) in (&equipped_items, &meleeweapons).join() {
-                    if wielded.owner == entity && wielded.slot == EquipmentSlot::Melee {
-                        weapon_info = melee.clone();
-                    }
+                // wayが入るのはプレイヤーキャラでコマンド指定したとき
+                if let Some(way) = wants_melee.way {
+                    weapon_info = meleeweapons.get(way).unwrap().clone();
+                    attack_name = names.get(way).unwrap().name.clone();
                 }
 
                 let natural_roll = rng.roll_dice(1, 20);
@@ -146,7 +149,7 @@ impl<'a> System<'a> for MeleeCombatSystem {
                     );
                     crate::gamelog::Logger::new()
                         .npc_name(&name.name)
-                        .append(&wants_melee.way)
+                        .append(&attack_name)
                         .append("->")
                         .npc_name(&target_name.name)
                         .append("for")
