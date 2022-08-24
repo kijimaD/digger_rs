@@ -3,8 +3,8 @@ use crate::components::*;
 use crate::random_table::{MasterTable, RandomTable};
 use crate::{attr_bonus, npc_hp, sp_at_level};
 use regex::Regex;
-use specs::prelude::*;
 use rltk::prelude::*;
+use specs::prelude::*;
 use specs::saveload::{MarkedBuilder, SimpleMarker};
 use std::collections::{HashMap, HashSet};
 

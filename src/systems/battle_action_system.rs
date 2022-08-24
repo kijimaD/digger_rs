@@ -1,5 +1,6 @@
 /// 戦闘用entityごとに、wants_to_meleeを生成する
-use crate::{Combatant, Monster, Player, Pools, WantsToMelee};
+use crate::{Combatant, Monster, NaturalAttackDefense, Player, Pools, WantsToMelee};
+use rand::seq::SliceRandom;
 use specs::prelude::*;
 
 pub struct BattleActionSystem {}
@@ -16,25 +17,25 @@ impl<'a> System<'a> for BattleActionSystem {
         ReadStorage<'a, Player>,
         ReadStorage<'a, Monster>,
         ReadStorage<'a, Combatant>,
+        ReadStorage<'a, NaturalAttackDefense>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, _player_entity, mut wants_to_melee, pools, player, monster, combatant) =
+        let (entities, _player_entity, mut wants_to_melee, pools, player, monster, combatant, nad) =
             data;
-
-        // TODO: natural attackの中から選ばせればよさそう
+        let mut rng = rand::thread_rng();
 
         // monster -> player
-        for (m_entity, _pools, _monster, _combatant) in
-            (&entities, &pools, &monster, &combatant).join()
+        for (m_entity, _pools, _monster, _combatant, nad) in
+            (&entities, &pools, &monster, &combatant, &nad).join()
         {
             for (p_entity, _pools, _player) in (&entities, &pools, &player).join().take(1) {
                 wants_to_melee
                     .insert(
                         m_entity,
                         WantsToMelee {
-                            target: p_entity, // player
-                            way: None,        // 自動で攻撃選択できるようにすればoptionをやめる
+                            target: p_entity,                                        // player
+                            way: nad.attacks.choose(&mut rng).unwrap().name.clone(), // TODO: 名前と攻撃の実態が一致してないので、一致させる。wayには攻撃方法そのものを入れないといけない
                         },
                     )
                     .expect("Unable to insert WantsToMelee");

@@ -998,7 +998,7 @@
       "natural" : {
           "armor_class" : 11,
           "attacks" : [
-              { "name" : "bite", "hit_bonus" : 0, "damage" : "1d4" }
+              { "name" : "rush", "hit_bonus" : 0, "damage" : "2d3" }
           ]
       }
     }
