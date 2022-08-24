@@ -141,7 +141,6 @@ pub struct Attributes {
 pub enum Skill {
     Melee,
     Defense,
-    Magic,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

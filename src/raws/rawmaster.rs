@@ -477,7 +477,6 @@ pub fn spawn_named_fighter(raws: &RawMaster, ecs: &mut World, key: &str) -> Opti
         let mut skills = Skills { skills: HashMap::new() };
         skills.skills.insert(Skill::Melee, 1);
         skills.skills.insert(Skill::Defense, 1);
-        skills.skills.insert(Skill::Magic, 1);
         if let Some(mobskills) = &fighter_template.skills {
             for sk in mobskills.iter() {
                 match sk.0.as_str() {
@@ -486,9 +485,6 @@ pub fn spawn_named_fighter(raws: &RawMaster, ecs: &mut World, key: &str) -> Opti
                     }
                     "Defense" => {
                         skills.skills.insert(Skill::Defense, *sk.1);
-                    }
-                    "Magic" => {
-                        skills.skills.insert(Skill::Magic, *sk.1);
                     }
                     _ => {
                         rltk::console::log(format!("Unknown skill referenced: [{}]", sk.0));
