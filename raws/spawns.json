@@ -984,6 +984,25 @@
       "blocks_tile": true
     }
   ],
+  "fighters": [
+    {
+      "name": "Red Lime",
+      "attributes" : {
+          "might" : 7,
+          "fitness" : 3
+      },
+      "skills" : {
+          "Melee" : -1,
+          "Defense" : -1
+      },
+      "natural" : {
+          "armor_class" : 11,
+          "attacks" : [
+              { "name" : "bite", "hit_bonus" : 0, "damage" : "1d4" }
+          ]
+      }
+    }
+  ],
   "faction_table": [
     {
       "name": "Player",

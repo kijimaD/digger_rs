@@ -1,8 +1,10 @@
 use super::{Raws, Reaction};
 use crate::components::*;
 use crate::random_table::{MasterTable, RandomTable};
+use crate::{attr_bonus, npc_hp, sp_at_level};
 use regex::Regex;
 use specs::prelude::*;
+use rltk::prelude::*;
 use specs::saveload::{MarkedBuilder, SimpleMarker};
 use std::collections::{HashMap, HashSet};
 
@@ -37,6 +39,7 @@ pub struct RawMaster {
     raws: Raws,
     item_index: HashMap<String, usize>,
     mob_index: HashMap<String, usize>,
+    fighter_index: HashMap<String, usize>,
     prop_index: HashMap<String, usize>,
     loot_index: HashMap<String, usize>,
     faction_index: HashMap<String, HashMap<String, Reaction>>,
@@ -48,6 +51,7 @@ impl RawMaster {
             raws: Raws {
                 items: Vec::new(),
                 mobs: Vec::new(),
+                fighters: Vec::new(),
                 props: Vec::new(),
                 spawn_table: Vec::new(),
                 loot_tables: Vec::new(),
@@ -55,6 +59,7 @@ impl RawMaster {
             },
             item_index: HashMap::new(),
             mob_index: HashMap::new(),
+            fighter_index: HashMap::new(),
             prop_index: HashMap::new(),
             loot_index: HashMap::new(),
             faction_index: HashMap::new(),
@@ -81,6 +86,16 @@ impl RawMaster {
             }
             self.mob_index.insert(mob.name.clone(), i);
             used_names.insert(mob.name.clone());
+        }
+        for (i, fighter) in self.raws.fighters.iter().enumerate() {
+            if used_names.contains(&fighter.name) {
+                rltk::console::log(format!(
+                    "WARNING - duplicate fighter name in raws [{}]",
+                    fighter.name
+                ));
+            }
+            self.fighter_index.insert(fighter.name.clone(), i);
+            used_names.insert(fighter.name.clone());
         }
         for (i, prop) in self.raws.props.iter().enumerate() {
             if used_names.contains(&prop.name) {
@@ -295,26 +310,6 @@ pub fn spawn_named_mob(
             dirty: true,
         });
 
-        // natural attack
-        if let Some(na) = &mob_template.natural {
-            let mut nature =
-                NaturalAttackDefense { armor_class: na.armor_class, attacks: Vec::new() };
-            if let Some(attacks) = &na.attacks {
-                for nattack in attacks.iter() {
-                    let (n, d, b) = parse_dice_string(&nattack.damage);
-                    let attack = NaturalAttack {
-                        name: nattack.name.clone(),
-                        hit_bonus: nattack.hit_bonus,
-                        damage_n_dice: n,
-                        damage_die_type: d,
-                        damage_bonus: b,
-                    };
-                    nature.attacks.push(attack);
-                }
-            }
-            eb = eb.with(nature);
-        }
-
         // loot item
         if let Some(loot) = &mob_template.loot_table {
             eb = eb.with(LootTable { table: loot.clone() });
@@ -392,6 +387,116 @@ pub fn spawn_named_prop(
             eb = eb.with(EntryTrigger {});
             apply_effects!(entry_trigger.effects, eb);
         }
+
+        return Some(eb.build());
+    }
+    None
+}
+
+pub fn spawn_named_fighter(raws: &RawMaster, ecs: &mut World, key: &str) -> Option<Entity> {
+    if raws.fighter_index.contains_key(key) {
+        let fighter_template = &raws.raws.fighters[raws.fighter_index[key]];
+        let mut eb = ecs.create_entity().marked::<SimpleMarker<SerializeMe>>();
+
+        eb = eb.with(Name { name: fighter_template.name.clone() });
+        eb = eb.with(Monster {}); // TODO: 味方と敵で共通化したい
+        eb = eb.with(Combatant {});
+        eb = eb.with(EquipmentChanged {});
+
+        // attr
+        let mut fighter_fitness = 11;
+        let mut fighter_int = 11;
+        let mut attr = Attributes {
+            might: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            fitness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            quickness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            intelligence: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+        };
+        if let Some(might) = fighter_template.attributes.might {
+            attr.might = Attribute { base: might, modifiers: 0, bonus: attr_bonus(might) };
+        }
+        if let Some(fitness) = fighter_template.attributes.fitness {
+            attr.fitness = Attribute { base: fitness, modifiers: 0, bonus: attr_bonus(fitness) };
+            fighter_fitness = fitness;
+        }
+        if let Some(quickness) = fighter_template.attributes.quickness {
+            attr.quickness =
+                Attribute { base: quickness, modifiers: 0, bonus: attr_bonus(quickness) };
+        }
+        if let Some(intelligence) = fighter_template.attributes.intelligence {
+            attr.intelligence =
+                Attribute { base: intelligence, modifiers: 0, bonus: attr_bonus(intelligence) };
+            fighter_int = intelligence;
+        }
+        eb = eb.with(attr);
+
+        // pool
+        let fighter_level =
+            if fighter_template.level.is_some() { fighter_template.level.unwrap() } else { 1 };
+        let fighter_hp = npc_hp(fighter_fitness, fighter_level);
+        let fighter_sp = sp_at_level(fighter_int, fighter_level);
+        let pools = Pools {
+            level: fighter_level,
+            xp: 0,
+            hit_points: Pool { current: fighter_hp, max: fighter_hp },
+            sp: Pool { current: fighter_sp, max: fighter_sp },
+            total_weight: 0.0,
+            total_initiative_penalty: 0.0,
+            gold: if let Some(gold) = &fighter_template.gold {
+                let (n, d, b) = parse_dice_string(&gold);
+                let mut rng = RandomNumberGenerator::new();
+                (rng.roll_dice(n, d) + b) as f32
+            } else {
+                0.0
+            },
+            god_mode: false,
+        };
+        eb = eb.with(pools);
+
+        // natural attack
+        if let Some(na) = &fighter_template.natural {
+            let mut nature =
+                NaturalAttackDefense { armor_class: na.armor_class, attacks: Vec::new() };
+            if let Some(attacks) = &na.attacks {
+                for nattack in attacks.iter() {
+                    let (n, d, b) = parse_dice_string(&nattack.damage);
+                    let attack = NaturalAttack {
+                        name: nattack.name.clone(),
+                        hit_bonus: nattack.hit_bonus,
+                        damage_n_dice: n,
+                        damage_die_type: d,
+                        damage_bonus: b,
+                    };
+                    nature.attacks.push(attack);
+                }
+            }
+            eb = eb.with(nature);
+        }
+
+        // skill
+        let mut skills = Skills { skills: HashMap::new() };
+        skills.skills.insert(Skill::Melee, 1);
+        skills.skills.insert(Skill::Defense, 1);
+        skills.skills.insert(Skill::Magic, 1);
+        if let Some(mobskills) = &fighter_template.skills {
+            for sk in mobskills.iter() {
+                match sk.0.as_str() {
+                    "Melee" => {
+                        skills.skills.insert(Skill::Melee, *sk.1);
+                    }
+                    "Defense" => {
+                        skills.skills.insert(Skill::Defense, *sk.1);
+                    }
+                    "Magic" => {
+                        skills.skills.insert(Skill::Magic, *sk.1);
+                    }
+                    _ => {
+                        rltk::console::log(format!("Unknown skill referenced: [{}]", sk.0));
+                    }
+                }
+            }
+        }
+        eb = eb.with(skills);
 
         return Some(eb.build());
     }

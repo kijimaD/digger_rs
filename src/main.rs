@@ -595,7 +595,7 @@ impl GameState for State {
 
         // TODO: モンスター生成を別のsystemにする
         if encounter_system::is_encounter(&mut self.ecs) {
-            spawner::battle_monster(&mut self.ecs, "orcA");
+            raws::spawn_named_fighter(&raws::RAWS.lock().unwrap(), &mut self.ecs, "Red Lime");
         }
         encounter_system::invoke_battle(&mut self.ecs);
 
