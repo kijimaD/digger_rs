@@ -70,8 +70,8 @@ fn check_battle_win(ecs: &mut World) {
             for (_entity, on_battle) in (&entities, &on_battle).join() {
                 dead.push(on_battle.monster);
             }
+            on_battle.clear();
         }
-        on_battle.clear();
     }
 
     {
