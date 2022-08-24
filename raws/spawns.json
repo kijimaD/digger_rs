@@ -989,7 +989,9 @@
       "name": "Red Lime",
       "attributes" : {
           "might" : 7,
-          "fitness" : 3
+          "fitness" : 3,
+          "quickness": 2,
+          "intelligence": 1
       },
       "skills" : {
           "Melee" : -1,
@@ -1001,7 +1003,8 @@
               { "name" : "rush", "hit_bonus" : 0, "damage" : "2d3" },
               { "name" : "mucus", "hit_bonus" : 1, "damage" : "2d2" }
           ]
-      }
+      },
+      "gold": "10d2"
     }
   ],
   "faction_table": [

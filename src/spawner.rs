@@ -10,8 +10,8 @@ use specs::prelude::*;
 use specs::saveload::{MarkedBuilder, SimpleMarker};
 use std::collections::HashMap;
 
-/// フィールド用エンティティ。
-/// TODO: 戦闘関係を分離する
+/// フィールド用エンティティ。"@"
+/// TODO: 戦闘関係を分離する。combatantを付け替えるのをやめる。各味方キャラクターはrawで生成する
 pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
     let mut skills = Skills { skills: HashMap::new() };
     skills.skills.insert(Skill::Melee, 1);
