@@ -64,7 +64,7 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
     for (name, pools, _combatant, _monster) in (&names, &pools, &combatants, &monsters).join() {
         draw_batch.print_color(
             Point::new((80 * i) / (1 + combatants.count()), 20),
-            format!("[{}]({})", name.name, pools.hit_points.current),
+            format!("{}({})", name.name, pools.hit_points.current),
             ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
         );
         i += 1;

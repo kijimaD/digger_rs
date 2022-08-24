@@ -141,7 +141,6 @@ pub struct Attributes {
 pub enum Skill {
     Melee,
     Defense,
-    Magic,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -182,9 +181,10 @@ pub struct NaturalAttackDefense {
     pub attacks: Vec<NaturalAttack>,
 }
 
-#[derive(Component, Debug, ConvertSaveload, Clone)]
+#[derive(Component, Debug, Clone)]
 pub struct WantsToMelee {
     pub target: Entity,
+    pub way: Option<Entity>,
 }
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]

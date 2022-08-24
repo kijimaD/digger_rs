@@ -1,10 +1,8 @@
 use super::{
-    random_table::{MasterTable, RandomTable},
-    raws::*,
-    Attribute, Attributes, Combatant, EntryTrigger, EquipmentChanged, Faction, HungerClock,
-    HungerState, Initiative, LightSource, Map, MasterDungeonMap, Monster, Name, OtherLevelPosition,
-    Player, Pool, Pools, Position, Rect, Renderable, SerializeMe, SingleActivation, Skill, Skills,
-    TeleportTo, TileType, Viewshed,
+    random_table::MasterTable, raws::*, Attribute, Attributes, EntryTrigger, EquipmentChanged,
+    Faction, HungerClock, HungerState, Initiative, LightSource, Map, MasterDungeonMap, Name,
+    OtherLevelPosition, Player, Pool, Pools, Position, Rect, Renderable, SerializeMe,
+    SingleActivation, Skill, Skills, TeleportTo, TileType, Viewshed,
 };
 use crate::{attr_bonus, player_hp_at_level, sp_at_level};
 use rltk::{RandomNumberGenerator, RGB};
@@ -12,12 +10,12 @@ use specs::prelude::*;
 use specs::saveload::{MarkedBuilder, SimpleMarker};
 use std::collections::HashMap;
 
-/// Spawns the player and returns his/her entity object.
+/// フィールド用エンティティ。
+/// TODO: 戦闘関係を分離する
 pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
     let mut skills = Skills { skills: HashMap::new() };
     skills.skills.insert(Skill::Melee, 1);
     skills.skills.insert(Skill::Defense, 1);
-    skills.skills.insert(Skill::Magic, 1);
 
     let player = ecs
         .create_entity()
@@ -176,37 +174,6 @@ pub fn spawn_entity(ecs: &mut World, spawn: &(&usize, &String)) {
     }
 
     rltk::console::log(format!("WARNING: We dont't know how to spawn [{}]", spawn.1));
-}
-
-pub fn battle_monster<S: ToString>(ecs: &mut World, name: S) {
-    let mut skills = Skills { skills: HashMap::new() };
-    skills.skills.insert(Skill::Melee, 1);
-    skills.skills.insert(Skill::Defense, 1);
-    skills.skills.insert(Skill::Magic, 1);
-
-    ecs.create_entity()
-        .with(Monster {})
-        .with(Combatant {})
-        .with(Name { name: name.to_string() })
-        .with(Attributes {
-            might: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-            fitness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-            quickness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-            intelligence: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-        })
-        .with(Pools {
-            hit_points: Pool { current: player_hp_at_level(1, 1), max: player_hp_at_level(1, 1) },
-            sp: Pool { current: sp_at_level(11, 1), max: sp_at_level(11, 1) },
-            xp: 0,
-            level: 1,
-            total_weight: 0.0,
-            total_initiative_penalty: 0.0,
-            gold: 10.0, // TODO: after implement battle monster spawner, randomize amount.
-            god_mode: false,
-        })
-        .with(skills)
-        .with(EquipmentChanged {})
-        .build();
 }
 
 pub fn spawn_town_portal(ecs: &mut World) {

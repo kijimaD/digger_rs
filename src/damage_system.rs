@@ -25,8 +25,10 @@ pub fn delete_the_dead(ecs: &mut World) {
                             crate::gamelog::Logger::new()
                                 .color(rltk::YELLOW)
                                 .append(&victim_name.name)
+                                .color(rltk::WHITE)
+                                .append("is")
                                 .color(rltk::RED)
-                                .append("is dead.")
+                                .append("dead.")
                                 .log(&crate::gamelog::LogKind::Battle);
                         }
                         dead.push(entity);
@@ -68,8 +70,8 @@ fn check_battle_win(ecs: &mut World) {
             for (_entity, on_battle) in (&entities, &on_battle).join() {
                 dead.push(on_battle.monster);
             }
+            on_battle.clear();
         }
-        on_battle.clear();
     }
 
     {

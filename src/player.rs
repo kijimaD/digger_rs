@@ -1,7 +1,7 @@
 use super::{
-    gamelog, Attributes, BlocksTile, BlocksVisibility, Door, EntityMoved, Faction, HungerClock,
-    HungerState, Item, Map, Monster, Name, Player, Pools, Position, Renderable, RunState, State,
-    TileType, Vendor, VendorMode, Viewshed, WantsToEncounter, WantsToMelee, WantsToPickupItem,
+    gamelog, BlocksTile, BlocksVisibility, Door, EntityMoved, Faction, HungerClock, HungerState,
+    Item, Map, Monster, Name, Player, Pools, Position, Renderable, RunState, State, TileType,
+    Vendor, VendorMode, Viewshed, WantsToEncounter, WantsToPickupItem,
 };
 use crate::raws::Reaction;
 use rltk::{Point, Rltk, VirtualKeyCode};
@@ -14,9 +14,7 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
     let monsters = ecs.read_storage::<Monster>();
     let mut viewsheds = ecs.write_storage::<Viewshed>();
     let entities = ecs.entities();
-    let combat_stats = ecs.read_storage::<Attributes>();
     let map = ecs.fetch::<Map>();
-    let mut wants_to_melee = ecs.write_storage::<WantsToMelee>();
     let mut wants_to_encounter = ecs.write_storage::<WantsToEncounter>();
     let mut entity_moved = ecs.write_storage::<EntityMoved>();
     let mut doors = ecs.write_storage::<Door>();
@@ -74,14 +72,6 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
                     ppos.x = pos.x;
                     ppos.y = pos.y;
                     return Some(RunState::Ticking);
-                } else {
-                    let target = combat_stats.get(potential_target);
-                    if let Some(_target) = target {
-                        wants_to_melee
-                            .insert(entity, WantsToMelee { target: potential_target })
-                            .expect("Add target failed");
-                        return Some(RunState::Ticking);
-                    }
                 }
                 let door = doors.get_mut(potential_target);
                 if let Some(door) = door {
