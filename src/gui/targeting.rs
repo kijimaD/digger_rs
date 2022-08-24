@@ -1,4 +1,4 @@
-use super::{show_inventory, Name, Player, Pools, State, ASCII_ALPHABET_OFFSET};
+use super::{Name, Player, Pools, State, ASCII_ALPHABET_OFFSET};
 use rltk::prelude::*;
 use specs::prelude::*;
 

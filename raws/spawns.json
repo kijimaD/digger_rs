@@ -998,7 +998,8 @@
       "natural" : {
           "armor_class" : 11,
           "attacks" : [
-              { "name" : "rush", "hit_bonus" : 0, "damage" : "2d3" }
+              { "name" : "rush", "hit_bonus" : 0, "damage" : "2d3" },
+              { "name" : "mucus", "hit_bonus" : 1, "damage" : "2d2" }
           ]
       }
     }

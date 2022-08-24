@@ -1,6 +1,6 @@
 use super::{
     gamelog, tooltips, Attribute, Attributes, Consumable, Equipped, HungerClock, HungerState,
-    InBackpack, Map, Name, Player, Point, Pools,
+    InBackpack, Map, Name, Point, Pools,
 };
 use rltk::prelude::*;
 use specs::prelude::*;

@@ -1,10 +1,8 @@
 use super::{
-    random_table::{MasterTable, RandomTable},
-    raws::*,
-    Attribute, Attributes, Combatant, EntryTrigger, EquipmentChanged, Faction, HungerClock,
-    HungerState, Initiative, LightSource, Map, MasterDungeonMap, Monster, Name, OtherLevelPosition,
-    Player, Pool, Pools, Position, Rect, Renderable, SerializeMe, SingleActivation, Skill, Skills,
-    TeleportTo, TileType, Viewshed,
+    random_table::MasterTable, raws::*, Attribute, Attributes, EntryTrigger, EquipmentChanged,
+    Faction, HungerClock, HungerState, Initiative, LightSource, Map, MasterDungeonMap, Name,
+    OtherLevelPosition, Player, Pool, Pools, Position, Rect, Renderable, SerializeMe,
+    SingleActivation, Skill, Skills, TeleportTo, TileType, Viewshed,
 };
 use crate::{attr_bonus, player_hp_at_level, sp_at_level};
 use rltk::{RandomNumberGenerator, RGB};
@@ -12,7 +10,8 @@ use specs::prelude::*;
 use specs::saveload::{MarkedBuilder, SimpleMarker};
 use std::collections::HashMap;
 
-/// Spawns the player and returns his/her entity object.
+/// フィールド用エンティティ。
+/// TODO: 戦闘関係を分離する
 pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
     let mut skills = Skills { skills: HashMap::new() };
     skills.skills.insert(Skill::Melee, 1);

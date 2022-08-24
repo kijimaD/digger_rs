@@ -1,4 +1,4 @@
-use super::{gamelog, EquipmentChanged, Equippable, Equipped, InBackpack, Name, WantsToUseItem};
+use super::{EquipmentChanged, Equippable, Equipped, InBackpack, Name, WantsToUseItem};
 use specs::prelude::*;
 
 pub struct ItemEquipOnUse {}

@@ -1,4 +1,4 @@
-use rltk::{Point, Rltk, RGB};
+use rltk::prelude::*;
 use serde::{Deserialize, Serialize};
 mod logstore;
 use logstore::*;
