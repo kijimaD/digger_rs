@@ -163,6 +163,7 @@ pub struct Pools {
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Party {
     pub god_mode: bool,
+    pub gold: f32,
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]

@@ -452,7 +452,8 @@ pub fn spawn_named_fighter(raws: &RawMaster, ecs: &mut World, key: &str) -> Opti
         };
         eb = eb.with(pools);
 
-        let party = Party { god_mode: false };
+        // party
+        let party = Party { god_mode: false, gold: 0.0 };
         eb = eb.with(party);
 
         // natural attack

@@ -66,6 +66,7 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
     let mut gold_gain = 0.0f32;
 
     let mut pools = ecs.write_storage::<Pools>();
+    let mut parties = ecs.write_storage::<Party>();
     let attributes = ecs.read_storage::<Attributes>();
 
     {
@@ -83,9 +84,10 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
 
             if xp_gain != 0 || gold_gain != 0.0 {
                 let mut player_stats = pools.get_mut(source).unwrap();
+                let mut party = parties.get_mut(source).unwrap();
                 let player_attributes = attributes.get(source).unwrap();
                 player_stats.xp += xp_gain;
-                player_stats.gold += gold_gain;
+                party.gold += gold_gain;
                 if player_stats.xp >= player_stats.level * 1000 {
                     // level up
                     player_stats.level += 1;

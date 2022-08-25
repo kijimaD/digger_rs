@@ -1,6 +1,6 @@
 use super::{
     gamelog, tooltips, Attribute, Attributes, Consumable, Equipped, HungerClock, HungerState,
-    InBackpack, Map, Name, Point, Pools,
+    InBackpack, Map, Name, Party, Point, Pools,
 };
 use rltk::prelude::*;
 use specs::prelude::*;
@@ -123,8 +123,10 @@ fn initiative_weight(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &En
     let white = RGB::named(rltk::WHITE).to_rgba(1.0);
     let attributes = ecs.read_storage::<Attributes>();
     let attr = attributes.get(*player_entity).unwrap();
+    let parties = ecs.read_storage::<Party>();
     let pools = ecs.read_storage::<Pools>();
     let player_pools = pools.get(*player_entity).unwrap();
+    let party = parties.get(*player_entity).unwrap();
 
     draw_batch.print_color(
         Point::new(50, 9),
@@ -142,7 +144,7 @@ fn initiative_weight(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &En
     );
     draw_batch.print_color(
         Point::new(50, 11),
-        &format!("Gold: {:.1}", player_pools.gold),
+        &format!("Gold: {:.1}", party.gold),
         ColorPair::new(rltk::RGB::named(rltk::GOLD), black),
     );
 }

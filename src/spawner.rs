@@ -41,7 +41,7 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             total_initiative_penalty: 0.0,
             gold: 0.0,
         })
-        .with(Party { god_mode: false })
+        .with(Party { god_mode: false, gold: 0.0 })
         .with(EquipmentChanged {})
         .with(Player {})
         .with(Faction { name: "Player".to_string() })

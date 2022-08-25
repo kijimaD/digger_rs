@@ -510,7 +510,7 @@ impl GameState for State {
                             .base_value
                             * 0.8;
                         self.ecs
-                            .write_storage::<Pools>()
+                            .write_storage::<Party>()
                             .get_mut(*self.ecs.fetch::<Entity>())
                             .unwrap()
                             .gold += price;
@@ -519,11 +519,11 @@ impl GameState for State {
                     gui::VendorResult::Buy => {
                         let tag = result.2.unwrap();
                         let price = result.3.unwrap();
-                        let mut pools = self.ecs.write_storage::<Pools>();
-                        let player_pools = pools.get_mut(*self.ecs.fetch::<Entity>()).unwrap();
-                        if player_pools.gold >= price {
-                            player_pools.gold -= price;
-                            std::mem::drop(pools);
+                        let mut parties = self.ecs.write_storage::<Party>();
+                        let party = parties.get_mut(*self.ecs.fetch::<Entity>()).unwrap();
+                        if party.gold >= price {
+                            party.gold -= price;
+                            std::mem::drop(parties);
                             let player_entity = *self.ecs.fetch::<Entity>();
                             crate::raws::spawn_named_item(
                                 &RAWS.lock().unwrap(),
