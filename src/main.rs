@@ -562,9 +562,9 @@ impl GameState for State {
                     }
                     gui::CheatMenuResult::GodMode => {
                         let player = self.ecs.fetch::<Entity>();
-                        let mut pools = self.ecs.write_storage::<Pools>();
-                        let mut player_pools = pools.get_mut(*player).unwrap();
-                        player_pools.god_mode = true;
+                        let mut parties = self.ecs.write_storage::<Party>();
+                        let mut party = parties.get_mut(*player).unwrap();
+                        party.god_mode = true;
                         newrunstate = RunState::AwaitingInput;
                     }
                     gui::CheatMenuResult::TeleportToExit => {
@@ -696,6 +696,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Attributes>();
     gs.ecs.register::<Skills>();
     gs.ecs.register::<Pools>();
+    gs.ecs.register::<Party>();
     gs.ecs.register::<NaturalAttackDefense>();
     gs.ecs.register::<WantsToMelee>();
     gs.ecs.register::<WantsToEncounter>();

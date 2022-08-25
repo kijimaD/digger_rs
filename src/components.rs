@@ -158,6 +158,10 @@ pub struct Pools {
     pub total_weight: f32,
     pub total_initiative_penalty: f32,
     pub gold: f32,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Party {
     pub god_mode: bool,
 }
 

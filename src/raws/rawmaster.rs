@@ -449,9 +449,11 @@ pub fn spawn_named_fighter(raws: &RawMaster, ecs: &mut World, key: &str) -> Opti
             } else {
                 0.0
             },
-            god_mode: false,
         };
         eb = eb.with(pools);
+
+        let party = Party { god_mode: false };
+        eb = eb.with(party);
 
         // natural attack
         if let Some(na) = &fighter_template.natural {

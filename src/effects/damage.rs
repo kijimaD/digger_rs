@@ -1,5 +1,5 @@
 use super::*;
-use crate::components::{Attributes, Player, Pools};
+use crate::components::{Attributes, Party, Player, Pools};
 use crate::gamelog;
 use crate::gamesystem::{player_hp_at_level, sp_at_level};
 use crate::map::Map;
@@ -7,42 +7,49 @@ use specs::prelude::*;
 
 pub fn inflict_damage(ecs: &mut World, damage: &EffectSpawner, target: Entity) {
     let mut pools = ecs.write_storage::<Pools>();
+    let parties = ecs.read_storage::<Party>();
     let player_entity = ecs.fetch::<Entity>();
     if let Some(pool) = pools.get_mut(target) {
-        if !pool.god_mode {
-            // 攻撃主と攻撃対象が同じである場合はダメージを与えない
-            if let Some(creator) = damage.creator {
-                if creator == target {
-                    return;
-                }
-            }
-            if let EffectType::Damage { amount } = damage.effect_type {
-                pool.hit_points.current -= amount;
-                // TODO: particle系を適切にする
-                add_effect(None, EffectType::Bloodstain, Targets::Single { target });
-                add_effect(
-                    None,
-                    EffectType::Particle {
-                        glyph: rltk::to_cp437('‼'),
-                        fg: rltk::RGB::named(rltk::ORANGE),
-                        bg: rltk::RGB::named(rltk::BLACK),
-                        lifespan: 200.0,
-                    },
-                    Targets::Single { target },
-                );
-
-                if target == *player_entity {
-                    crate::gamelog::record_event("Damage Taken", amount);
-                }
-
+        if let Some(party) = parties.get(target) {
+            if !party.god_mode {
+                // 攻撃主と攻撃対象が同じである場合はダメージを与えない
                 if let Some(creator) = damage.creator {
-                    if creator == *player_entity {
-                        crate::gamelog::record_event("Damage Inflicted", amount);
+                    if creator == target {
+                        return;
                     }
                 }
+                if let EffectType::Damage { amount } = damage.effect_type {
+                    pool.hit_points.current -= amount;
+                    // TODO: particle系を適切にする
+                    add_effect(None, EffectType::Bloodstain, Targets::Single { target });
+                    add_effect(
+                        None,
+                        EffectType::Particle {
+                            glyph: rltk::to_cp437('‼'),
+                            fg: rltk::RGB::named(rltk::ORANGE),
+                            bg: rltk::RGB::named(rltk::BLACK),
+                            lifespan: 200.0,
+                        },
+                        Targets::Single { target },
+                    );
 
-                if pool.hit_points.current < 1 {
-                    add_effect(damage.creator, EffectType::EntityDeath, Targets::Single { target });
+                    if target == *player_entity {
+                        crate::gamelog::record_event("Damage Taken", amount);
+                    }
+
+                    if let Some(creator) = damage.creator {
+                        if creator == *player_entity {
+                            crate::gamelog::record_event("Damage Inflicted", amount);
+                        }
+                    }
+
+                    if pool.hit_points.current < 1 {
+                        add_effect(
+                            damage.creator,
+                            EffectType::EntityDeath,
+                            Targets::Single { target },
+                        );
+                    }
                 }
             }
         }

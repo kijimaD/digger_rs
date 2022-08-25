@@ -1,7 +1,7 @@
 use super::{
     random_table::MasterTable, raws::*, Attribute, Attributes, EntryTrigger, EquipmentChanged,
     Faction, HungerClock, HungerState, Initiative, LightSource, Map, MasterDungeonMap, Name,
-    OtherLevelPosition, Player, Pool, Pools, Position, Rect, Renderable, SerializeMe,
+    OtherLevelPosition, Party, Player, Pool, Pools, Position, Rect, Renderable, SerializeMe,
     SingleActivation, Skill, Skills, TeleportTo, TileType, Viewshed,
 };
 use crate::{attr_bonus, player_hp_at_level, sp_at_level};
@@ -40,8 +40,8 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             total_weight: 0.0,
             total_initiative_penalty: 0.0,
             gold: 0.0,
-            god_mode: false,
         })
+        .with(Party { god_mode: false })
         .with(EquipmentChanged {})
         .with(Player {})
         .with(Faction { name: "Player".to_string() })
