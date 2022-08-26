@@ -1,6 +1,6 @@
 use super::{
-    gamelog, tooltips, Attribute, Attributes, Consumable, Equipped, HungerClock, HungerState,
-    InBackpack, Map, Name, Party, Point, Pools,
+    gamelog, tooltips, Attribute, Attributes, Combatant, Consumable, Equipped, HungerClock,
+    HungerState, InBackpack, Map, Name, Party, Player, Point, Pools,
 };
 use rltk::prelude::*;
 use specs::prelude::*;
@@ -70,42 +70,50 @@ fn draw_attribute(name: &str, attribute: &Attribute, y: i32, draw_batch: &mut Dr
     }
 }
 
-fn draw_stats(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) {
+fn draw_stats(ecs: &World, draw_batch: &mut DrawBatch) {
     let black = RGB::named(rltk::BLACK).to_rgba(1.0);
     let white = RGB::named(rltk::WHITE).to_rgba(1.0);
-    let player_entity = ecs.fetch::<Entity>();
+    let players = ecs.read_storage::<Player>();
+    let combatants = ecs.read_storage::<Combatant>();
     let pools = ecs.read_storage::<Pools>();
-    let player_pools = pools.get(*player_entity).unwrap();
-    let health = format!("HP: {}/{}", player_pools.hit_points.current, player_pools.hit_points.max);
-    let sp = format!("SP: {}/{}", player_pools.sp.current, player_pools.sp.max);
+    let entities = ecs.entities();
 
-    draw_batch.print_color(Point::new(50, 1), &health, ColorPair::new(white, black));
-    draw_batch.print_color(Point::new(50, 2), &sp, ColorPair::new(white, black));
-    draw_batch.bar_horizontal(
-        Point::new(64, 1),
-        14,
-        player_pools.hit_points.current,
-        player_pools.hit_points.max,
-        ColorPair::new(RGB::named(rltk::RED), RGB::named(rltk::BLACK)),
-    );
-    draw_batch.bar_horizontal(
-        Point::new(64, 2),
-        14,
-        player_pools.sp.current,
-        player_pools.sp.max,
-        ColorPair::new(RGB::named(rltk::BLUE), RGB::named(rltk::BLACK)),
-    );
+    // TODO: 表示を複数対応にする
+    for (_player, _combatant, player_pools,_entity) in
+        (&players, &combatants, &pools, &entities).join()
+    {
+        let health =
+            format!("HP: {}/{}", player_pools.hit_points.current, player_pools.hit_points.max);
+        let sp = format!("SP: {}/{}", player_pools.sp.current, player_pools.sp.max);
 
-    let xp = format!("Level: {}", player_pools.level);
-    draw_batch.print_color(Point::new(50, 3), &xp, ColorPair::new(white, black));
-    let xp_level_start = (player_pools.level - 1) * 1000;
-    draw_batch.bar_horizontal(
-        Point::new(64, 3),
-        14,
-        player_pools.xp - xp_level_start,
-        1000,
-        ColorPair::new(RGB::named(rltk::GOLD), RGB::named(rltk::BLACK)),
-    );
+        draw_batch.print_color(Point::new(50, 1), &health, ColorPair::new(white, black));
+        draw_batch.print_color(Point::new(50, 2), &sp, ColorPair::new(white, black));
+        draw_batch.bar_horizontal(
+            Point::new(64, 1),
+            14,
+            player_pools.hit_points.current,
+            player_pools.hit_points.max,
+            ColorPair::new(RGB::named(rltk::RED), RGB::named(rltk::BLACK)),
+        );
+        draw_batch.bar_horizontal(
+            Point::new(64, 2),
+            14,
+            player_pools.sp.current,
+            player_pools.sp.max,
+            ColorPair::new(RGB::named(rltk::BLUE), RGB::named(rltk::BLACK)),
+        );
+
+        let xp = format!("Level: {}", player_pools.level);
+        draw_batch.print_color(Point::new(50, 3), &xp, ColorPair::new(white, black));
+        let xp_level_start = (player_pools.level - 1) * 1000;
+        draw_batch.bar_horizontal(
+            Point::new(64, 3),
+            14,
+            player_pools.xp - xp_level_start,
+            1000,
+            ColorPair::new(RGB::named(rltk::GOLD), RGB::named(rltk::BLACK)),
+        );
+    }
 }
 
 fn draw_attributes(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) {
@@ -230,7 +238,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
 
     draw_framework(&mut draw_batch);
     draw_map_level(ecs, &mut draw_batch);
-    draw_stats(ecs, &mut draw_batch, &player_entity);
+    draw_stats(ecs, &mut draw_batch);
     draw_attributes(ecs, &mut draw_batch, &player_entity);
     initiative_weight(ecs, &mut draw_batch, &player_entity);
     let mut y = equipped(ecs, &mut draw_batch, &player_entity);

@@ -48,11 +48,6 @@ pub fn invoke_battle(ecs: &mut World) {
             )
             .expect("Unable to insert encounter");
 
-        // playerを戦闘中にする
-        for (entity, _player) in (&entities, &player).join() {
-            combatant.insert(entity, Combatant {}).expect("Unable to insert combatant");
-        }
-
         gamelog::clear_log(&crate::gamelog::BATTLE_LOG);
         gamelog::Logger::new().append("Monster appearing!").log(&crate::gamelog::LogKind::Battle);
     }

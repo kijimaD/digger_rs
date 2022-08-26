@@ -743,9 +743,11 @@ fn main() -> rltk::BError {
     gs.ecs.insert(Map::new(1, 64, 64, "New Map"));
     gs.ecs.insert(Point::new(0, 0));
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
-    let player_entity = spawner::player(&mut gs.ecs, 0, 0);
+    let battle_entity = spawner::battle_player(&mut gs.ecs);
+    let field_entity = spawner::player(&mut gs.ecs, 0, 0);
 
-    gs.ecs.insert(player_entity);
+    gs.ecs.insert(battle_entity);
+    gs.ecs.insert(field_entity);
     gs.ecs.insert(RunState::MapGeneration {});
     gamelog::clear_log(&crate::gamelog::FIELD_LOG);
     gs.ecs.insert(systems::ParticleBuilder::new());
