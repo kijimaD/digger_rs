@@ -1,7 +1,4 @@
-use super::{
-    Consumable, EquipmentChanged, Equippable, Equipped, HungerClock, InBackpack, InflictsDamage,
-    Map, Name, Pools, ProvidesFood, ProvidesHealing, RunState, TownPortal, WantsToUseItem,
-};
+use super::{EquipmentChanged, InflictsDamage, WantsToUseItem};
 use crate::effects::*;
 use specs::prelude::*;
 

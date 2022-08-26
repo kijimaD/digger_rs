@@ -1,7 +1,6 @@
 use super::{
-    gamelog, Consumable, EquipmentChanged, Equippable, Equipped, HungerClock, HungerState,
-    InBackpack, InflictsDamage, Map, Name, Pools, Position, ProvidesFood, ProvidesHealing,
-    RunState, TownPortal, WantsToDropItem, WantsToPickupItem, WantsToRemoveItem, WantsToUseItem,
+    gamelog, EquipmentChanged, Equippable, Equipped, InBackpack, InflictsDamage, Name, Position,
+    WantsToDropItem, WantsToPickupItem, WantsToRemoveItem, WantsToUseItem,
 };
 
 mod drop_system;
