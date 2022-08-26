@@ -12,17 +12,18 @@ Based on "Roguelike Tutorial - In Rust": https://bfnightly.bracketproductions.co
 
 ## Operation
 
-| Key       | Effect           |
-|-----------|------------------|
-| `Enter`   | OK               |
-| `ESC`     | Cancel           |
-| `w/a/s/d` | Movement         |
-| `Space`   | Stepping         |
-| `g`       | Get item         |
-| `i`       | Open inventory   |
-| `t`       | Drop item        |
-| `r`       | Remove equipment |
-| `/`       | Cheat menu       |
+| Key       | Effect               |
+|-----------|----------------------|
+| `Enter`   | OK                   |
+| `ESC`     | Quit                 |
+| `w/a/s/d` | Movement(orthogonal) |
+| `q/e/z/x` | Movement(diagonals)  |
+| `Space`   | Skip turn            |
+| `g`       | Get item             |
+| `i`       | Open inventory       |
+| `t`       | Drop item            |
+| `r`       | Remove equipment     |
+| `/`       | Cheat menu           |
 
 ## Development
 
