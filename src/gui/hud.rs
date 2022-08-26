@@ -124,22 +124,20 @@ fn initiative_weight(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &En
     let attributes = ecs.read_storage::<Attributes>();
     let attr = attributes.get(*player_entity).unwrap();
     let parties = ecs.read_storage::<Party>();
-    let pools = ecs.read_storage::<Pools>();
-    let player_pools = pools.get(*player_entity).unwrap();
     let party = parties.get(*player_entity).unwrap();
 
     draw_batch.print_color(
         Point::new(50, 9),
         &format!(
             "{:.0} kg ({} kg max)",
-            player_pools.total_weight,
+            party.total_weight,
             (attr.might.base + attr.might.modifiers) * 15
         ),
         ColorPair::new(white, black),
     );
     draw_batch.print_color(
         Point::new(50, 10),
-        &format!("Initiative Penalty: {:.0}", player_pools.total_initiative_penalty),
+        &format!("Initiative Penalty: {:.0}", party.total_initiative_penalty),
         ColorPair::new(white, black),
     );
     draw_batch.print_color(

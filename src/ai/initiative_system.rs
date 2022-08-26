@@ -1,4 +1,4 @@
-use crate::{Attributes, Initiative, MyTurn, Pools, Position, RunState};
+use crate::{Attributes, Initiative, MyTurn, Party, Position, RunState};
 use specs::prelude::*;
 
 pub struct InitiativeSystem {}
@@ -15,7 +15,7 @@ impl<'a> System<'a> for InitiativeSystem {
         WriteExpect<'a, RunState>,
         ReadExpect<'a, Entity>,
         ReadExpect<'a, rltk::Point>,
-        ReadStorage<'a, Pools>,
+        ReadStorage<'a, Party>,
     );
 
     /// initiativeの値に応じて、entityにturnを追加する。各ゲームシステムはturnでループを回して処理する。
@@ -30,7 +30,7 @@ impl<'a> System<'a> for InitiativeSystem {
             mut runstate,
             player,
             player_pos,
-            pools,
+            parties,
         ) = data;
 
         if *runstate != RunState::Ticking {
@@ -51,8 +51,8 @@ impl<'a> System<'a> for InitiativeSystem {
                     initiative.current -= attr.quickness.bonus;
                 }
 
-                if let Some(pools) = pools.get(entity) {
-                    initiative.current += f32::floor(pools.total_initiative_penalty) as i32;
+                if let Some(party) = parties.get(entity) {
+                    initiative.current += f32::floor(party.total_initiative_penalty) as i32;
                 }
 
                 if entity == *player {

@@ -1,6 +1,6 @@
 use crate::{
     gamelog, gamesystem::attr_bonus, AttributeBonus, Attributes, EquipmentChanged, Equipped,
-    InBackpack, Item, Pools,
+    InBackpack, Item, Party,
 };
 use specs::prelude::*;
 use std::collections::HashMap;
@@ -15,12 +15,13 @@ impl<'a> System<'a> for EncumbranceSystem {
         ReadStorage<'a, Item>,
         ReadStorage<'a, InBackpack>,
         ReadStorage<'a, Equipped>,
-        WriteStorage<'a, Pools>,
+        WriteStorage<'a, Party>,
         WriteStorage<'a, Attributes>,
         ReadExpect<'a, Entity>,
         ReadStorage<'a, AttributeBonus>,
     );
 
+    /// 重さとペナルティを管理する。アイテムのdirty flagが立つたびに再計算する
     fn run(&mut self, data: Self::SystemData) {
         let (
             mut equip_dirty,
@@ -28,7 +29,7 @@ impl<'a> System<'a> for EncumbranceSystem {
             items,
             backpacks,
             wielded,
-            mut pools,
+            mut parties,
             mut attributes,
             player,
             attrbonus,
@@ -89,11 +90,11 @@ impl<'a> System<'a> for EncumbranceSystem {
             }
         }
 
-        // Apply the data to Pools
+        // Apply the data to Party
         for (entity, item) in to_update.iter() {
-            if let Some(pool) = pools.get_mut(*entity) {
-                pool.total_weight = item.weight;
-                pool.total_initiative_penalty = item.initiative;
+            if let Some(party) = parties.get_mut(*entity) {
+                party.total_weight = item.weight;
+                party.total_initiative_penalty = item.initiative;
 
                 if let Some(attr) = attributes.get_mut(*entity) {
                     attr.might.modifiers = item.might;
@@ -108,9 +109,9 @@ impl<'a> System<'a> for EncumbranceSystem {
                         attr_bonus(attr.intelligence.base + attr.intelligence.modifiers);
 
                     let carry_capacity_kg = (attr.might.base + attr.might.modifiers) * 15;
-                    if pool.total_weight as i32 > carry_capacity_kg {
+                    if party.total_weight as i32 > carry_capacity_kg {
                         // Overburdened
-                        pool.total_initiative_penalty += 4.0;
+                        party.total_initiative_penalty += 4.0;
                         if *entity == *player {
                             gamelog::Logger::new()
                                 .color(rltk::ORANGE)

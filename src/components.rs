@@ -155,8 +155,6 @@ pub struct Pools {
     pub sp: Pool,
     pub xp: i32,
     pub level: i32,
-    pub total_weight: f32,
-    pub total_initiative_penalty: f32,
     pub gold: f32,
 }
 
@@ -164,6 +162,8 @@ pub struct Pools {
 pub struct Party {
     pub god_mode: bool,
     pub gold: f32,
+    pub total_weight: f32,
+    pub total_initiative_penalty: f32,
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
