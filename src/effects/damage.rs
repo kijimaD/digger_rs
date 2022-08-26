@@ -8,9 +8,11 @@ use specs::prelude::*;
 pub fn inflict_damage(ecs: &mut World, damage: &EffectSpawner, target: Entity) {
     let mut pools = ecs.write_storage::<Pools>();
     let parties = ecs.read_storage::<Party>();
+    let players = ecs.read_storage::<Player>();
     let player_entity = ecs.fetch::<Entity>();
+
     if let Some(pool) = pools.get_mut(target) {
-        if let Some(party) = parties.get(target) {
+        if let Some(party) = parties.get(*player_entity) {
             if !party.god_mode {
                 // 攻撃主と攻撃対象が同じである場合はダメージを与えない
                 if let Some(creator) = damage.creator {
@@ -33,12 +35,12 @@ pub fn inflict_damage(ecs: &mut World, damage: &EffectSpawner, target: Entity) {
                         Targets::Single { target },
                     );
 
-                    if target == *player_entity {
+                    if players.get(target).is_some() {
                         crate::gamelog::record_event("Damage Taken", amount);
                     }
 
                     if let Some(creator) = damage.creator {
-                        if creator == *player_entity {
+                        if players.get(creator).is_some() {
                             crate::gamelog::record_event("Damage Inflicted", amount);
                         }
                     }
@@ -68,6 +70,7 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
     let mut pools = ecs.write_storage::<Pools>();
     let mut parties = ecs.write_storage::<Party>();
     let attributes = ecs.read_storage::<Attributes>();
+    let player_entity = ecs.fetch::<Entity>();
 
     {
         if let Some(pos) = entity_position(ecs, target) {
@@ -84,7 +87,7 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
 
             if xp_gain != 0 || gold_gain != 0.0 {
                 let mut player_stats = pools.get_mut(source).unwrap();
-                let mut party = parties.get_mut(source).unwrap();
+                let mut party = parties.get_mut(*player_entity).unwrap();
                 let player_attributes = attributes.get(source).unwrap();
                 player_stats.xp += xp_gain;
                 party.gold += gold_gain;

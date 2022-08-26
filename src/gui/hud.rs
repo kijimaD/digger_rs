@@ -79,7 +79,7 @@ fn draw_stats(ecs: &World, draw_batch: &mut DrawBatch) {
     let entities = ecs.entities();
 
     // TODO: 表示を複数対応にする
-    for (_player, _combatant, player_pools,_entity) in
+    for (_player, _combatant, player_pools, _entity) in
         (&players, &combatants, &pools, &entities).join()
     {
         let health =

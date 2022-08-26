@@ -156,7 +156,8 @@
       },
       "weight_kg": 3.0,
       "base_value": 3.0,
-      "initiative_penalty": 2
+      "initiative_penalty": 2,
+      "vendor_category": "food"
     },
     {
       "name": "Rations",
@@ -1000,8 +1001,8 @@
       "natural" : {
           "armor_class" : 11,
           "attacks" : [
-              { "name" : "rush", "hit_bonus" : 0, "damage" : "2d3" },
-              { "name" : "mucus", "hit_bonus" : 1, "damage" : "2d2" }
+              { "name" : "rush", "hit_bonus" : 0, "damage" : "4d3" },
+              { "name" : "mucus", "hit_bonus" : 1, "damage" : "4d2" }
           ]
       },
       "gold": "10d2"
