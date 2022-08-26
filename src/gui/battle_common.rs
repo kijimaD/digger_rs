@@ -21,17 +21,17 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
             format!("HP: {}/{}", player_pools.hit_points.current, player_pools.hit_points.max);
         let sp = format!("SP: {}/{}", player_pools.sp.current, player_pools.sp.max);
 
-        draw_batch.print_color(Point::new(50, 1), &health, ColorPair::new(white, black));
-        draw_batch.print_color(Point::new(50, 2), &sp, ColorPair::new(white, black));
+        draw_batch.print_color(Point::new(1, 1), &health, ColorPair::new(white, black));
+        draw_batch.print_color(Point::new(1, 2), &sp, ColorPair::new(white, black));
         draw_batch.bar_horizontal(
-            Point::new(64, 1),
+            Point::new(14, 1),
             14,
             player_pools.hit_points.current,
             player_pools.hit_points.max,
             ColorPair::new(RGB::named(rltk::RED), RGB::named(rltk::BLACK)),
         );
         draw_batch.bar_horizontal(
-            Point::new(64, 2),
+            Point::new(14, 2),
             14,
             player_pools.sp.current,
             player_pools.sp.max,
@@ -39,10 +39,10 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
         );
 
         let xp = format!("Level: {}", player_pools.level);
-        draw_batch.print_color(Point::new(50, 3), &xp, ColorPair::new(white, black));
+        draw_batch.print_color(Point::new(1, 3), &xp, ColorPair::new(white, black));
         let xp_level_start = (player_pools.level - 1) * 1000;
         draw_batch.bar_horizontal(
-            Point::new(64, 3),
+            Point::new(14, 3),
             14,
             player_pools.xp - xp_level_start,
             1000,
