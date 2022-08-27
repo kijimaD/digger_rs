@@ -2,19 +2,27 @@
   <head>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
     <script src="./digger_rs.js"></script>
-  </head>
-  <body style="background-image: url(crt2.jpg);
-               background-size: 78%;
-               background-repeat: no-repeat;
-               background-position: center;
-               background-color: black;">
-    <div style="width: 800px; height: 632px; box-shadow: 0 0 30px #002222; margin: 80px auto;">
-      <canvas id="canvas" style="width: 800px; height: 632px; border-radius: 2%;"></canvas>
-    </div>
     <script>
      window.addEventListener("load", async () => {
        await wasm_bindgen("./digger_rs_bg.wasm");
      });
     </script>
+  </head>
+
+  <body style="background-color: black;">
+    <div style="position: absolute;
+                width: 1900px;
+                height: 1000px;
+                background-image: url(crt.jpg);
+                background-size: 80%;
+                background-repeat: no-repeat;
+                background-position: top center;">
+      <div style="position: absolute;
+                  top: 144px;
+                  left: 544px;
+                  box-shadow: 0 0 30px #002222;">
+        <canvas id="canvas" style="width: 812px; height: 642px; border-radius: 2%;"></canvas>
+      </div>
+    </div>
   </body>
 </html>
