@@ -21,12 +21,6 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             bg: RGB::named(rltk::BLACK),
             render_order: 0,
         })
-        .with(Attributes {
-            might: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-            fitness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-            quickness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-            intelligence: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-        }) // TODO: battle entityに移動する
         .with(Party {
             god_mode: false,
             gold: 50.0,
@@ -112,6 +106,12 @@ pub fn battle_player(ecs: &mut World) -> Entity {
             xp: 0,
             level: 1,
             gold: 0.0,
+        })
+        .with(Attributes {
+            might: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            fitness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            quickness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            intelligence: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
         })
         .with(skills)
         .marked::<SimpleMarker<SerializeMe>>()

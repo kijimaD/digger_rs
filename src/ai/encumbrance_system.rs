@@ -108,7 +108,10 @@ impl<'a> System<'a> for EncumbranceSystem {
                     attr.intelligence.bonus =
                         attr_bonus(attr.intelligence.base + attr.intelligence.modifiers);
 
-                    let carry_capacity_kg = (attr.might.base + attr.might.modifiers) * 15;
+                    // MEMO: 戦闘用エンティティ分割で計算できなくなったので一時的に固定
+                    // let carry_capacity_kg = (attr.might.base + attr.might.modifiers) * 15;
+                    let carry_capacity_kg = 100;
+
                     if party.total_weight as i32 > carry_capacity_kg {
                         // Overburdened
                         party.total_initiative_penalty += 4.0;

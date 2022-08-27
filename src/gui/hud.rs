@@ -116,21 +116,26 @@ fn draw_stats(ecs: &World, draw_batch: &mut DrawBatch) {
     }
 }
 
-fn draw_attributes(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) {
+fn draw_attributes(ecs: &World, draw_batch: &mut DrawBatch) {
+    let entities = ecs.entities();
+    let players = ecs.read_storage::<Player>();
+    let combatants = ecs.read_storage::<Combatant>();
     let attributes = ecs.read_storage::<Attributes>();
-    let attr = attributes.get(*player_entity).unwrap();
 
-    draw_attribute("Might:", &attr.might, 4, draw_batch);
-    draw_attribute("Quickness:", &attr.quickness, 5, draw_batch);
-    draw_attribute("Fitness:", &attr.fitness, 6, draw_batch);
-    draw_attribute("Intelligence:", &attr.intelligence, 7, draw_batch);
+    // TODO: 表示を複数対応にする
+    for (_player, _combatant, attr, entity) in
+        (&players, &combatants, &attributes, &entities).join()
+    {
+        draw_attribute("Might:", &attr.might, 4, draw_batch);
+        draw_attribute("Quickness:", &attr.quickness, 5, draw_batch);
+        draw_attribute("Fitness:", &attr.fitness, 6, draw_batch);
+        draw_attribute("Intelligence:", &attr.intelligence, 7, draw_batch);
+    }
 }
 
 fn initiative_weight(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) {
     let black = RGB::named(rltk::BLACK).to_rgba(1.0);
     let white = RGB::named(rltk::WHITE).to_rgba(1.0);
-    let attributes = ecs.read_storage::<Attributes>();
-    let attr = attributes.get(*player_entity).unwrap();
     let parties = ecs.read_storage::<Party>();
     let party = parties.get(*player_entity).unwrap();
 
@@ -139,7 +144,7 @@ fn initiative_weight(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &En
         &format!(
             "{:.0} kg ({} kg max)",
             party.total_weight,
-            (attr.might.base + attr.might.modifiers) * 15
+            100 // MEMO: 戦闘用エンティティ分割で計算できなくなったので一時的に固定
         ),
         ColorPair::new(white, black),
     );
@@ -238,7 +243,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
 
     draw_map_level(ecs, &mut draw_batch);
     draw_stats(ecs, &mut draw_batch);
-    draw_attributes(ecs, &mut draw_batch, &player_entity);
+    draw_attributes(ecs, &mut draw_batch);
     initiative_weight(ecs, &mut draw_batch, &player_entity);
     let mut y = equipped(ecs, &mut draw_batch, &player_entity);
     y += consumables(ecs, &mut draw_batch, &player_entity, y);
