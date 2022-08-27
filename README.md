@@ -28,10 +28,11 @@ Based on "Roguelike Tutorial - In Rust": https://bfnightly.bracketproductions.co
 ## Development
 
 ```shell
-$ make build # development build
+# development
+$ make build
+$ make fmt
 
+# release build
 $ make docker
-$ make release # release build
-
-$ make fmt # format
+root> cd rust; make release
 ```

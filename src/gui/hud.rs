@@ -236,7 +236,6 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     let mut draw_batch = DrawBatch::new();
     let player_entity = ecs.fetch::<Entity>();
 
-    draw_framework(&mut draw_batch);
     draw_map_level(ecs, &mut draw_batch);
     draw_stats(ecs, &mut draw_batch);
     draw_attributes(ecs, &mut draw_batch, &player_entity);
