@@ -1,17 +1,33 @@
 <html>
   <head>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
-  </head>
-  <body style="background-color: black;">
-    <div style="transform-origin: top left;
-                transform: scale(1.8);">
-      <canvas id="canvas"></canvas>
-    </div>
     <script src="./digger_rs.js"></script>
     <script>
      window.addEventListener("load", async () => {
        await wasm_bindgen("./digger_rs_bg.wasm");
      });
     </script>
+  </head>
+
+  <body style="background-color: black;">
+    <div style="position: absolute;
+                width: 1900px;
+                height: 1000px;
+                background-image: url(crt.jpg);
+                background-size: 80%;
+                background-repeat: no-repeat;
+                background-position: top center;">
+      <div style="position: absolute;
+                  top: 196px;
+                  left: 610px;
+                  box-shadow: 0 0 20px #191a12;">
+        <canvas id="canvas";
+                style="width: 684px;
+                       height: 520px;
+                       border-radius: 8%;
+                       opacity: 0.6;">
+        </canvas>
+      </div>
+    </div>
   </body>
 </html>
