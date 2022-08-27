@@ -11,7 +11,6 @@ use specs::saveload::{MarkedBuilder, SimpleMarker};
 use std::collections::HashMap;
 
 /// フィールド用エンティティ。"@"
-/// TODO: 戦闘関係を分離する。combatantを付け替えるのをやめる。各味方キャラクターはrawで生成する
 pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
     let player = ecs
         .create_entity()
@@ -27,10 +26,10 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             fitness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
             quickness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
             intelligence: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-        })
+        }) // TODO: battle entityに移動する
         .with(Party {
             god_mode: false,
-            gold: 0.0,
+            gold: 50.0,
             total_weight: 0.0,
             total_initiative_penalty: 0.0,
         })
@@ -56,6 +55,12 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
         &RAWS.lock().unwrap(),
         ecs,
         "Dried Sausage",
+        SpawnType::Carried { by: player },
+    );
+    spawn_named_entity(
+        &RAWS.lock().unwrap(),
+        ecs,
+        "Health Potion",
         SpawnType::Carried { by: player },
     );
     spawn_named_entity(&RAWS.lock().unwrap(), ecs, "Beer", SpawnType::Carried { by: player });
@@ -99,8 +104,11 @@ pub fn battle_player(ecs: &mut World) -> Entity {
             intelligence: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
         })
         .with(Pools {
-            hit_points: Pool { current: player_hp_at_level(1, 1), max: player_hp_at_level(1, 1) },
-            sp: Pool { current: sp_at_level(11, 1), max: sp_at_level(11, 1) },
+            hit_points: Pool {
+                current: player_hp_at_level(1, 1) - 1,
+                max: player_hp_at_level(1, 1),
+            },
+            sp: Pool { current: sp_at_level(11, 1) - 1, max: sp_at_level(11, 1) },
             xp: 0,
             level: 1,
             gold: 0.0,
