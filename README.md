@@ -1,3 +1,6 @@
+[![Build](https://github.com/kijimaD/digger_rs/actions/workflows/build.yml/badge.svg)](https://github.com/kijimaD/digger_rs/actions/workflows/build.yml)
+[![deploy](https://github.com/kijimaD/digger_rs/actions/workflows/deploy.yml/badge.svg)](https://github.com/kijimaD/digger_rs/actions/workflows/deploy.yml)
+
 ![image](https://user-images.githubusercontent.com/11595790/187049845-d7276d98-d270-4e05-832c-5964da37d36d.png)
 ![image](https://user-images.githubusercontent.com/11595790/187049851-9f2661b4-d671-4ea1-94c9-a78d2227a719.png)
 
