@@ -1,8 +1,5 @@
-Based on "Roguelike Tutorial - In Rust": https://bfnightly.bracketproductions.com
-
-![image](https://user-images.githubusercontent.com/11595790/186383942-00eeb2e7-3ad7-4388-b44c-ff5e6cb768a3.png)
-
-![image](https://user-images.githubusercontent.com/11595790/186384528-37909ee2-8500-41e9-9492-981a1ca25351.png)
+![image](https://user-images.githubusercontent.com/11595790/187049845-d7276d98-d270-4e05-832c-5964da37d36d.png)
+![image](https://user-images.githubusercontent.com/11595790/187049851-9f2661b4-d671-4ea1-94c9-a78d2227a719.png)
 
 ## Feature
 
@@ -36,3 +33,7 @@ $ make fmt
 $ make docker
 root> cd rust; make release
 ```
+
+## Credit
+
+I expanded on "Roguelike Tutorial - In Rust": (https://bfnightly.bracketproductions.com) code. Thanks great tutorial!
