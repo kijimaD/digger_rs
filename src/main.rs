@@ -373,8 +373,7 @@ impl GameState for State {
                     gui::ItemMenuResult::NoResponse => {}
                     gui::ItemMenuResult::Selected => {
                         let item_entity = result.1.unwrap();
-                        // components.target = playerのときだけtarget画面をスキップ
-                        // TODO: とても汚いので要リファクタ
+                        // フィールドエンティティ向けの場合はtarget選択画面をスキップ
                         if let Some(consumable) = consumables.get(item_entity) {
                             match consumable.target {
                                 ItemTarget::Field => {

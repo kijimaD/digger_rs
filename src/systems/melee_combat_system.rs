@@ -5,12 +5,9 @@ use crate::{
 };
 use specs::prelude::*;
 
-// battle state用のsystem
-// 敵とプレイヤーのwants_to_meleeを処理して、双方の攻撃を行う
-// 回すたびにwants_to_meleeを一つ消してenter待ちstateにすれば一つずつ攻撃ができそう
-
-// TODO: entityが複数の攻撃手段を持つようにする。player entityの場合はコマンドで選択肢、モンスターの場合はAI選択。
-// <wants_to_melee method, from, to>
+/// 戦闘の攻撃を処理するsystem
+/// 敵とプレイヤーのwants_to_meleeを処理して、双方の攻撃を行う
+/// 回すたびにwants_to_meleeを一つ消してenter待ちstateにすれば一つずつ攻撃ができそう
 
 pub struct MeleeCombatSystem {}
 

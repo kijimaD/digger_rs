@@ -219,7 +219,6 @@ pub enum ItemTarget {
     Battle,
 }
 
-// TODO: targetにenumを使う
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Consumable {
     pub target: ItemTarget,

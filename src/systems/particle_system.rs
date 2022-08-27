@@ -1,8 +1,8 @@
 use crate::{ParticleLifetime, Position, Renderable, Rltk, RGB};
 use specs::prelude::*;
 
-// map field用。
-// TODO: battle stateでは使用できないので追加する
+/// グラフィックエフェクトを処理するsystem
+/// TODO: map field専用で、battle stateに対応してないので追加する
 
 struct ParticleRequest {
     x: i32,
