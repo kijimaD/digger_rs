@@ -204,7 +204,7 @@ pub fn spawn_named_item(
         });
 
         if let Some(consumable) = &item_template.consumable {
-            eb = eb.with(crate::components::Consumable {});
+            eb = eb.with(crate::components::Consumable { target: consumable.target });
             apply_effects!(consumable.effects, eb);
         }
 
@@ -440,8 +440,6 @@ pub fn spawn_named_fighter(raws: &RawMaster, ecs: &mut World, key: &str) -> Opti
             xp: 0,
             hit_points: Pool { current: fighter_hp, max: fighter_hp },
             sp: Pool { current: fighter_sp, max: fighter_sp },
-            total_weight: 0.0,
-            total_initiative_penalty: 0.0,
             gold: if let Some(gold) = &fighter_template.gold {
                 let (n, d, b) = parse_dice_string(&gold);
                 let mut rng = RandomNumberGenerator::new();
@@ -449,9 +447,13 @@ pub fn spawn_named_fighter(raws: &RawMaster, ecs: &mut World, key: &str) -> Opti
             } else {
                 0.0
             },
-            god_mode: false,
         };
         eb = eb.with(pools);
+
+        // party
+        let party =
+            Party { god_mode: false, gold: 0.0, total_weight: 0.0, total_initiative_penalty: 0.0 };
+        eb = eb.with(party);
 
         // natural attack
         if let Some(na) = &fighter_template.natural {

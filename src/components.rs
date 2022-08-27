@@ -155,10 +155,15 @@ pub struct Pools {
     pub sp: Pool,
     pub xp: i32,
     pub level: i32,
+    pub gold: f32,
+}
+
+#[derive(Component, Debug, Serialize, Deserialize, Clone)]
+pub struct Party {
+    pub god_mode: bool,
+    pub gold: f32,
     pub total_weight: f32,
     pub total_initiative_penalty: f32,
-    pub gold: f32,
-    pub god_mode: bool,
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
@@ -208,8 +213,16 @@ pub struct Item {
     pub base_value: f32,
 }
 
+#[derive(Debug, Serialize, Deserialize, Copy, Clone, PartialEq)]
+pub enum ItemTarget {
+    Field,
+    Battle,
+}
+
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
-pub struct Consumable {}
+pub struct Consumable {
+    pub target: ItemTarget,
+}
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]
 pub struct InflictsDamage {

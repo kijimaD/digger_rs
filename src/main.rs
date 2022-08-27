@@ -366,12 +366,37 @@ impl GameState for State {
             }
             RunState::ShowInventory => {
                 let result = gui::show_inventory(self, ctx);
+                let consumables = self.ecs.read_storage::<Consumable>();
+
                 match result.0 {
                     gui::ItemMenuResult::Cancel => newrunstate = RunState::AwaitingInput,
                     gui::ItemMenuResult::NoResponse => {}
                     gui::ItemMenuResult::Selected => {
                         let item_entity = result.1.unwrap();
-                        newrunstate = RunState::ItemTargeting { item: item_entity };
+                        // フィールドエンティティ向けの場合はtarget選択画面をスキップ
+                        if let Some(consumable) = consumables.get(item_entity) {
+                            match consumable.target {
+                                ItemTarget::Field => {
+                                    let mut intent = self.ecs.write_storage::<WantsToUseItem>();
+                                    let player_entity = self.ecs.fetch::<Entity>();
+                                    intent
+                                        .insert(
+                                            *self.ecs.fetch::<Entity>(),
+                                            WantsToUseItem {
+                                                item: item_entity,
+                                                target: *player_entity,
+                                            },
+                                        )
+                                        .expect("Unable to insert intent");
+                                    newrunstate = RunState::Ticking;
+                                }
+                                ItemTarget::Battle => {
+                                    newrunstate = RunState::ItemTargeting { item: item_entity }
+                                }
+                            }
+                        } else {
+                            newrunstate = RunState::ItemTargeting { item: item_entity };
+                        }
                     }
                 }
             }
@@ -510,7 +535,7 @@ impl GameState for State {
                             .base_value
                             * 0.8;
                         self.ecs
-                            .write_storage::<Pools>()
+                            .write_storage::<Party>()
                             .get_mut(*self.ecs.fetch::<Entity>())
                             .unwrap()
                             .gold += price;
@@ -519,11 +544,11 @@ impl GameState for State {
                     gui::VendorResult::Buy => {
                         let tag = result.2.unwrap();
                         let price = result.3.unwrap();
-                        let mut pools = self.ecs.write_storage::<Pools>();
-                        let player_pools = pools.get_mut(*self.ecs.fetch::<Entity>()).unwrap();
-                        if player_pools.gold >= price {
-                            player_pools.gold -= price;
-                            std::mem::drop(pools);
+                        let mut parties = self.ecs.write_storage::<Party>();
+                        let party = parties.get_mut(*self.ecs.fetch::<Entity>()).unwrap();
+                        if party.gold >= price {
+                            party.gold -= price;
+                            std::mem::drop(parties);
                             let player_entity = *self.ecs.fetch::<Entity>();
                             crate::raws::spawn_named_item(
                                 &RAWS.lock().unwrap(),
@@ -562,9 +587,9 @@ impl GameState for State {
                     }
                     gui::CheatMenuResult::GodMode => {
                         let player = self.ecs.fetch::<Entity>();
-                        let mut pools = self.ecs.write_storage::<Pools>();
-                        let mut player_pools = pools.get_mut(*player).unwrap();
-                        player_pools.god_mode = true;
+                        let mut parties = self.ecs.write_storage::<Party>();
+                        let mut party = parties.get_mut(*player).unwrap();
+                        party.god_mode = true;
                         newrunstate = RunState::AwaitingInput;
                     }
                     gui::CheatMenuResult::TeleportToExit => {
@@ -696,6 +721,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Attributes>();
     gs.ecs.register::<Skills>();
     gs.ecs.register::<Pools>();
+    gs.ecs.register::<Party>();
     gs.ecs.register::<NaturalAttackDefense>();
     gs.ecs.register::<WantsToMelee>();
     gs.ecs.register::<WantsToEncounter>();
@@ -742,9 +768,11 @@ fn main() -> rltk::BError {
     gs.ecs.insert(Map::new(1, 64, 64, "New Map"));
     gs.ecs.insert(Point::new(0, 0));
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
-    let player_entity = spawner::player(&mut gs.ecs, 0, 0);
+    let battle_entity = spawner::battle_player(&mut gs.ecs);
+    let field_entity = spawner::player(&mut gs.ecs, 0, 0);
 
-    gs.ecs.insert(player_entity);
+    gs.ecs.insert(battle_entity);
+    gs.ecs.insert(field_entity);
     gs.ecs.insert(RunState::MapGeneration {});
     gamelog::clear_log(&crate::gamelog::FIELD_LOG);
     gs.ecs.insert(systems::ParticleBuilder::new());

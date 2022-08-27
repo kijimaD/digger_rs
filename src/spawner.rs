@@ -1,8 +1,8 @@
 use super::{
-    random_table::MasterTable, raws::*, Attribute, Attributes, EntryTrigger, EquipmentChanged,
-    Faction, HungerClock, HungerState, Initiative, LightSource, Map, MasterDungeonMap, Name,
-    OtherLevelPosition, Player, Pool, Pools, Position, Rect, Renderable, SerializeMe,
-    SingleActivation, Skill, Skills, TeleportTo, TileType, Viewshed,
+    random_table::MasterTable, raws::*, Attribute, Attributes, Combatant, EntryTrigger,
+    EquipmentChanged, Faction, HungerClock, HungerState, Initiative, LightSource, Map,
+    MasterDungeonMap, Name, OtherLevelPosition, Party, Player, Pool, Pools, Position, Rect,
+    Renderable, SerializeMe, SingleActivation, Skill, Skills, TeleportTo, TileType, Viewshed,
 };
 use crate::{attr_bonus, player_hp_at_level, sp_at_level};
 use rltk::{RandomNumberGenerator, RGB};
@@ -10,13 +10,8 @@ use specs::prelude::*;
 use specs::saveload::{MarkedBuilder, SimpleMarker};
 use std::collections::HashMap;
 
-/// フィールド用エンティティ。
-/// TODO: 戦闘関係を分離する
+/// フィールド用エンティティ。"@"
 pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
-    let mut skills = Skills { skills: HashMap::new() };
-    skills.skills.insert(Skill::Melee, 1);
-    skills.skills.insert(Skill::Defense, 1);
-
     let player = ecs
         .create_entity()
         .with(Position { x: player_x, y: player_y })
@@ -31,16 +26,12 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
             fitness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
             quickness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
             intelligence: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-        })
-        .with(Pools {
-            hit_points: Pool { current: player_hp_at_level(1, 1), max: player_hp_at_level(1, 1) },
-            sp: Pool { current: sp_at_level(11, 1), max: sp_at_level(11, 1) },
-            xp: 0,
-            level: 1,
+        }) // TODO: battle entityに移動する
+        .with(Party {
+            god_mode: false,
+            gold: 50.0,
             total_weight: 0.0,
             total_initiative_penalty: 0.0,
-            gold: 0.0,
-            god_mode: false,
         })
         .with(EquipmentChanged {})
         .with(Player {})
@@ -50,7 +41,6 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
         .with(Name { name: "Player".to_string() })
         .with(HungerClock { state: HungerState::WellFed, duration: 20 })
         .with(LightSource { color: rltk::RGB::from_hex("#EDF122").expect("Bad color"), range: 6 })
-        .with(skills)
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
 
@@ -65,6 +55,12 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
         &RAWS.lock().unwrap(),
         ecs,
         "Dried Sausage",
+        SpawnType::Carried { by: player },
+    );
+    spawn_named_entity(
+        &RAWS.lock().unwrap(),
+        ecs,
+        "Health Potion",
         SpawnType::Carried { by: player },
     );
     spawn_named_entity(&RAWS.lock().unwrap(), ecs, "Beer", SpawnType::Carried { by: player });
@@ -86,6 +82,40 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
         "Town Portal Stone",
         SpawnType::Carried { by: player },
     );
+
+    player
+}
+
+// TODO: rawで生成する
+pub fn battle_player(ecs: &mut World) -> Entity {
+    let mut skills = Skills { skills: HashMap::new() };
+    skills.skills.insert(Skill::Melee, 1);
+    skills.skills.insert(Skill::Defense, 1);
+
+    let player = ecs
+        .create_entity()
+        .with(Player {})
+        .with(Combatant {})
+        .with(Name { name: "Player".to_string() })
+        .with(Attributes {
+            might: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            fitness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            quickness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+            intelligence: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
+        })
+        .with(Pools {
+            hit_points: Pool {
+                current: player_hp_at_level(1, 1) - 1,
+                max: player_hp_at_level(1, 1),
+            },
+            sp: Pool { current: sp_at_level(11, 1) - 1, max: sp_at_level(11, 1) },
+            xp: 0,
+            level: 1,
+            gold: 0.0,
+        })
+        .with(skills)
+        .marked::<SimpleMarker<SerializeMe>>()
+        .build();
 
     player
 }

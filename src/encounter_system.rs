@@ -1,4 +1,4 @@
-use super::{gamelog, Combatant, Monster, OnBattle, Player, Pools, RunState, WantsToEncounter};
+use super::{gamelog, Combatant, Monster, OnBattle, Party, Player, RunState, WantsToEncounter};
 use specs::prelude::*;
 
 pub fn is_encounter(ecs: &mut World) -> bool {
@@ -22,11 +22,11 @@ pub fn invoke_battle(ecs: &mut World) {
     // 最初のwants_encounterだけ処理する
     for wants_encounter in (&wants_encounter).join().take(1) {
         let player_entity = ecs.fetch::<Entity>();
-        let pools = ecs.read_storage::<Pools>();
-        let player_pools = pools.get(*player_entity).unwrap();
+        let parties = ecs.read_storage::<Party>();
+        let party = parties.get(*player_entity).unwrap();
 
         // god modeのときはエンカウントしない
-        if player_pools.god_mode {
+        if party.god_mode {
             entities.delete(wants_encounter.monster).expect("Unable to delete");
             return;
         }
@@ -47,11 +47,6 @@ pub fn invoke_battle(ecs: &mut World) {
                 OnBattle { monster: wants_encounter.monster, monsters: combat_monsters },
             )
             .expect("Unable to insert encounter");
-
-        // playerを戦闘中にする
-        for (entity, _player) in (&entities, &player).join() {
-            combatant.insert(entity, Combatant {}).expect("Unable to insert combatant");
-        }
 
         gamelog::clear_log(&crate::gamelog::BATTLE_LOG);
         gamelog::Logger::new().append("Monster appearing!").log(&crate::gamelog::LogKind::Battle);
