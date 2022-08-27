@@ -1,6 +1,6 @@
 use super::{
-    gamelog, EquipmentChanged, Equippable, Equipped, InBackpack, InflictsDamage, Name, Position,
-    WantsToDropItem, WantsToPickupItem, WantsToRemoveItem, WantsToUseItem,
+    gamelog, Consumable, EquipmentChanged, Equippable, Equipped, InBackpack, InflictsDamage, Name,
+    Position, WantsToDropItem, WantsToPickupItem, WantsToRemoveItem, WantsToUseItem,
 };
 
 mod drop_system;

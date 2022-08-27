@@ -366,12 +366,35 @@ impl GameState for State {
             }
             RunState::ShowInventory => {
                 let result = gui::show_inventory(self, ctx);
+                let consumables = self.ecs.read_storage::<Consumable>();
+
                 match result.0 {
                     gui::ItemMenuResult::Cancel => newrunstate = RunState::AwaitingInput,
                     gui::ItemMenuResult::NoResponse => {}
                     gui::ItemMenuResult::Selected => {
                         let item_entity = result.1.unwrap();
-                        newrunstate = RunState::ItemTargeting { item: item_entity };
+                        // components.target = playerのときだけtarget画面をスキップ
+                        // TODO: とても汚いので要リファクタ
+                        if let Some(consumable) = consumables.get(item_entity) {
+                            if consumable.target == "player" {
+                                let mut intent = self.ecs.write_storage::<WantsToUseItem>();
+                                let player_entity = self.ecs.fetch::<Entity>();
+                                intent
+                                    .insert(
+                                        *self.ecs.fetch::<Entity>(),
+                                        WantsToUseItem {
+                                            item: item_entity,
+                                            target: *player_entity,
+                                        },
+                                    )
+                                    .expect("Unable to insert intent");
+                                newrunstate = RunState::Ticking;
+                            } else {
+                                newrunstate = RunState::ItemTargeting { item: item_entity };
+                            }
+                        } else {
+                            newrunstate = RunState::ItemTargeting { item: item_entity };
+                        }
                     }
                 }
             }

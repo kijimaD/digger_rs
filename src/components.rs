@@ -213,8 +213,11 @@ pub struct Item {
     pub base_value: f32,
 }
 
+// TODO: targetにenumを使う
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
-pub struct Consumable {}
+pub struct Consumable {
+    pub target: String,
+}
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]
 pub struct InflictsDamage {

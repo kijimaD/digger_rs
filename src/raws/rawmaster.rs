@@ -204,7 +204,7 @@ pub fn spawn_named_item(
         });
 
         if let Some(consumable) = &item_template.consumable {
-            eb = eb.with(crate::components::Consumable {});
+            eb = eb.with(crate::components::Consumable { target: consumable.target.clone() });
             apply_effects!(consumable.effects, eb);
         }
 

@@ -26,6 +26,7 @@ pub struct Renderable {
 #[derive(Deserialize, Debug)]
 pub struct Consumable {
     pub effects: HashMap<String, String>,
+    pub target: String,
 }
 
 #[derive(Deserialize, Debug)]
