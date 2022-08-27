@@ -376,21 +376,24 @@ impl GameState for State {
                         // components.target = playerのときだけtarget画面をスキップ
                         // TODO: とても汚いので要リファクタ
                         if let Some(consumable) = consumables.get(item_entity) {
-                            if consumable.target == "player" {
-                                let mut intent = self.ecs.write_storage::<WantsToUseItem>();
-                                let player_entity = self.ecs.fetch::<Entity>();
-                                intent
-                                    .insert(
-                                        *self.ecs.fetch::<Entity>(),
-                                        WantsToUseItem {
-                                            item: item_entity,
-                                            target: *player_entity,
-                                        },
-                                    )
-                                    .expect("Unable to insert intent");
-                                newrunstate = RunState::Ticking;
-                            } else {
-                                newrunstate = RunState::ItemTargeting { item: item_entity };
+                            match consumable.target {
+                                ItemTarget::Field => {
+                                    let mut intent = self.ecs.write_storage::<WantsToUseItem>();
+                                    let player_entity = self.ecs.fetch::<Entity>();
+                                    intent
+                                        .insert(
+                                            *self.ecs.fetch::<Entity>(),
+                                            WantsToUseItem {
+                                                item: item_entity,
+                                                target: *player_entity,
+                                            },
+                                        )
+                                        .expect("Unable to insert intent");
+                                    newrunstate = RunState::Ticking;
+                                }
+                                ItemTarget::Battle => {
+                                    newrunstate = RunState::ItemTargeting { item: item_entity }
+                                }
                             }
                         } else {
                             newrunstate = RunState::ItemTargeting { item: item_entity };

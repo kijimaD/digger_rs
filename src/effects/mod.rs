@@ -29,7 +29,7 @@ pub enum EffectType {
 
 #[derive(Clone, Debug)]
 pub enum Targets {
-    Player,
+    Party,
     Single { target: Entity },
     TargetList { targets: Vec<Entity> },
     Tile { tile_idx: i32 },
@@ -71,7 +71,7 @@ fn target_applicator(ecs: &mut World, effect: &EffectSpawner) {
                 tiles.iter().for_each(|tile_idx| affect_tile(ecs, effect, *tile_idx))
             }
             Targets::Single { target } => affect_entity(ecs, effect, *target),
-            Targets::Player {} => {
+            Targets::Party {} => {
                 let field_entity = *ecs.fetch::<Entity>();
                 affect_entity(ecs, effect, field_entity)
             }

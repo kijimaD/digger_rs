@@ -1,3 +1,4 @@
+use crate::components;
 use serde::Deserialize;
 use std::collections::HashMap;
 
@@ -26,7 +27,7 @@ pub struct Renderable {
 #[derive(Deserialize, Debug)]
 pub struct Consumable {
     pub effects: HashMap<String, String>,
-    pub target: String,
+    pub target: components::ItemTarget,
 }
 
 #[derive(Deserialize, Debug)]

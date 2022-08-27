@@ -1,5 +1,5 @@
 use super::{Consumable, EquipmentChanged, InflictsDamage, WantsToUseItem};
-use crate::effects::*;
+use crate::{components, effects::*};
 use specs::prelude::*;
 
 pub struct ItemUseSystem {}
@@ -28,9 +28,9 @@ impl<'a> System<'a> for ItemUseSystem {
             add_effect(
                 Some(entity),
                 EffectType::ItemUse { item: useitem.item },
-                match consumable.target.as_str() {
-                    "player" => Targets::Player,
-                    _ => Targets::Single { target: useitem.target },
+                match consumable.target {
+                    components::ItemTarget::Field => Targets::Party,
+                    components::ItemTarget::Battle => Targets::Single { target: useitem.target },
                 },
             )
         }

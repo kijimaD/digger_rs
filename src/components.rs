@@ -213,10 +213,16 @@ pub struct Item {
     pub base_value: f32,
 }
 
+#[derive(Debug, Serialize, Deserialize, Copy, Clone, PartialEq)]
+pub enum ItemTarget {
+    Field,
+    Battle,
+}
+
 // TODO: targetにenumを使う
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct Consumable {
-    pub target: String,
+    pub target: ItemTarget,
 }
 
 #[derive(Component, Debug, ConvertSaveload, Clone)]
