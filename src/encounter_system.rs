@@ -14,7 +14,7 @@ pub fn is_encounter(ecs: &mut World) -> bool {
 pub fn invoke_battle(ecs: &mut World) {
     let entities = ecs.entities();
     let mut wants_encounter = ecs.write_storage::<WantsToEncounter>();
-    let mut battle = ecs.write_storage::<OnBattle>();
+    let mut on_battles = ecs.write_storage::<OnBattle>();
     let monster = ecs.write_storage::<Monster>();
     let mut combatant = ecs.write_storage::<Combatant>();
     let player = ecs.read_storage::<Player>();
@@ -40,11 +40,19 @@ pub fn invoke_battle(ecs: &mut World) {
             combat_monsters.push(entity);
         }
 
+        on_battles.clear();
+
         // battleを作成し、player entityに追加する
-        battle
+        on_battles
             .insert(
                 *player_entity,
-                OnBattle { monster: wants_encounter.monster, monsters: combat_monsters },
+                OnBattle {
+                    monster: wants_encounter.monster,
+                    monsters: combat_monsters,
+                    xp: 0,
+                    gold: 0.0,
+                    drops: Vec::new(),
+                },
             )
             .expect("Unable to insert encounter");
 

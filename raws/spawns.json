@@ -984,7 +984,7 @@
     {
       "name": "Red Lime",
       "attributes" : {
-          "might" : 7,
+          "might" : 3,
           "fitness" : 3,
           "quickness": 2,
           "intelligence": 1

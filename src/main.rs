@@ -48,7 +48,8 @@ pub enum RunState {
     BattleInventory,
     BattleItemTargeting { item: Entity },
     BattleTurn,
-    BattleResult,
+    BattleRunAwayResult,
+    BattleWinResult,
     BattleAwaiting,
     BattleAttackWay,
     BattleAttackTargeting { way: Entity },
@@ -188,7 +189,8 @@ impl GameState for State {
             | RunState::BattleAwaiting
             | RunState::BattleAttackWay
             | RunState::BattleAttackTargeting { .. }
-            | RunState::BattleResult => gui::draw_battle_ui(&self.ecs, ctx),
+            | RunState::BattleRunAwayResult
+            | RunState::BattleWinResult => gui::draw_battle_ui(&self.ecs, ctx),
             _ => {}
         }
 
@@ -208,7 +210,9 @@ impl GameState for State {
                     gui::BattleCommandResult::ShowInventory => {
                         newrunstate = RunState::BattleInventory
                     }
-                    gui::BattleCommandResult::RunAway => newrunstate = RunState::BattleResult,
+                    gui::BattleCommandResult::RunAway => {
+                        newrunstate = RunState::BattleRunAwayResult
+                    }
                     gui::BattleCommandResult::RunAwayFailed => newrunstate = RunState::BattleTurn,
                 }
             }
@@ -307,17 +311,22 @@ impl GameState for State {
                     }
                 }
             }
-            RunState::BattleResult => {
-                // 戦闘終了(勝利 or 逃走)
-                let result = gui::show_battle_result(self, ctx);
-                match result {
-                    gui::BattleResult::NoResponse => {}
-                    gui::BattleResult::Enter => {
-                        newrunstate = RunState::AwaitingInput;
+            RunState::BattleRunAwayResult => {
+                // 戦闘終了(逃走)
+            }
+            RunState::BattleWinResult => {
+                // 戦闘終了(勝利)
+                {
+                    let result = gui::show_battle_result(self, ctx);
+                    match result {
+                        gui::BattleWinResult::NoResponse => {}
+                        gui::BattleWinResult::Enter => {
+                            newrunstate = RunState::AwaitingInput;
 
-                        // MEMO: 倒した敵が消えないため
-                        self.ecs.maintain();
-                        self.run_field_systems();
+                            // MEMO: 倒した敵が消えないため
+                            self.ecs.maintain();
+                            self.run_field_systems();
+                        }
                     }
                 }
             }
