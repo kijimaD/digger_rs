@@ -35,11 +35,7 @@ fn draw_map_level(ecs: &World, draw_batch: &mut DrawBatch) {
     let name_length = map.name.len() + 1;
     draw_batch.set(Point::new(0, 0), ColorPair::new(gray, black), to_cp437('-'));
     draw_batch.print_color(Point::new(1, 0), &map.name, ColorPair::new(white, black));
-    draw_batch.set(
-        Point::new(name_length, 0),
-        ColorPair::new(gray, black),
-        to_cp437('-'),
-    );
+    draw_batch.set(Point::new(name_length, 0), ColorPair::new(gray, black), to_cp437('-'));
     std::mem::drop(map);
 }
 

@@ -330,13 +330,6 @@ pub fn spawn_named_mob(
 
         let new_mob = eb.build();
 
-        // Are they wielding anything?
-        if let Some(wielding) = &mob_template.equipped {
-            for tag in wielding.iter() {
-                spawn_named_entity(raws, ecs, tag, SpawnType::Equipped { by: new_mob });
-            }
-        }
-
         return Some(new_mob);
     }
     None
@@ -393,6 +386,7 @@ pub fn spawn_named_prop(
     None
 }
 
+/// 戦闘エンティティを生成する。今のところ敵の生成でのみ、この関数を使っている。将来的に共通化する。
 pub fn spawn_named_fighter(raws: &RawMaster, ecs: &mut World, key: &str) -> Option<Entity> {
     if raws.fighter_index.contains_key(key) {
         let fighter_template = &raws.raws.fighters[raws.fighter_index[key]];
@@ -496,7 +490,16 @@ pub fn spawn_named_fighter(raws: &RawMaster, ecs: &mut World, key: &str) -> Opti
         }
         eb = eb.with(skills);
 
-        return Some(eb.build());
+        let new_fighter = eb.build();
+
+        // Are they wielding anything?
+        if let Some(wielding) = &fighter_template.equipped {
+            for tag in wielding.iter() {
+                spawn_named_entity(raws, ecs, tag, SpawnType::Equipped { by: new_fighter });
+            }
+        }
+
+        return Some(new_fighter);
     }
     None
 }

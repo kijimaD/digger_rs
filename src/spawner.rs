@@ -38,13 +38,7 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
 
-    // Starting equipment
-    spawn_named_entity(
-        &RAWS.lock().unwrap(),
-        ecs,
-        "Rusty Longsword",
-        SpawnType::Equipped { by: player },
-    );
+    // Item
     spawn_named_entity(
         &RAWS.lock().unwrap(),
         ecs,
@@ -58,18 +52,6 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
         SpawnType::Carried { by: player },
     );
     spawn_named_entity(&RAWS.lock().unwrap(), ecs, "Beer", SpawnType::Carried { by: player });
-    spawn_named_entity(
-        &RAWS.lock().unwrap(),
-        ecs,
-        "Stained Tunic",
-        SpawnType::Equipped { by: player },
-    );
-    spawn_named_entity(
-        &RAWS.lock().unwrap(),
-        ecs,
-        "Torn Trousers",
-        SpawnType::Equipped { by: player },
-    );
     spawn_named_entity(
         &RAWS.lock().unwrap(),
         ecs,
@@ -116,6 +98,26 @@ pub fn battle_player(ecs: &mut World) -> Entity {
         .with(skills)
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
+
+    // Equipment
+    spawn_named_entity(
+        &RAWS.lock().unwrap(),
+        ecs,
+        "Rusty Longsword",
+        SpawnType::Equipped { by: player },
+    );
+    spawn_named_entity(
+        &RAWS.lock().unwrap(),
+        ecs,
+        "Stained Tunic",
+        SpawnType::Equipped { by: player },
+    );
+    spawn_named_entity(
+        &RAWS.lock().unwrap(),
+        ecs,
+        "Torn Trousers",
+        SpawnType::Equipped { by: player },
+    );
 
     player
 }
