@@ -1,4 +1,4 @@
-use super::{Equipped, MeleeWeapon, Name, State, ASCII_ALPHABET_OFFSET};
+use super::{Equipped, MeleeWeapon, Name, Player, State, ASCII_ALPHABET_OFFSET};
 use rltk::prelude::*;
 use specs::prelude::*;
 
@@ -16,7 +16,7 @@ pub fn show_attack_way(gs: &mut State, ctx: &mut Rltk) -> (BattleAttackWayResult
     let equipped = gs.ecs.read_storage::<Equipped>();
     let weapon = gs.ecs.read_storage::<MeleeWeapon>();
     let names = gs.ecs.read_storage::<Name>();
-    let player_entity = gs.ecs.fetch::<Entity>();
+    let players = gs.ecs.read_storage::<Player>();
 
     let base_x = 18;
     let mut y = 30;
@@ -28,7 +28,7 @@ pub fn show_attack_way(gs: &mut State, ctx: &mut Rltk) -> (BattleAttackWayResult
     );
 
     for (entity, equipped_by, _weapon) in (&entities, &equipped, &weapon).join() {
-        if equipped_by.owner == *player_entity {
+        if players.get(equipped_by.owner).is_some() {
             let name = names.get(entity).unwrap();
             draw_batch.print_color(
                 Point::new(base_x + 3, y),

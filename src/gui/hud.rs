@@ -33,14 +33,9 @@ fn draw_map_level(ecs: &World, draw_batch: &mut DrawBatch) {
 
     let map = ecs.fetch::<Map>();
     let name_length = map.name.len() + 1;
-    let x_pos = (22 - (name_length / 2)) as i32;
-    draw_batch.set(Point::new(x_pos, 0), ColorPair::new(gray, black), to_cp437('┤'));
-    draw_batch.set(
-        Point::new(x_pos + name_length as i32, 0),
-        ColorPair::new(gray, black),
-        to_cp437('├'),
-    );
-    draw_batch.print_color(Point::new(x_pos + 1, 0), &map.name, ColorPair::new(white, black));
+    draw_batch.set(Point::new(0, 0), ColorPair::new(gray, black), to_cp437('-'));
+    draw_batch.print_color(Point::new(1, 0), &map.name, ColorPair::new(white, black));
+    draw_batch.set(Point::new(name_length, 0), ColorPair::new(gray, black), to_cp437('-'));
     std::mem::drop(map);
 }
 
@@ -116,64 +111,35 @@ fn draw_stats(ecs: &World, draw_batch: &mut DrawBatch) {
     }
 }
 
-fn draw_attributes(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) {
-    let attributes = ecs.read_storage::<Attributes>();
-    let attr = attributes.get(*player_entity).unwrap();
-
-    draw_attribute("Might:", &attr.might, 4, draw_batch);
-    draw_attribute("Quickness:", &attr.quickness, 5, draw_batch);
-    draw_attribute("Fitness:", &attr.fitness, 6, draw_batch);
-    draw_attribute("Intelligence:", &attr.intelligence, 7, draw_batch);
-}
-
 fn initiative_weight(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) {
     let black = RGB::named(rltk::BLACK).to_rgba(1.0);
     let white = RGB::named(rltk::WHITE).to_rgba(1.0);
-    let attributes = ecs.read_storage::<Attributes>();
-    let attr = attributes.get(*player_entity).unwrap();
     let parties = ecs.read_storage::<Party>();
     let party = parties.get(*player_entity).unwrap();
 
     draw_batch.print_color(
-        Point::new(50, 9),
+        Point::new(50, 5),
         &format!(
             "{:.0} kg ({} kg max)",
             party.total_weight,
-            (attr.might.base + attr.might.modifiers) * 15
+            100 // MEMO: 戦闘用エンティティ分割で計算できなくなったので一時的に固定
         ),
         ColorPair::new(white, black),
     );
     draw_batch.print_color(
-        Point::new(50, 10),
+        Point::new(50, 6),
         &format!("Initiative Penalty: {:.0}", party.total_initiative_penalty),
         ColorPair::new(white, black),
     );
     draw_batch.print_color(
-        Point::new(50, 11),
+        Point::new(50, 7),
         &format!("Gold: {:.1}", party.gold),
         ColorPair::new(rltk::RGB::named(rltk::GOLD), black),
     );
 }
 
-fn equipped(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) -> i32 {
-    let white = RGB::named(rltk::WHITE);
-    let black = RGB::named(rltk::BLACK);
-    let mut y = 13;
-    let entities = ecs.entities();
-    let equipped = ecs.read_storage::<Equipped>();
-    let names = ecs.read_storage::<Name>();
-    for (entity, equipped_by) in (&entities, &equipped).join() {
-        if equipped_by.owner == *player_entity {
-            let name = names.get(entity).unwrap();
-            draw_batch.print_color(Point::new(50, y), &name.name, ColorPair::new(white, black));
-            y += 1;
-        }
-    }
-    y
-}
-
-fn consumables(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity, mut y: i32) -> i32 {
-    y += 1;
+fn consumables(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) {
+    let mut y = 9;
     let black = RGB::named(rltk::BLACK);
     let yellow = RGB::named(rltk::YELLOW);
     let green = RGB::named(rltk::GREEN);
@@ -195,10 +161,9 @@ fn consumables(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity, 
             index += 1;
         }
     }
-    y
 }
 
-fn status(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) {
+fn hunger_status(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) {
     let mut y = 44;
     let hunger = ecs.read_storage::<HungerClock>();
     let hc = hunger.get(*player_entity).unwrap();
@@ -238,11 +203,9 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
 
     draw_map_level(ecs, &mut draw_batch);
     draw_stats(ecs, &mut draw_batch);
-    draw_attributes(ecs, &mut draw_batch, &player_entity);
     initiative_weight(ecs, &mut draw_batch, &player_entity);
-    let mut y = equipped(ecs, &mut draw_batch, &player_entity);
-    y += consumables(ecs, &mut draw_batch, &player_entity, y);
-    status(ecs, &mut draw_batch, &player_entity);
+    consumables(ecs, &mut draw_batch, &player_entity);
+    hunger_status(ecs, &mut draw_batch, &player_entity);
     gamelog::print_log(
         &crate::gamelog::FIELD_LOG,
         &mut rltk::BACKEND_INTERNAL.lock().consoles[1].console,
