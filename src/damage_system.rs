@@ -86,7 +86,7 @@ fn check_battle_win(ecs: &mut World) {
         }
     }
 
-    // アイテムドロップ
+    // アイテムドロップ(フィールド)
     let mut to_spawn: Vec<(String, Position)> = Vec::new();
     {
         let mut to_drop: Vec<(Entity, Position)> = Vec::new();
