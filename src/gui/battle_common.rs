@@ -9,11 +9,17 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
     // トップバー
     let black = RGB::named(rltk::BLACK).to_rgba(1.0);
     let white = RGB::named(rltk::WHITE).to_rgba(1.0);
+    let blue = RGB::named(rltk::SKYBLUE).to_rgba(1.0);
     let players = ecs.read_storage::<Player>();
     let combatants = ecs.read_storage::<Combatant>();
     let pools = ecs.read_storage::<Pools>();
     let names = ecs.read_storage::<Name>();
     let entities = ecs.entities();
+
+    let mut x = 1;
+    let left_width: i32 = 10;
+    let right_width: i32 = 8;
+    let margin: i32 = 1;
 
     for (player, combatant, player_pools, entity, name) in
         (&players, &combatants, &pools, &entities, &names).join()
@@ -23,24 +29,26 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
             format!("HP {}/{}", player_pools.hit_points.current, player_pools.hit_points.max);
         let sp = format!("SP {}/{}", player_pools.sp.current, player_pools.sp.max);
 
-        draw_batch.print_color(Point::new(1, 1), &name.name, ColorPair::new(white, black));
-        draw_batch.print_color(Point::new(12, 1), &level, ColorPair::new(white, black));
-        draw_batch.print_color(Point::new(1, 2), &health, ColorPair::new(white, black));
-        draw_batch.print_color(Point::new(1, 3), &sp, ColorPair::new(white, black));
+        draw_batch.print_color(Point::new(x, 1), &name.name, ColorPair::new(blue, black));
+        draw_batch.print_color(Point::new(x + left_width, 1), &level, ColorPair::new(blue, black));
+        draw_batch.print_color(Point::new(x, 2), &health, ColorPair::new(white, black));
+        draw_batch.print_color(Point::new(x, 3), &sp, ColorPair::new(white, black));
         draw_batch.bar_horizontal(
-            Point::new(12, 2),
-            10,
+            Point::new(x + left_width, 2),
+            right_width,
             player_pools.hit_points.current,
             player_pools.hit_points.max,
-            ColorPair::new(RGB::named(rltk::RED), RGB::named(rltk::BLACK)),
+            ColorPair::new(RGB::named(rltk::GREEN), RGB::named(rltk::BLACK)),
         );
         draw_batch.bar_horizontal(
-            Point::new(12, 3),
-            10,
+            Point::new(x + left_width, 3),
+            right_width,
             player_pools.sp.current,
             player_pools.sp.max,
             ColorPair::new(RGB::named(rltk::GOLD), RGB::named(rltk::BLACK)),
         );
+
+        x += left_width + right_width + margin;
     }
 
     // ログ
