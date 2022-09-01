@@ -1,4 +1,5 @@
 use super::{RunState, State};
+use crate::rex_assets::RexAssets;
 use rltk::prelude::*;
 use specs::prelude::*;
 
@@ -16,43 +17,30 @@ pub enum MainMenuResult {
 }
 
 pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
+    let runstate = gs.ecs.fetch::<RunState>();
+    let assets = gs.ecs.fetch::<RexAssets>();
+    ctx.render_xp_sprite(&assets.menu, 0, 0);
+
     let mut draw_batch = DrawBatch::new();
     let save_exists = crate::saveload_system::does_save_exist();
-    let runstate = gs.ecs.fetch::<RunState>();
-    // let assets = gs.ecs.fetch::<RexAssets>();
-    // ctx.render_xp_sprite(&assets.menu, 0, 0);
+    let x = 8;
+    let mut y = 20;
 
-    draw_batch.draw_double_box(
-        Rect::with_size(24, 18, 31, 10),
-        ColorPair::new(RGB::named(rltk::WHEAT), RGB::named(rltk::BLACK)),
-    );
-    draw_batch.print_color_centered(
-        20,
-        "Battle Digger Clone",
+    draw_batch.print_color(
+        Point::new(x, y - 4),
+        "Diggers",
         ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
     );
-    draw_batch.print_color_centered(
-        21,
-        "by Kijimad",
-        ColorPair::new(RGB::named(rltk::CYAN), RGB::named(rltk::BLACK)),
-    );
-    draw_batch.print_color_centered(
-        22,
-        "Use Up/Down Arrows and Enter",
-        ColorPair::new(RGB::named(rltk::GRAY), RGB::named(rltk::BLACK)),
-    );
-
-    let mut y = 24;
     if let RunState::MainMenu { menu_selection: selection } = *runstate {
         if selection == MainMenuSelection::NewGame {
-            draw_batch.print_color_centered(
-                y,
+            draw_batch.print_color(
+                Point::new(x, y),
                 "Begin New Game",
                 ColorPair::new(RGB::named(rltk::MAGENTA), RGB::named(rltk::BLACK)),
             );
         } else {
-            draw_batch.print_color_centered(
-                y,
+            draw_batch.print_color(
+                Point::new(x, y),
                 "Begin New Game",
                 ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
             );
@@ -61,14 +49,14 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
 
         if save_exists {
             if selection == MainMenuSelection::LoadGame {
-                draw_batch.print_color_centered(
-                    y,
+                draw_batch.print_color(
+                    Point::new(x, y),
                     "Load Game",
                     ColorPair::new(RGB::named(rltk::MAGENTA), RGB::named(rltk::BLACK)),
                 );
             } else {
-                draw_batch.print_color_centered(
-                    y,
+                draw_batch.print_color(
+                    Point::new(x, y),
                     "Load Game",
                     ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
                 );
@@ -77,14 +65,14 @@ pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
         }
 
         if selection == MainMenuSelection::Quit {
-            draw_batch.print_color_centered(
-                y,
+            draw_batch.print_color(
+                Point::new(x, y),
                 "Quit",
                 ColorPair::new(RGB::named(rltk::MAGENTA), RGB::named(rltk::BLACK)),
             );
         } else {
-            draw_batch.print_color_centered(
-                y,
+            draw_batch.print_color(
+                Point::new(x, y),
                 "Quit",
                 ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
             );
