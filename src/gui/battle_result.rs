@@ -16,24 +16,26 @@ pub fn show_battle_result(gs: &mut State, ctx: &mut Rltk) -> BattleWinResult {
         let xp = on_battle.xp.to_string();
         let gold = on_battle.gold.to_string();
 
-        let x = 18;
+        let padding = 2;
+        let container_x = 20;
+        let inner_x = container_x + padding;
         let mut y = 30;
 
         draw_batch.draw_box(
-            Rect::with_size(15, y, 31, 6),
+            Rect::with_size(container_x, y, 40, 6),
             ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
         );
-        y += 1;
+        y += 2;
 
         draw_batch.print_color(
-            Point::new(x, y),
+            Point::new(inner_x, y),
             format!("{} xp", xp),
             ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
         );
         y += 1;
 
         draw_batch.print_color(
-            Point::new(x, y),
+            Point::new(inner_x, y),
             format!("{} gold", gold),
             ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
         );
