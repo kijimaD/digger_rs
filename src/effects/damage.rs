@@ -1,5 +1,5 @@
 use super::*;
-use crate::components::{Attributes, Party, Player, Pools};
+use crate::components::{Attributes, OnBattle, Party, Player, Pools};
 use crate::gamelog;
 use crate::gamesystem::{player_hp_at_level, sp_at_level};
 use crate::map::Map;
@@ -69,6 +69,7 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
 
     let mut pools = ecs.write_storage::<Pools>();
     let mut parties = ecs.write_storage::<Party>();
+    let mut on_battles = ecs.write_storage::<OnBattle>();
     let attributes = ecs.read_storage::<Attributes>();
     let player_entity = ecs.fetch::<Entity>();
 
@@ -85,52 +86,15 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
                 gold_gain += stats.gold;
             }
 
+            // 戦闘終了後に一気にまとめてxpやgoldの獲得をさせるため、OnBattleに格納するのみ
             if xp_gain != 0 || gold_gain != 0.0 {
                 let mut player_stats = pools.get_mut(source).unwrap();
                 let mut party = parties.get_mut(*player_entity).unwrap();
                 let player_attributes = attributes.get(source).unwrap();
-                player_stats.xp += xp_gain;
-                party.gold += gold_gain;
-                if player_stats.xp >= player_stats.level * 1000 {
-                    // level up
-                    player_stats.level += 1;
-                    gamelog::Logger::new()
-                        .append(format!("Congratulations, you are now level{}", player_stats.level))
-                        .color(rltk::MAGENTA)
-                        .append("Congratulations, you are now level")
-                        .append(format!("{}", player_stats.level))
-                        .log(&crate::gamelog::LogKind::Field);
-                    player_stats.hit_points.max = player_hp_at_level(
-                        player_attributes.fitness.base + player_attributes.fitness.modifiers,
-                        player_stats.level,
-                    );
-                    player_stats.hit_points.current = player_stats.hit_points.max;
-                    player_stats.sp.max = sp_at_level(
-                        player_attributes.intelligence.base
-                            + player_attributes.intelligence.modifiers,
-                        player_stats.level,
-                    );
-                    player_stats.sp.current = player_stats.sp.max;
+                let mut on_battle = on_battles.get_mut(*player_entity).unwrap();
 
-                    let player_pos = ecs.fetch::<rltk::Point>();
-                    let map = ecs.fetch::<Map>();
-                    for i in 0..10 {
-                        if player_pos.y - i > 1 {
-                            add_effect(
-                                None,
-                                EffectType::Particle {
-                                    glyph: rltk::to_cp437('░'),
-                                    fg: rltk::RGB::named(rltk::GOLD),
-                                    bg: rltk::RGB::named(rltk::BLACK),
-                                    lifespan: 400.0,
-                                },
-                                Targets::Tile {
-                                    tile_idx: map.xy_idx(player_pos.x, player_pos.y - i) as i32,
-                                },
-                            );
-                        }
-                    }
-                }
+                on_battle.xp += xp_gain;
+                on_battle.gold += gold_gain;
             }
         }
     }

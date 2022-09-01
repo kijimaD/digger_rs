@@ -11,7 +11,7 @@ pub struct Mob {
     pub vision_range: i32,
     pub movement: String,
     pub quips: Option<Vec<String>>,
-    pub loot_table: Option<String>, // TODO: move to battle entity
+    pub loot_table: Option<String>,
     pub light: Option<MobLight>,
     pub faction: Option<String>,
     pub vendor: Option<Vec<String>>,

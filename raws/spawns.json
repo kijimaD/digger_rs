@@ -469,10 +469,6 @@
         "Stand and deliver!",
         "Alright, hand it over"
       ],
-      "equipped": [
-        "Stained Tunic",
-        "Shield"
-      ],
       "light": {
         "range": 4,
         "color": "#550000"
@@ -616,13 +612,6 @@
       "blocks_tile": true,
       "vision_range": 4,
       "movement": "random",
-      "skills": {
-        "Melee": 2
-      },
-      "equipped": [
-        "Stained Tunic",
-        "Slippers"
-      ],
       "faction": "Townsfolk"
     },
     {
@@ -995,7 +984,7 @@
     {
       "name": "Red Lime",
       "attributes" : {
-          "might" : 7,
+          "might" : 3,
           "fitness" : 3,
           "quickness": 2,
           "intelligence": 1
@@ -1011,6 +1000,10 @@
               { "name" : "mucus", "hit_bonus" : 1, "damage" : "4d2" }
           ]
       },
+      "equipped": [
+        "Stained Tunic",
+        "Shield"
+      ],
       "gold": "10d2"
     }
   ],

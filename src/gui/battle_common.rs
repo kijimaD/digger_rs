@@ -9,45 +9,46 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
     // トップバー
     let black = RGB::named(rltk::BLACK).to_rgba(1.0);
     let white = RGB::named(rltk::WHITE).to_rgba(1.0);
+    let blue = RGB::named(rltk::SKYBLUE).to_rgba(1.0);
     let players = ecs.read_storage::<Player>();
     let combatants = ecs.read_storage::<Combatant>();
     let pools = ecs.read_storage::<Pools>();
+    let names = ecs.read_storage::<Name>();
     let entities = ecs.entities();
 
-    for (player, combatant, player_pools, entity) in
-        (&players, &combatants, &pools, &entities).join()
-    {
-        let health =
-            format!("HP: {}/{}", player_pools.hit_points.current, player_pools.hit_points.max);
-        let sp = format!("SP: {}/{}", player_pools.sp.current, player_pools.sp.max);
+    let mut x = 1;
+    let left_width: i32 = 10;
+    let right_width: i32 = 8;
+    let margin: i32 = 1;
 
-        draw_batch.print_color(Point::new(1, 1), &health, ColorPair::new(white, black));
-        draw_batch.print_color(Point::new(1, 2), &sp, ColorPair::new(white, black));
+    for (player, combatant, player_pools, entity, name) in
+        (&players, &combatants, &pools, &entities, &names).join()
+    {
+        let level = format!("Lv. {}", player_pools.level);
+        let health =
+            format!("HP {}/{}", player_pools.hit_points.current, player_pools.hit_points.max);
+        let sp = format!("SP {}/{}", player_pools.sp.current, player_pools.sp.max);
+
+        draw_batch.print_color(Point::new(x, 1), &name.name, ColorPair::new(blue, black));
+        draw_batch.print_color(Point::new(x + left_width, 1), &level, ColorPair::new(blue, black));
+        draw_batch.print_color(Point::new(x, 2), &health, ColorPair::new(white, black));
+        draw_batch.print_color(Point::new(x, 3), &sp, ColorPair::new(white, black));
         draw_batch.bar_horizontal(
-            Point::new(14, 1),
-            14,
+            Point::new(x + left_width, 2),
+            right_width,
             player_pools.hit_points.current,
             player_pools.hit_points.max,
-            ColorPair::new(RGB::named(rltk::RED), RGB::named(rltk::BLACK)),
+            ColorPair::new(RGB::named(rltk::GREEN), RGB::named(rltk::BLACK)),
         );
         draw_batch.bar_horizontal(
-            Point::new(14, 2),
-            14,
+            Point::new(x + left_width, 3),
+            right_width,
             player_pools.sp.current,
             player_pools.sp.max,
-            ColorPair::new(RGB::named(rltk::BLUE), RGB::named(rltk::BLACK)),
-        );
-
-        let xp = format!("Level: {}", player_pools.level);
-        draw_batch.print_color(Point::new(1, 3), &xp, ColorPair::new(white, black));
-        let xp_level_start = (player_pools.level - 1) * 1000;
-        draw_batch.bar_horizontal(
-            Point::new(14, 3),
-            14,
-            player_pools.xp - xp_level_start,
-            1000,
             ColorPair::new(RGB::named(rltk::GOLD), RGB::named(rltk::BLACK)),
         );
+
+        x += left_width + right_width + margin;
     }
 
     // ログ

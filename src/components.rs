@@ -201,6 +201,9 @@ pub struct WantsToEncounter {
 pub struct OnBattle {
     pub monster: Entity,
     pub monsters: Vec<Entity>,
+    pub xp: i32,
+    pub gold: f32,
+    pub drops: Vec<Entity>,
 }
 
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
