@@ -313,6 +313,15 @@ impl GameState for State {
             }
             RunState::BattleRunAwayResult => {
                 // 戦闘終了(逃走)
+                match ctx.key {
+                    None => {}
+                    Some(key) => match key {
+                        VirtualKeyCode::Return => {
+                            newrunstate = RunState::AwaitingInput;
+                        }
+                        _ => {}
+                    },
+                }
             }
             RunState::BattleWinResult => {
                 // 戦闘終了(勝利)
