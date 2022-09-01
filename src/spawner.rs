@@ -31,10 +31,10 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
         .with(Player {})
         .with(Faction { name: "Player".to_string() })
         .with(Initiative { current: 0 })
-        .with(Viewshed { visible_tiles: Vec::new(), range: 8, dirty: true })
+        .with(Viewshed { visible_tiles: Vec::new(), range: 6, dirty: true })
         .with(Name { name: "Player".to_string() })
         .with(HungerClock { state: HungerState::WellFed, duration: 20 })
-        .with(LightSource { color: rltk::RGB::from_hex("#EDF122").expect("Bad color"), range: 6 })
+        .with(LightSource { color: rltk::RGB::from_hex("#FF8C00").expect("Bad color"), range: 6 })
         .marked::<SimpleMarker<SerializeMe>>()
         .build();
 

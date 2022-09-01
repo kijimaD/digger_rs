@@ -20,7 +20,7 @@ impl<'a> System<'a> for LightingSystem {
             return;
         }
 
-        let black = RGB::from_f32(0.0, 0.0, 0.0);
+        let black = RGB::from_f32(0.3, 0.3, 0.3);
         for l in map.light.iter_mut() {
             *l = black;
         }
