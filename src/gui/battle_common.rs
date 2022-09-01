@@ -1,9 +1,13 @@
 use super::{gamelog, Combatant, Monster, Name, Player, Pools};
+use crate::rex_assets::RexAssets;
 use rltk::prelude::*;
 use specs::prelude::*;
 
 /// すべての戦闘系stateで共通表示するUI
 pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
+    let assets = ecs.fetch::<RexAssets>();
+    ctx.render_xp_sprite(&assets.forest, 0, 0);
+
     let mut draw_batch = DrawBatch::new();
 
     // トップバー

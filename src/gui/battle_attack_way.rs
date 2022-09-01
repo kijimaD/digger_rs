@@ -18,39 +18,43 @@ pub fn show_attack_way(gs: &mut State, ctx: &mut Rltk) -> (BattleAttackWayResult
     let names = gs.ecs.read_storage::<Name>();
     let players = gs.ecs.read_storage::<Player>();
 
-    let base_x = 18;
+    let mut x = 19;
     let mut y = 30;
     let mut j = 0;
 
     draw_batch.draw_box(
-        Rect::with_size(15, y - 2, 31, 6),
+        Rect::with_size(x, y - 2, 31, 6),
         ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
     );
+    x += 1;
 
     for (entity, equipped_by, _weapon) in (&entities, &equipped, &weapon).join() {
         if players.get(equipped_by.owner).is_some() {
             let name = names.get(entity).unwrap();
+            draw_batch.set(
+                Point::new(x, y),
+                ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
+                rltk::to_cp437('['),
+            );
+            x += 1;
+            draw_batch.set(
+                Point::new(x, y),
+                ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
+                ASCII_ALPHABET_OFFSET + j as rltk::FontCharType,
+            );
+            x += 1;
+            draw_batch.set(
+                Point::new(x, y),
+                ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
+                rltk::to_cp437(']'),
+            );
+            x += 2;
             draw_batch.print_color(
-                Point::new(base_x + 3, y),
+                Point::new(x, y),
                 &name.name,
                 ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
             );
 
-            draw_batch.set(
-                Point::new(base_x - 1, y),
-                ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
-                rltk::to_cp437('['),
-            );
-            draw_batch.set(
-                Point::new(base_x, y),
-                ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
-                ASCII_ALPHABET_OFFSET + j as rltk::FontCharType,
-            );
-            draw_batch.set(
-                Point::new(base_x + 1, y),
-                ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
-                rltk::to_cp437(']'),
-            );
             y += 1;
             j += 1;
             targets.push(entity);

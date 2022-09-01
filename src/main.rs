@@ -706,7 +706,7 @@ fn main() -> rltk::BError {
     use rltk::RltkBuilder;
     let mut context = RltkBuilder::simple(80, 60)
         .unwrap()
-        .with_title("Battle Digger Clone")
+        .with_title("Diggers")
         .with_font("vga8x16.png", 8, 16)
         .with_sparse_console(80, 30, "vga8x16.png")
         .build()?;
