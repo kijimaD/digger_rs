@@ -14,24 +14,29 @@ pub enum BattleCommandResult {
 pub fn show_battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResult {
     let mut draw_batch = DrawBatch::new();
 
-    let y = 30;
+    let mut x = 19;
+    let mut y = 28;
 
     draw_batch.draw_box(
-        Rect::with_size(15, y - 2, 31, 6 as i32),
+        Rect::with_size(x, y, 31, 6 as i32),
         ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
     );
+    x += 1;
+    y += 2;
     draw_batch.print_color(
-        Point::new(16, y),
+        Point::new(x, y),
         "[a] Attack",
         ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
     );
+    y += 1;
     draw_batch.print_color(
-        Point::new(16, y + 1),
+        Point::new(x, y),
         "[i] Inventory",
         ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
     );
+    y += 1;
     draw_batch.print_color(
-        Point::new(16, y + 2),
+        Point::new(x, y),
         "[r] Run away",
         ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
     );
