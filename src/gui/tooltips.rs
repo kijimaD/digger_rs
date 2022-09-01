@@ -29,19 +29,19 @@ impl Tooltip {
         self.lines.len() as i32 + 2i32
     }
 
-    fn render(&self, draw_batch: &mut DrawBatch, x: i32, y: i32) {
+    fn render(&self, draw_batch: &mut DrawBatch) {
         let box_gray: RGB = RGB::from_hex("#999999").expect("Oops");
         let light_gray: RGB = RGB::from_hex("#DDDDDD").expect("Oops");
         let white = RGB::named(rltk::WHITE);
         let black = RGB::named(rltk::BLACK);
         draw_batch.draw_box(
-            Rect::with_size(x, y, self.width() - 1, self.height() - 1),
+            Rect::with_size(1, 2, self.width() - 1, self.height() - 1),
             ColorPair::new(white, box_gray),
         );
         for (i, s) in self.lines.iter().enumerate() {
             let col = if i == 0 { white } else { light_gray };
             draw_batch.print_color(
-                Point::new(x + 1, y + i as i32 + 1),
+                Point::new(2, 3),
                 &s,
                 ColorPair::new(col, black),
             );
@@ -128,21 +128,6 @@ pub fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
         return;
     }
 
-    let box_gray: RGB = RGB::from_hex("#999999").expect("Oops");
-    let white = RGB::named(rltk::WHITE);
-
-    let arrow;
-    let arrow_x;
-    let arrow_y = mouse_pos.1;
-    if mouse_pos.0 < 40 {
-        arrow = to_cp437('→');
-        arrow_x = mouse_pos.0 - 1;
-    } else {
-        arrow = to_cp437('←');
-        arrow_x = mouse_pos.0 + 1;
-    }
-    draw_batch.set(Point::new(arrow_x, arrow_y), ColorPair::new(white, box_gray), arrow);
-
     let mut total_height = 0;
     for tt in tip_boxes.iter() {
         total_height += tt.height();
@@ -154,12 +139,7 @@ pub fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
     }
 
     for tt in tip_boxes.iter() {
-        let x = if mouse_pos.0 < 40 {
-            mouse_pos.0 - (1 + tt.width())
-        } else {
-            mouse_pos.0 + (1 + tt.width())
-        };
-        tt.render(&mut draw_batch, x, y);
+        tt.render(&mut draw_batch);
         y += tt.height();
     }
 
