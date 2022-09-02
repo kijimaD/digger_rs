@@ -1,8 +1,9 @@
+name: Binary Build
+
 on:
   release:
     types: [created]
-  on:
-    push:
+  push:
 
 jobs:
   release:
