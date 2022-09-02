@@ -1,15 +1,23 @@
 name: Binary Build
 
 on:
-  release:
-    types: [created]
   push:
+    # tags:
+    #   - "v[0-9]+\\.[0-9]+\\.[0-9]+"
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Set version
+        id: version
+        run: |
+          REPOSITORY=$(echo ${{ github.repository }} | sed -e "s#.*/##")
+          VERSION=$(echo ${{ github.ref }} | sed -e "s#refs/tags/##g")
+          echo ::set-output name=version::$VERSION
+          echo ::set-output name=filename::$REPOSITORY-$VERSION
+          echo "Version $VERSION"
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
@@ -20,8 +28,8 @@ jobs:
         with:
           draft: false
           prerelease: false
-          tag_name: ${{ github.sha }}
-          release_name: Release ${{ github.sha }}
+          tag_name: ${{ steps.version.outputs.version }}
+          release_name: Release ${{ steps.version.outputs.version }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - name: upload linux artifact
