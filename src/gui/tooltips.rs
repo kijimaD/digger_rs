@@ -40,11 +40,7 @@ impl Tooltip {
         );
         for (i, s) in self.lines.iter().enumerate() {
             let col = if i == 0 { white } else { light_gray };
-            draw_batch.print_color(
-                Point::new(2, 3),
-                &s,
-                ColorPair::new(col, black),
-            );
+            draw_batch.print_color(Point::new(2, 3), &s, ColorPair::new(col, black));
         }
     }
 }
