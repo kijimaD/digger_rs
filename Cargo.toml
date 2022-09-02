@@ -8,7 +8,7 @@ edition = "2021"
 
 [dependencies]
 getrandom = { version = "0.2", features = ["js"] }
-rltk = { version = "0.8.0", features = ["serde"] }
+rltk = { version = "0.8.0", features = ["serde", "opengl"] }
 specs = { version = "0.16.1", features = ["serde"] }
 specs-derive = "0.4.1"
 serde= { version = "^1.0.44", features = ["derive"] }
