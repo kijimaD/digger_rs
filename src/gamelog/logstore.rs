@@ -24,7 +24,7 @@ pub fn clear_log(log: &LogType) {
 pub fn log_display() -> TextBuilder {
     let mut buf = TextBuilder::empty();
 
-    FIELD_LOG.lock().unwrap().iter().rev().take(12).for_each(|log| {
+    FIELD_LOG.lock().unwrap().iter().rev().take(10).for_each(|log| {
         log.iter().for_each(|frag| {
             buf.fg(frag.color);
             buf.line_wrap(&frag.text);
@@ -48,7 +48,7 @@ pub fn print_log(log: &LogType, console: &mut Box<dyn Console>, pos: Point) {
     let mut y = pos.y;
     let mut x = pos.x;
 
-    log.lock().unwrap().iter().rev().take(6).for_each(|log| {
+    log.lock().unwrap().iter().rev().take(10).for_each(|log| {
         log.iter().for_each(|frag| {
             console.print_color(
                 x,

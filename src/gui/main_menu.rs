@@ -17,6 +17,7 @@ pub enum MainMenuResult {
 }
 
 pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
+    ctx.set_active_console(2);
     let runstate = gs.ecs.fetch::<RunState>();
     let assets = gs.ecs.fetch::<RexAssets>();
     ctx.render_xp_sprite(&assets.menu, 0, 0);

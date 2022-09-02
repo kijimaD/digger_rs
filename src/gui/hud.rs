@@ -199,6 +199,7 @@ fn hunger_status(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity
 
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     let mut draw_batch = DrawBatch::new();
+    draw_batch.target(2);
     let player_entity = ecs.fetch::<Entity>();
 
     draw_map_level(ecs, &mut draw_batch);
@@ -206,12 +207,13 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     initiative_weight(ecs, &mut draw_batch, &player_entity);
     consumables(ecs, &mut draw_batch, &player_entity);
     hunger_status(ecs, &mut draw_batch, &player_entity);
-    gamelog::print_log(
-        &crate::gamelog::FIELD_LOG,
-        &mut rltk::BACKEND_INTERNAL.lock().consoles[1].console,
-        Point::new(1, 23),
-    );
     tooltips::draw_tooltips(ecs, ctx);
 
     draw_batch.submit(5000); // There are 80x60(4800) possible tiles in the map.
+
+    gamelog::print_log(
+        &crate::gamelog::FIELD_LOG,
+        &mut rltk::BACKEND_INTERNAL.lock().consoles[2].console,
+        Point::new(1, 50),
+    );
 }
