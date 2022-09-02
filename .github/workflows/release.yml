@@ -6,28 +6,14 @@ on:
   push:
 
 jobs:
-  linux-build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - run: make linux-build
-
-  windows-build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-      - run: make windows-build
-
   release:
-    needs: [linux-build, windows-build]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - run: make linux-build && make windows-build
       - name: release
         uses: actions/create-release@v1
         id: create_release
