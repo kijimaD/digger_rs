@@ -24,11 +24,6 @@ windows-build:
 	rustup target add x86_64-pc-windows-gnu && \
 	cross build --release --target x86_64-pc-windows-gnu
 
-mac-build:
-	cargo install cross && \
-	rustup target add x86_64-apple-darwin && \
-	cross build --release --target x86_64-apple-darwin
-
 fmt:
 	cargo fmt && \
 	cargo clippy
