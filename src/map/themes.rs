@@ -148,7 +148,7 @@ fn get_forest_glyph(idx: usize, map: &Map) -> (rltk::FontCharType, RGB, RGB) {
 
     match map.tiles[idx] {
         TileType::Wall => {
-            glyph = rltk::to_cp437('"');
+            glyph = rltk::to_cp437('♣');
             fg = RGB::from_f32(0.0, 0.6, 0.0);
         }
         TileType::Bridge => {
