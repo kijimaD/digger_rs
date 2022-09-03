@@ -718,19 +718,18 @@ fn main() -> rltk::BError {
     const DISPLAY_HEIGHT: i32 = SCREEN_HEIGHT / 2;
 
     rltk::embedded_resource!(DUNGEON_FONT, "../resources/dungeonfont.png");
-    rltk::link_resource!(DUNGEON_FONT, "../resources/dungeonfont.png");
+    rltk::link_resource!(DUNGEON_FONT, "resources/dungeonfont.png");
 
     let context = BTermBuilder::new()
         .with_title("Diggers")
-        .with_fps_cap(30.0)
+        .with_fps_cap(60.0)
         .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
         .with_tile_dimensions(32, 32)
-        // .with_resource_path("resources/")
         .with_font("vga8x16.png", 8, 16)
         .with_font("dungeonfont.png", 32, 32)
-        .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png") // 0.フィールド時の画像(小)
-        .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png") // 1. 使ってない疑惑。タイルを背景としたスプライトとして使いたいが、うまくいかない。
-        .with_sparse_console(SCREEN_WIDTH, SCREEN_HEIGHT, "vga8x16.png") // 2. 文字表示 + 背景
+        .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png") // 0.フィールドのタイル画像(小)
+        .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png") // 1. フィールドキャラクタの画像(小)
+        .with_sparse_console(SCREEN_WIDTH, SCREEN_HEIGHT, "vga8x16.png") // 2. 文字表示
         .with_simple_console_no_bg(DISPLAY_WIDTH / 4, DISPLAY_HEIGHT / 4, "dungeonfont.png") // 3.戦闘時の敵画像(大)
         .build()?;
 
