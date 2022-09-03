@@ -78,7 +78,7 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
     gamelog::print_log(
         &crate::gamelog::BATTLE_LOG,
         &mut rltk::BACKEND_INTERNAL.lock().consoles[2].console,
-        Point::new(1, 50),
+        Point::new(1, 46),
     );
 
     draw_batch.target(3);
