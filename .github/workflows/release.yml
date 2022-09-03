@@ -40,7 +40,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./target/x86_64-unknown-linux-gnu/release/digger_rs
-          asset_name: x86_64-unknown-linux-gnu_digger_rs
+          asset_name: digger_rs_${{ steps.version.outputs.version }}_x86_64-unknown-linux-gnu
           asset_content_type: application/gzip
       - name: upload windows artifact
         uses: actions/upload-release-asset@v1
@@ -49,7 +49,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./target/x86_64-pc-windows-gnu/release/digger_rs.exe
-          asset_name: x86_64-pc-windows-gnu_digger_rs.exe
+          asset_name: digger_rs_${{ steps.version.outputs.version }}_x86_64-pc-windows-gnu.exe
           asset_content_type: application/zip
       - name: upload mac artifact
         uses: actions/upload-release-asset@v1
@@ -58,5 +58,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./target/x86_64-apple-darwin/release/digger_rs
-          asset_name: x86_64-apple-darwin_digger_rs
+          asset_name: digger_rs_${{ steps.version.outputs.version }}_x86_64-apple-darwin
           asset_content_type: application/zip
