@@ -48,7 +48,7 @@ pub fn print_log(log: &LogType, console: &mut Box<dyn Console>, pos: Point) {
     let mut y = pos.y;
     let mut x = pos.x;
 
-    log.lock().unwrap().iter().rev().take(6).for_each(|log| {
+    log.lock().unwrap().iter().rev().take(12).for_each(|log| {
         log.iter().for_each(|frag| {
             console.print_color(
                 x,

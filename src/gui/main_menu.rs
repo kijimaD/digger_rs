@@ -17,20 +17,51 @@ pub enum MainMenuResult {
 }
 
 pub fn main_menu(gs: &mut State, ctx: &mut Rltk) -> MainMenuResult {
+    ctx.set_active_console(2);
     let runstate = gs.ecs.fetch::<RunState>();
     let assets = gs.ecs.fetch::<RexAssets>();
     ctx.render_xp_sprite(&assets.menu, 0, 0);
 
     let mut draw_batch = DrawBatch::new();
-    let save_exists = crate::saveload_system::does_save_exist();
+    draw_batch.target(2);
+
     let x = 8;
     let mut y = 20;
 
+    // TODO: easy to read
     draw_batch.print_color(
-        Point::new(x, y - 4),
-        "Diggers",
+        Point::new(x, y - 8),
+        r"██████╗ ██╗ ██████╗  ██████╗ ███████╗██████╗ ███████╗",
         ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
     );
+    draw_batch.print_color(
+        Point::new(x, y - 7),
+        r"██╔══██╗██║██╔════╝ ██╔════╝ ██╔════╝██╔══██╗██╔════╝",
+        ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
+    );
+    draw_batch.print_color(
+        Point::new(x, y - 6),
+        r"██║  ██║██║██║  ███╗██║  ███╗█████╗  ██████╔╝███████╗",
+        ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
+    );
+    draw_batch.print_color(
+        Point::new(x, y - 5),
+        r"██║  ██║██║██║   ██║██║   ██║██╔══╝  ██╔══██╗╚════██║",
+        ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
+    );
+    draw_batch.print_color(
+        Point::new(x, y - 4),
+        r"██████╔╝██║╚██████╔╝╚██████╔╝███████╗██║  ██║███████║",
+        ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
+    );
+    draw_batch.print_color(
+        Point::new(x, y - 3),
+        r"╚═════╝ ╚═╝ ╚═════╝  ╚═════╝ ╚══════╝╚═╝  ╚═╝╚══════╝",
+        ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
+    );
+
+    let save_exists = crate::saveload_system::does_save_exist();
+
     if let RunState::MainMenu { menu_selection: selection } = *runstate {
         if selection == MainMenuSelection::NewGame {
             draw_batch.print_color(

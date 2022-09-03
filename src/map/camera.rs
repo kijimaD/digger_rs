@@ -7,7 +7,9 @@ const SHOW_BOUNDARIES: bool = false;
 
 pub fn render_camera(ecs: &World, ctx: &mut Rltk) {
     let mut draw_batch = DrawBatch::new();
+    draw_batch.target(0);
 
+    // 地形
     let map = ecs.fetch::<Map>();
     let (min_x, max_x, min_y, max_y) = get_screen_bounds(ecs, ctx);
 
@@ -36,6 +38,11 @@ pub fn render_camera(ecs: &World, ctx: &mut Rltk) {
         y += 1;
     }
 
+    draw_batch.submit(1000);
+
+    draw_batch.target(1);
+
+    // キャラ
     let positions = ecs.read_storage::<Position>();
     let renderables = ecs.read_storage::<Renderable>();
     let map = ecs.fetch::<Map>();
@@ -67,8 +74,7 @@ pub fn render_camera(ecs: &World, ctx: &mut Rltk) {
 
 pub fn get_screen_bounds(ecs: &World, ctx: &mut Rltk) -> (i32, i32, i32, i32) {
     let player_pos = ecs.fetch::<Point>();
-    // let (x_chars, y_chars) = ctx.get_char_size();
-    let (x_chars, y_chars) = (48, 44);
+    let (x_chars, y_chars) = ctx.get_char_size();
 
     let center_x = (x_chars / 2) as i32;
     let center_y = (y_chars / 2) as i32;

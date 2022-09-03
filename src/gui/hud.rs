@@ -31,11 +31,13 @@ fn draw_map_level(ecs: &World, draw_batch: &mut DrawBatch) {
     let black = RGB::named(rltk::BLACK).to_rgba(1.0);
     let white = RGB::named(rltk::WHITE).to_rgba(1.0);
 
+    let y = 1;
+
     let map = ecs.fetch::<Map>();
     let name_length = map.name.len() + 1;
-    draw_batch.set(Point::new(0, 0), ColorPair::new(gray, black), to_cp437('-'));
-    draw_batch.print_color(Point::new(1, 0), &map.name, ColorPair::new(white, black));
-    draw_batch.set(Point::new(name_length, 0), ColorPair::new(gray, black), to_cp437('-'));
+    draw_batch.set(Point::new(1, y), ColorPair::new(gray, black), to_cp437('-'));
+    draw_batch.print_color(Point::new(2, y), &map.name, ColorPair::new(white, black));
+    draw_batch.set(Point::new(name_length, y), ColorPair::new(gray, black), to_cp437('-'));
     std::mem::drop(map);
 }
 
@@ -164,6 +166,7 @@ fn consumables(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) 
 }
 
 fn hunger_status(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity) {
+    let x = 1;
     let mut y = 44;
     let hunger = ecs.read_storage::<HungerClock>();
     let hc = hunger.get(*player_entity).unwrap();
@@ -171,7 +174,7 @@ fn hunger_status(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity
     match hc.state {
         HungerState::WellFed => {
             draw_batch.print_color(
-                Point::new(50, y),
+                Point::new(x, y),
                 "Well Fed",
                 ColorPair::new(RGB::named(rltk::GREEN), RGB::named(rltk::BLACK)),
             );
@@ -180,7 +183,7 @@ fn hunger_status(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity
         HungerState::Normal => {}
         HungerState::Hungry => {
             draw_batch.print_color(
-                Point::new(50, y),
+                Point::new(x, y),
                 "Hungry",
                 ColorPair::new(RGB::named(rltk::ORANGE), RGB::named(rltk::BLACK)),
             );
@@ -188,7 +191,7 @@ fn hunger_status(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity
         }
         HungerState::Starving => {
             draw_batch.print_color(
-                Point::new(50, y),
+                Point::new(x, y),
                 "Starving",
                 ColorPair::new(RGB::named(rltk::RED), RGB::named(rltk::BLACK)),
             );
@@ -199,6 +202,7 @@ fn hunger_status(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity
 
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     let mut draw_batch = DrawBatch::new();
+    draw_batch.target(2);
     let player_entity = ecs.fetch::<Entity>();
 
     draw_map_level(ecs, &mut draw_batch);
@@ -206,12 +210,13 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     initiative_weight(ecs, &mut draw_batch, &player_entity);
     consumables(ecs, &mut draw_batch, &player_entity);
     hunger_status(ecs, &mut draw_batch, &player_entity);
-    gamelog::print_log(
-        &crate::gamelog::FIELD_LOG,
-        &mut rltk::BACKEND_INTERNAL.lock().consoles[1].console,
-        Point::new(1, 23),
-    );
     tooltips::draw_tooltips(ecs, ctx);
 
     draw_batch.submit(5000); // There are 80x60(4800) possible tiles in the map.
+
+    gamelog::print_log(
+        &crate::gamelog::FIELD_LOG,
+        &mut rltk::BACKEND_INTERNAL.lock().consoles[2].console,
+        Point::new(1, 46),
+    );
 }

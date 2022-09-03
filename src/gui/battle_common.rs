@@ -5,10 +5,12 @@ use specs::prelude::*;
 
 /// すべての戦闘系stateで共通表示するUI
 pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
+    ctx.set_active_console(2); // 背景用
     let assets = ecs.fetch::<RexAssets>();
     ctx.render_xp_sprite(&assets.forest, 0, 0);
 
     let mut draw_batch = DrawBatch::new();
+    draw_batch.target(2);
 
     // トップバー
     let black = RGB::named(rltk::BLACK).to_rgba(1.0);
@@ -55,17 +57,6 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
         x += left_width + right_width + margin;
     }
 
-    // ログ
-    draw_batch.draw_box(
-        Rect::with_size(0, 45, 79, 14),
-        ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
-    );
-    gamelog::print_log(
-        &crate::gamelog::BATTLE_LOG,
-        &mut rltk::BACKEND_INTERNAL.lock().consoles[1].console,
-        Point::new(1, 23),
-    );
-
     // 敵一覧
     let names = ecs.read_storage::<Name>();
     let pools = ecs.read_storage::<Pools>();
@@ -75,7 +66,7 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
     let mut i = 1;
     for (name, pools, _combatant, _monster) in (&names, &pools, &combatants, &monsters).join() {
         draw_batch.print_color(
-            Point::new((80 * i) / (1 + combatants.count()), 20),
+            Point::new((80 * i) / (combatants.count()), 18),
             format!("{}({})", name.name, pools.hit_points.current),
             ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
         );
@@ -83,4 +74,24 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
     }
 
     draw_batch.submit(5000);
+
+    gamelog::print_log(
+        &crate::gamelog::BATTLE_LOG,
+        &mut rltk::BACKEND_INTERNAL.lock().consoles[2].console,
+        Point::new(1, 46),
+    );
+
+    draw_batch.target(3);
+
+    let mut i = 1;
+    for (name, pools, _combatant, _monster) in (&names, &pools, &combatants, &monsters).join() {
+        draw_batch.print_color(
+            Point::new((10 * i) / (combatants.count()), 1),
+            format!("g"),
+            ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::WHITE)),
+        );
+        i += 1;
+    }
+
+    draw_batch.submit(6000);
 }
