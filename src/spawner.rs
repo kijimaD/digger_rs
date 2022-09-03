@@ -58,6 +58,7 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
         "Town Portal Stone",
         SpawnType::Carried { by: player },
     );
+    spawn_named_entity(&RAWS.lock().unwrap(), ecs, "Dagger", SpawnType::Carried { by: player });
 
     player
 }

@@ -306,41 +306,25 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
             | VirtualKeyCode::A
             | VirtualKeyCode::H => return try_move_player(-1, 0, &mut gs.ecs),
 
-            VirtualKeyCode::Right
-            | VirtualKeyCode::Numpad6
-            | VirtualKeyCode::D
-            | VirtualKeyCode::L => return try_move_player(1, 0, &mut gs.ecs),
-
-            VirtualKeyCode::Up
-            | VirtualKeyCode::Numpad8
-            | VirtualKeyCode::W
-            | VirtualKeyCode::K => return try_move_player(0, -1, &mut gs.ecs),
-
-            VirtualKeyCode::Down
-            | VirtualKeyCode::Numpad2
-            | VirtualKeyCode::S
-            | VirtualKeyCode::J => return try_move_player(0, 1, &mut gs.ecs),
-
-            // Diagonals
-            VirtualKeyCode::Numpad9 | VirtualKeyCode::E | VirtualKeyCode::Y => {
+            VirtualKeyCode::Numpad9 | VirtualKeyCode::E => {
                 return try_move_player(1, -1, &mut gs.ecs)
             }
 
-            VirtualKeyCode::Numpad7 | VirtualKeyCode::Q | VirtualKeyCode::U => {
+            VirtualKeyCode::Numpad7 | VirtualKeyCode::Q => {
                 return try_move_player(-1, -1, &mut gs.ecs)
             }
 
-            VirtualKeyCode::Numpad3 | VirtualKeyCode::X | VirtualKeyCode::N => {
+            VirtualKeyCode::Numpad3 | VirtualKeyCode::X => {
                 return try_move_player(1, 1, &mut gs.ecs)
             }
 
-            VirtualKeyCode::Numpad1 | VirtualKeyCode::Z | VirtualKeyCode::B => {
+            VirtualKeyCode::Numpad1 | VirtualKeyCode::Z => {
                 return try_move_player(-1, 1, &mut gs.ecs)
             }
 
             // Picking up items
             VirtualKeyCode::G => get_item(&mut gs.ecs),
-            VirtualKeyCode::I => return RunState::ShowInventory,
+            VirtualKeyCode::U => return RunState::ShowUseItem,
             VirtualKeyCode::T => return RunState::ShowDropItem,
 
             // Save and Quit

@@ -56,7 +56,7 @@ pub enum RunState {
     AwaitingInput,
     PreRun,
     Ticking,
-    ShowInventory,
+    ShowUseItem,
     ItemTargeting { item: Entity },
     ShowDropItem,
     MainMenu { menu_selection: gui::MainMenuSelection },
@@ -167,7 +167,7 @@ impl GameState for State {
             RunState::AwaitingInput
             | RunState::PreRun
             | RunState::Ticking
-            | RunState::ShowInventory
+            | RunState::ShowUseItem
             | RunState::ItemTargeting { .. }
             | RunState::ShowDropItem
             | RunState::SaveGame
@@ -388,7 +388,7 @@ impl GameState for State {
                     }
                 }
             }
-            RunState::ShowInventory => {
+            RunState::ShowUseItem => {
                 let result = gui::show_inventory(self, ctx);
                 let consumables = self.ecs.read_storage::<Consumable>();
 
@@ -427,7 +427,7 @@ impl GameState for State {
             RunState::ItemTargeting { item } => {
                 let result = gui::show_item_targeting(self, ctx);
                 match result.0 {
-                    gui::ItemTargetingResult::Cancel => newrunstate = RunState::ShowInventory,
+                    gui::ItemTargetingResult::Cancel => newrunstate = RunState::ShowUseItem,
                     gui::ItemTargetingResult::NoResponse => {}
                     gui::ItemTargetingResult::Selected => {
                         let target = result.1.unwrap();
