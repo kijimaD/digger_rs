@@ -301,11 +301,23 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
     match ctx.key {
         None => return RunState::AwaitingInput, // Nothing happened
         Some(key) => match key {
-            VirtualKeyCode::Left
-            | VirtualKeyCode::Numpad4
-            | VirtualKeyCode::A
-            | VirtualKeyCode::H => return try_move_player(-1, 0, &mut gs.ecs),
+            VirtualKeyCode::Left | VirtualKeyCode::Numpad4 | VirtualKeyCode::A => {
+                return try_move_player(-1, 0, &mut gs.ecs)
+            }
 
+            VirtualKeyCode::Right | VirtualKeyCode::Numpad6 | VirtualKeyCode::D => {
+                return try_move_player(1, 0, &mut gs.ecs)
+            }
+
+            VirtualKeyCode::Up | VirtualKeyCode::Numpad8 | VirtualKeyCode::W => {
+                return try_move_player(0, -1, &mut gs.ecs)
+            }
+
+            VirtualKeyCode::Down | VirtualKeyCode::Numpad2 | VirtualKeyCode::S => {
+                return try_move_player(0, 1, &mut gs.ecs)
+            }
+
+            // Diagonals
             VirtualKeyCode::Numpad9 | VirtualKeyCode::E => {
                 return try_move_player(1, -1, &mut gs.ecs)
             }
@@ -322,10 +334,14 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
                 return try_move_player(-1, 1, &mut gs.ecs)
             }
 
+            // Skip Turn
+            VirtualKeyCode::Numpad5 | VirtualKeyCode::Space => return skip_turn(&mut gs.ecs),
+
             // Picking up items
             VirtualKeyCode::G => get_item(&mut gs.ecs),
-            VirtualKeyCode::U => return RunState::ShowUseItem,
+            VirtualKeyCode::I => return RunState::ShowUseItem,
             VirtualKeyCode::T => return RunState::ShowDropItem,
+            VirtualKeyCode::R => return RunState::ShowRemoveItem,
 
             // Save and Quit
             VirtualKeyCode::Escape => return RunState::SaveGame,
@@ -346,12 +362,6 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
                     return RunState::PreviousLevel;
                 }
             }
-
-            // Skip Turn
-            VirtualKeyCode::Numpad5 => return skip_turn(&mut gs.ecs),
-            VirtualKeyCode::Space => return skip_turn(&mut gs.ecs),
-
-            VirtualKeyCode::R => return RunState::ShowRemoveItem,
 
             _ => return RunState::AwaitingInput,
         },
