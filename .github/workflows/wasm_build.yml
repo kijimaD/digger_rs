@@ -4,14 +4,14 @@ on:
   push:
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Check out
         uses: actions/checkout@v3
 
       - name: Build
-        run: make release
+        run: make wasm-build
 
       - name: Check
         run: |
