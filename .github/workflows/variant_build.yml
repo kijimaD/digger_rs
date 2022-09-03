@@ -1,0 +1,33 @@
+name: Variant Build
+
+on:
+  push:
+
+jobs:
+  linux-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - run: make linux-build
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          path: ./target/x86_64-unknown-linux-gnu/release/digger_rs
+          name: x86_64-unknown-linux-gnu_digger_rs
+
+  windows-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - run: make windows-build
+      - name: upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          path: ./target/x86_64-pc-windows-gnu/release/digger_rs.exe
+          name: x86_64-pc-windows-gnu_digger_rs.exe
