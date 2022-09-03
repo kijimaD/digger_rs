@@ -51,3 +51,12 @@ jobs:
           asset_path: ./target/x86_64-pc-windows-gnu/release/digger_rs.exe
           asset_name: x86_64-pc-windows-gnu_digger_rs.exe
           asset_content_type: application/zip
+      - name: upload mac artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./target/x86_64-apple-darwin/release/digger_rs
+          asset_name: x86_64-apple-darwin_digger_rs
+          asset_content_type: application/zip
