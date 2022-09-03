@@ -150,10 +150,16 @@ impl GameState for State {
             newrunstate = *runstate;
         }
 
-        ctx.set_active_console(1);
-        ctx.cls();
         ctx.set_active_console(0);
         ctx.cls();
+        ctx.set_active_console(1);
+        ctx.cls();
+        ctx.set_active_console(2);
+        ctx.cls();
+        ctx.set_active_console(3);
+        ctx.cls();
+        ctx.set_active_console(0);
+
         systems::cull_dead_particles(&mut self.ecs, ctx);
 
         // マップUI表示
@@ -639,6 +645,7 @@ impl GameState for State {
         // TODO: モンスター生成を別のsystemにする
         if encounter_system::is_encounter(&mut self.ecs) {
             raws::spawn_named_fighter(&raws::RAWS.lock().unwrap(), &mut self.ecs, "Red Lime");
+            raws::spawn_named_fighter(&raws::RAWS.lock().unwrap(), &mut self.ecs, "Red Lime");
         }
         encounter_system::invoke_battle(&mut self.ecs);
 
@@ -703,14 +710,29 @@ impl State {
 }
 
 fn main() -> rltk::BError {
-    use rltk::RltkBuilder;
-    let mut context = RltkBuilder::simple(80, 60)
-        .unwrap()
+    use rltk::BTermBuilder;
+
+    const SCREEN_WIDTH: i32 = 80;
+    const SCREEN_HEIGHT: i32 = 60;
+    const DISPLAY_WIDTH: i32 = SCREEN_WIDTH / 2;
+    const DISPLAY_HEIGHT: i32 = SCREEN_HEIGHT / 2;
+
+    rltk::embedded_resource!(DUNGEON_FONT, "../resources/dungeonfont.png");
+    rltk::link_resource!(DUNGEON_FONT, "resources/dungeonfont.png");
+
+    let context = BTermBuilder::new()
         .with_title("Diggers")
+        .with_fps_cap(60.0)
+        .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
+        .with_tile_dimensions(32, 32)
         .with_font("vga8x16.png", 8, 16)
-        .with_sparse_console(80, 30, "vga8x16.png")
+        .with_font("dungeonfont.png", 32, 32)
+        .with_simple_console(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png") // 0.フィールドのタイル画像(小)
+        .with_simple_console_no_bg(DISPLAY_WIDTH, DISPLAY_HEIGHT, "dungeonfont.png") // 1. フィールドキャラクタの画像(小)
+        .with_sparse_console(SCREEN_WIDTH, SCREEN_HEIGHT, "vga8x16.png") // 2. 文字表示
+        .with_simple_console_no_bg(DISPLAY_WIDTH / 4, DISPLAY_HEIGHT / 4, "dungeonfont.png") // 3.戦闘時の敵画像(大)
         .build()?;
-    context.with_post_scanlines(true);
+
     let mut gs = State {
         ecs: World::new(),
         mapgen_next_state: Some(RunState::MainMenu {
