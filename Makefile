@@ -7,8 +7,8 @@ run_docker:
 docker:
 	docker run --rm -it -v $(shell pwd):/rust rust
 
-# premise: in ↑docker
-release:
+# premise: in docker
+wasm-build:
 	rustup target add wasm32-unknown-unknown && \
 	cargo install wasm-bindgen-cli && \
 	cargo build --release --target wasm32-unknown-unknown && \

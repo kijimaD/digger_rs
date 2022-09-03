@@ -35,7 +35,7 @@ $ make fmt
 
 # release build
 $ make docker
-root> cd rust; make release
+root> make wasm-build
 ```
 
 ## Credit
