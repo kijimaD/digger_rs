@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2022-09-04T00:32:31.630Z" agent="5.0 (X11)" etag="gtHw_OdsLvmT-TVdf3jZ" version="20.2.8" type="github" pages="7">
+<mxfile host="app.diagrams.net" modified="2022-09-04T03:19:50.963Z" agent="5.0 (X11)" etag="SJetpa_6bKR5zjTw1TXL" version="20.2.8" type="github" pages="7">
   <diagram id="xgExO2VgEaIyeyu2MwbZ" name="ステージLC">
     <mxGraphModel dx="1406" dy="757" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -610,7 +610,7 @@
           <mxGeometry x="240" y="250" width="160" height="240" as="geometry" />
         </mxCell>
         <mxCell id="gIeNKJY24FPtLhd5n39f-2" value="&lt;div align=&quot;left&quot;&gt;装備品&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- 鉄の兜&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- 木刀&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- 空き&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- 空き&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="440" y="250" width="160" height="240" as="geometry" />
+          <mxGeometry x="440" y="380" width="160" height="110" as="geometry" />
         </mxCell>
         <mxCell id="7c-rapBFHNlabEhP5bzz-2" value="[石原] 白瀬&amp;nbsp; 水木" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="240" y="200" width="360" height="40" as="geometry" />
@@ -625,7 +625,7 @@
           <mxGeometry x="800" y="250" width="160" height="240" as="geometry" />
         </mxCell>
         <mxCell id="9DCcU9UbDyJDqrm6AzHQ-3" value="&lt;div align=&quot;left&quot;&gt;装備品&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- 鉄の兜 [a]&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- 木刀 [b]&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- 空き [c]&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- 空き [d]&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="1000" y="250" width="160" height="240" as="geometry" />
+          <mxGeometry x="1000" y="380" width="160" height="110" as="geometry" />
         </mxCell>
         <mxCell id="9DCcU9UbDyJDqrm6AzHQ-4" value="[石原] 白瀬&amp;nbsp; 水木" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="800" y="200" width="360" height="40" as="geometry" />
@@ -640,7 +640,7 @@
           <mxGeometry x="1350" y="250" width="160" height="240" as="geometry" />
         </mxCell>
         <mxCell id="9DCcU9UbDyJDqrm6AzHQ-9" value="&lt;div align=&quot;left&quot;&gt;装備品&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- 鉄の兜&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- 木刀&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- ダガー&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- 空き&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="1550" y="250" width="160" height="240" as="geometry" />
+          <mxGeometry x="1550" y="380" width="160" height="110" as="geometry" />
         </mxCell>
         <mxCell id="9DCcU9UbDyJDqrm6AzHQ-10" value="[石原] 白瀬&amp;nbsp; 水木" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="1350" y="200" width="360" height="40" as="geometry" />
@@ -659,6 +659,15 @@
         </mxCell>
         <mxCell id="9DCcU9UbDyJDqrm6AzHQ-17" value="各種ステータス" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="1350" y="510" width="360" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="9DCcU9UbDyJDqrm6AzHQ-18" value="選択中のアイテム性能" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="250" width="160" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="9DCcU9UbDyJDqrm6AzHQ-19" value="選択中のアイテム性能" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="250" width="160" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="9DCcU9UbDyJDqrm6AzHQ-20" value="選択中のアイテム性能" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="1550" y="250" width="160" height="110" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
