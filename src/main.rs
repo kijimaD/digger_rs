@@ -58,6 +58,7 @@ pub enum RunState {
     Ticking,
     ShowUseItem,
     ItemTargeting { item: Entity },
+    ShowEquipItem,
     ShowDropItem,
     MainMenu { menu_selection: gui::MainMenuSelection },
     SaveGame,
@@ -435,6 +436,17 @@ impl GameState for State {
                         intent
                             .insert(*self.ecs.fetch::<Entity>(), WantsToUseItem { item, target })
                             .expect("Unable to insert intent");
+                        newrunstate = RunState::Ticking;
+                    }
+                }
+            }
+            RunState::ShowEquipItem => {
+                let result = gui::equip_item_menu(self, ctx);
+                match result.0 {
+                    gui::ItemMenuResult::Cancel => newrunstate = RunState::AwaitingInput,
+                    gui::ItemMenuResult::NoResponse => {}
+                    gui::ItemMenuResult::Selected => {
+                        let item_entity = result.1.unwrap();
                         newrunstate = RunState::Ticking;
                     }
                 }
