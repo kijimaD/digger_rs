@@ -15,8 +15,15 @@ pub fn drop_item_menu(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Option
         items.push((item.0, name.name.clone()))
     });
 
-    let result =
-        item_result_menu(&mut draw_batch, "Drop which item?", items.len(), &items, ctx.key);
+    let result = item_result_menu(
+        &mut draw_batch,
+        "Drop which item?",
+        items.len(),
+        &items,
+        ctx.key,
+        None,
+        None,
+    );
     draw_batch.submit(6000);
     result
 }
