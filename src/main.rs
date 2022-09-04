@@ -732,7 +732,7 @@ fn main() -> rltk::BError {
     rltk::embedded_resource!(DUNGEON_FONT, "../resources/dungeonfont.png");
     rltk::link_resource!(DUNGEON_FONT, "resources/dungeonfont.png");
 
-    let context = BTermBuilder::new()
+    let mut context = BTermBuilder::new()
         .with_title("Diggers")
         .with_fps_cap(60.0)
         .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
@@ -744,6 +744,8 @@ fn main() -> rltk::BError {
         .with_sparse_console(SCREEN_WIDTH, SCREEN_HEIGHT, "vga8x16.png") // 2. 文字表示
         .with_simple_console_no_bg(DISPLAY_WIDTH / 4, DISPLAY_HEIGHT / 4, "dungeonfont.png") // 3.戦闘時の敵画像(大)
         .build()?;
+
+    context.with_post_scanlines(true);
 
     let mut gs = State {
         ecs: World::new(),
