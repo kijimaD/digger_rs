@@ -1,6 +1,6 @@
 use super::{
     camera, gamelog, run_away_system, Attribute, Attributes, Combatant, Consumable, Equippable,
-    Equipped, HungerClock, HungerState, InBackpack, Item, Map, MeleeWeapon, Monster, Name,
+    Equipped, Faction, HungerClock, HungerState, InBackpack, Item, Map, MeleeWeapon, Monster, Name,
     OnBattle, Party, Player, Point, Pools, Position, RunState, State, Vendor, VendorMode,
 };
 

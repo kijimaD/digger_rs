@@ -1,4 +1,4 @@
-use super::{camera, Attributes, Map, Name, Pools, Position};
+use super::{camera, Faction, Name, Position};
 use rltk::prelude::*;
 use specs::prelude::*;
 
@@ -29,18 +29,18 @@ impl Tooltip {
         self.lines.len() as i32 + 2i32
     }
 
-    fn render(&self, draw_batch: &mut DrawBatch) {
+    fn render(&self, draw_batch: &mut DrawBatch, y: i32) {
         let box_gray: RGB = RGB::from_hex("#999999").expect("Oops");
         let light_gray: RGB = RGB::from_hex("#DDDDDD").expect("Oops");
         let white = RGB::named(rltk::WHITE);
         let black = RGB::named(rltk::BLACK);
         draw_batch.draw_box(
-            Rect::with_size(1, 2, self.width() - 1, self.height() - 1),
+            Rect::with_size(1, y, self.width() - 1, self.height() - 1),
             ColorPair::new(white, box_gray),
         );
         for (i, s) in self.lines.iter().enumerate() {
             let col = if i == 0 { white } else { light_gray };
-            draw_batch.print_color(Point::new(2, 3), &s, ColorPair::new(col, black));
+            draw_batch.print_color(Point::new(2, y + i as i32 + 1), &s, ColorPair::new(col, black));
         }
     }
 }
@@ -49,73 +49,28 @@ pub fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
     let mut draw_batch = DrawBatch::new();
 
     let (min_x, _max_x, min_y, _max_y) = camera::get_screen_bounds(ecs, ctx);
-    let map = ecs.fetch::<Map>();
     let names = ecs.read_storage::<Name>();
     let positions = ecs.read_storage::<Position>();
-    let attributes = ecs.read_storage::<Attributes>();
-    let pools = ecs.read_storage::<Pools>();
+    let factions = ecs.read_storage::<Faction>();
     let entities = ecs.entities();
 
     let mouse_pos = ctx.mouse_pos();
     let mut mouse_map_pos = mouse_pos;
     mouse_map_pos.0 += min_x - 1;
     mouse_map_pos.1 += min_y - 1;
-    if mouse_map_pos.0 >= map.width - 1
-        || mouse_map_pos.1 >= map.height - 1
-        || mouse_map_pos.0 < 1
-        || mouse_map_pos.1 < 1
-    {
-        return;
-    }
-    if !map.visible_tiles[map.xy_idx(mouse_map_pos.0, mouse_map_pos.1)] {
-        return;
-    }
 
     let mut tip_boxes: Vec<Tooltip> = Vec::new();
     for (entity, name, position) in (&entities, &names, &positions).join() {
-        if position.x == mouse_map_pos.0 && position.y == mouse_map_pos.1 {
+        if position.x == mouse_map_pos.0 + 1 && position.y == mouse_map_pos.1 + 1 {
             let mut tip = Tooltip::new();
             tip.add(name.name.to_string());
 
-            // Comment on attributes
-            let attr = attributes.get(entity);
-            if let Some(attr) = attr {
-                let mut s = "".to_string();
-                if attr.might.bonus < 0 {
-                    s += "Weak. "
-                };
-                if attr.might.bonus > 0 {
-                    s += "Strong. "
-                };
-                if attr.quickness.bonus < 0 {
-                    s += "Clumsy. "
-                };
-                if attr.quickness.bonus > 0 {
-                    s += "Agile. "
-                };
-                if attr.fitness.bonus < 0 {
-                    s += "Unhealthy. "
-                };
-                if attr.fitness.bonus > 0 {
-                    s += "Healthy. "
-                };
-                if attr.intelligence.bonus < 0 {
-                    s += "Unintelligent. "
-                };
-                if attr.intelligence.bonus > 0 {
-                    s += "Smart. "
-                };
-                if s.is_empty() {
-                    s = "Quite Average".to_string();
-                }
-                tip.add(s);
+            // Comment on faction
+            let faction = factions.get(entity);
+            if let Some(faction) = faction {
+                tip.add(format!("{}", faction.name));
             }
 
-            // Comment on pools
-            let stat = pools.get(entity);
-            if let Some(stat) = stat {
-                tip.add(format!("Level: {}", stat.level));
-            }
             tip_boxes.push(tip);
         }
     }
@@ -124,19 +79,11 @@ pub fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
         return;
     }
 
-    let mut total_height = 0;
-    for tt in tip_boxes.iter() {
-        total_height += tt.height();
-    }
+    let mut y = 2;
 
-    let mut y = mouse_pos.1 - (total_height / 2);
-    while y + (total_height / 2) > 50 {
-        y -= 1;
-    }
-
-    for tt in tip_boxes.iter() {
-        tt.render(&mut draw_batch);
-        y += tt.height();
+    for tip_box in tip_boxes.iter() {
+        tip_box.render(&mut draw_batch, y);
+        y += tip_box.height();
     }
 
     draw_batch.submit(7000);
