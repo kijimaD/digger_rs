@@ -7,7 +7,7 @@ pub fn town_builder(
     width: i32,
     height: i32,
 ) -> BuilderChain {
-    let mut chain = BuilderChain::new(new_depth, width, height, "Sasubo");
+    let mut chain = BuilderChain::new(new_depth, width, height, "Sasebo");
     chain.start_with(TownBuilder::new());
     chain
 }
