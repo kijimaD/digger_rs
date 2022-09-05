@@ -49,27 +49,34 @@ pub fn item_result_menu<S: ToString>(
     count: usize,
     items: &[(Entity, String)],
     key: Option<VirtualKeyCode>,
+    init_x: Option<i32>,
+    init_y: Option<i32>,
 ) -> (ItemMenuResult, Option<Entity>) {
-    let mut y = (25 - (count / 2)) as i32;
+    let mut x = init_x.unwrap_or(15);
+    let mut y = (init_y.unwrap_or(25) as usize - (count / 2)) as i32;
+
+    // box
     draw_batch.draw_box(
-        Rect::with_size(15, y - 2, 31, (count + 3) as i32),
+        Rect::with_size(x, y - 2, 31, (count + 3) as i32),
         ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
     );
+    x += 3;
     draw_batch.print_color(
-        Point::new(18, y - 2),
+        Point::new(x, y - 2),
         &title.to_string(),
         ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
     );
     draw_batch.print_color(
-        Point::new(18, y + count as i32 + 1),
+        Point::new(x, y + count as i32 + 1),
         "ESCAPE to cancel",
         ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
     );
 
+    // content
     let mut item_list: Vec<Entity> = Vec::new();
     let mut j = 0;
     for item in items {
-        menu_option(draw_batch, 17, y, ASCII_ALPHABET_OFFSET + j as rltk::FontCharType, &item.1);
+        menu_option(draw_batch, x, y, ASCII_ALPHABET_OFFSET + j as rltk::FontCharType, &item.1);
         item_list.push(item.0);
         y += 1;
         j += 1;

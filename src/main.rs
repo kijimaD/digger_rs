@@ -58,6 +58,7 @@ pub enum RunState {
     Ticking,
     ShowUseItem,
     ItemTargeting { item: Entity },
+    ShowEquipItem,
     ShowDropItem,
     MainMenu { menu_selection: gui::MainMenuSelection },
     SaveGame,
@@ -439,6 +440,17 @@ impl GameState for State {
                     }
                 }
             }
+            RunState::ShowEquipItem => {
+                let result = gui::equip_item_menu(self, ctx);
+                match result.0 {
+                    gui::ItemMenuResult::Cancel => newrunstate = RunState::AwaitingInput,
+                    gui::ItemMenuResult::NoResponse => {}
+                    gui::ItemMenuResult::Selected => {
+                        let item_entity = result.1.unwrap();
+                        newrunstate = RunState::Ticking;
+                    }
+                }
+            }
             RunState::ShowDropItem => {
                 let result = gui::drop_item_menu(self, ctx);
                 match result.0 {
@@ -720,7 +732,7 @@ fn main() -> rltk::BError {
     rltk::embedded_resource!(DUNGEON_FONT, "../resources/dungeonfont.png");
     rltk::link_resource!(DUNGEON_FONT, "resources/dungeonfont.png");
 
-    let context = BTermBuilder::new()
+    let mut context = BTermBuilder::new()
         .with_title("Diggers")
         .with_fps_cap(60.0)
         .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
@@ -732,6 +744,8 @@ fn main() -> rltk::BError {
         .with_sparse_console(SCREEN_WIDTH, SCREEN_HEIGHT, "vga8x16.png") // 2. 文字表示
         .with_simple_console_no_bg(DISPLAY_WIDTH / 4, DISPLAY_HEIGHT / 4, "dungeonfont.png") // 3.戦闘時の敵画像(大)
         .build()?;
+
+    context.with_post_scanlines(true);
 
     let mut gs = State {
         ecs: World::new(),
@@ -808,10 +822,12 @@ fn main() -> rltk::BError {
     gs.ecs.insert(Map::new(1, 64, 64, "New Map"));
     gs.ecs.insert(Point::new(0, 0));
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
-    let battle_entity = spawner::battle_player(&mut gs.ecs);
+    let battle_entity1 = spawner::battle_player(&mut gs.ecs);
+    let battle_entity2 = spawner::battle_player(&mut gs.ecs);
     let field_entity = spawner::player(&mut gs.ecs, 0, 0);
 
-    gs.ecs.insert(battle_entity);
+    gs.ecs.insert(battle_entity1);
+    gs.ecs.insert(battle_entity2);
     gs.ecs.insert(field_entity);
     gs.ecs.insert(RunState::MapGeneration {});
     gamelog::clear_log(&crate::gamelog::FIELD_LOG);

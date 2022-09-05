@@ -13,8 +13,8 @@ pub fn render_camera(ecs: &World, ctx: &mut Rltk) {
     let map = ecs.fetch::<Map>();
     let (min_x, max_x, min_y, max_y) = get_screen_bounds(ecs, ctx);
 
-    let map_width = map.width - 1;
-    let map_height = map.height - 1;
+    let map_width = map.width;
+    let map_height = map.height;
 
     let mut y = 0;
     for ty in min_y..max_y {
@@ -24,11 +24,11 @@ pub fn render_camera(ecs: &World, ctx: &mut Rltk) {
                 let idx = map.xy_idx(tx, ty);
                 if map.revealed_tiles[idx] {
                     let (glyph, fg, bg) = tile_glyph(idx, &*map);
-                    draw_batch.set(Point::new(x + 1, y + 1), ColorPair::new(fg, bg), glyph);
+                    draw_batch.set(Point::new(x, y), ColorPair::new(fg, bg), glyph);
                 }
             } else if SHOW_BOUNDARIES {
                 draw_batch.set(
-                    Point::new(x + 1, y + 1),
+                    Point::new(x, y),
                     ColorPair::new(RGB::named(rltk::GRAY), RGB::named(rltk::BLACK)),
                     to_cp437('·'),
                 );
@@ -61,7 +61,7 @@ pub fn render_camera(ecs: &World, ctx: &mut Rltk) {
                 && entity_screen_y < map_height
             {
                 draw_batch.set(
-                    Point::new(entity_screen_x + 1, entity_screen_y + 1),
+                    Point::new(entity_screen_x, entity_screen_y),
                     ColorPair::new(render.fg, render.bg),
                     render.glyph,
                 );

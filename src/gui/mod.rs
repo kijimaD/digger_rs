@@ -1,7 +1,7 @@
 use super::{
-    camera, gamelog, run_away_system, Attribute, Attributes, Combatant, Consumable, Equipped,
-    HungerClock, HungerState, InBackpack, Item, Map, MeleeWeapon, Monster, Name, OnBattle, Party,
-    Player, Point, Pools, Position, RunState, State, Vendor, VendorMode,
+    camera, gamelog, run_away_system, Attribute, Attributes, Combatant, Consumable, Equippable,
+    Equipped, Faction, HungerClock, HungerState, InBackpack, Item, Map, MeleeWeapon, Monster, Name,
+    OnBattle, Party, Player, Point, Pools, Position, RunState, State, Vendor, VendorMode,
 };
 
 const ASCII_ALPHABET_OFFSET: u16 = 97;
@@ -21,6 +21,8 @@ mod main_menu;
 pub use main_menu::*;
 mod remove_item_menu;
 pub use remove_item_menu::*;
+mod equip_item_menu;
+pub use equip_item_menu::*;
 mod game_over_menu;
 pub use game_over_menu::*;
 mod cheat_menu;
