@@ -1,4 +1,4 @@
-use super::{camera, Faction, Name, Position, Map};
+use super::{camera, Faction, Map, Name, Position};
 use rltk::prelude::*;
 use specs::prelude::*;
 
@@ -70,7 +70,7 @@ pub fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
     }
 
     // only show on visible tiles
-    if !map.visible_tiles[map.xy_idx(mouse_map_pos.0+1, mouse_map_pos.1+1)] {
+    if !map.visible_tiles[map.xy_idx(mouse_map_pos.0 + 1, mouse_map_pos.1 + 1)] {
         return;
     }
 
