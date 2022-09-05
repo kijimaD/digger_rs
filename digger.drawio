@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2022-09-05T09:05:28.757Z" agent="5.0 (X11)" etag="cfzoD_jPuwn87U7bikT0" version="20.2.8" type="github" pages="7">
+<mxfile host="app.diagrams.net" modified="2022-09-05T09:06:06.130Z" agent="5.0 (X11)" etag="rUKgTYs5-uLGfCqJK7IR" version="20.2.8" type="github" pages="7">
   <diagram id="xgExO2VgEaIyeyu2MwbZ" name="ステージLC">
     <mxGraphModel dx="1406" dy="757" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -620,13 +620,13 @@
         <mxCell id="9DCcU9UbDyJDqrm6AzHQ-1" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="740" y="180" width="480" height="440" as="geometry" />
         </mxCell>
-        <mxCell id="9DCcU9UbDyJDqrm6AzHQ-2" value="&lt;div align=&quot;left&quot;&gt;インベントリ(装備品のみ)&lt;br&gt;&lt;br&gt;- ダガー ←&lt;br&gt;- 鉄の斧&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;" parent="1" vertex="1">
+        <mxCell id="9DCcU9UbDyJDqrm6AzHQ-2" value="&lt;div align=&quot;left&quot;&gt;インベントリ(装備品のみ)&lt;br&gt;&lt;br&gt;- ダガー ←&lt;br&gt;- 鉄の斧&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- ヘルメット&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;align=left;" parent="1" vertex="1">
           <mxGeometry x="800" y="270" width="170" height="170" as="geometry" />
         </mxCell>
         <mxCell id="9DCcU9UbDyJDqrm6AzHQ-6" value="&lt;div align=&quot;left&quot;&gt;スロット選択&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;- 装備の対象キャラを切り替えることができる&lt;br&gt;&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
           <mxGeometry x="305" y="645" width="250" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="9DCcU9UbDyJDqrm6AzHQ-12" value="&lt;div align=&quot;left&quot;&gt;インベントリからアイテム選択&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;スロット選択中にステータス表示が変動する&lt;br&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
+        <mxCell id="9DCcU9UbDyJDqrm6AzHQ-12" value="&lt;div align=&quot;left&quot;&gt;インベントリから装備品選択&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;&lt;br&gt;&lt;/div&gt;&lt;div align=&quot;left&quot;&gt;スロット選択中にステータス表示が変動する&lt;br&gt;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
           <mxGeometry x="860" y="645" width="240" height="60" as="geometry" />
         </mxCell>
         <mxCell id="9DCcU9UbDyJDqrm6AzHQ-13" value="装備完了(スロット選択に戻る)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
