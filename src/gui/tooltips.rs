@@ -1,4 +1,4 @@
-use super::{camera, Faction, Name, Position};
+use super::{camera, Faction, Name, Position, Map};
 use rltk::prelude::*;
 use specs::prelude::*;
 
@@ -52,12 +52,27 @@ pub fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
     let names = ecs.read_storage::<Name>();
     let positions = ecs.read_storage::<Position>();
     let factions = ecs.read_storage::<Faction>();
+    let map = ecs.fetch::<Map>();
     let entities = ecs.entities();
 
     let mouse_pos = ctx.mouse_pos();
     let mut mouse_map_pos = mouse_pos;
     mouse_map_pos.0 += min_x - 1;
     mouse_map_pos.1 += min_y - 1;
+
+    // マウスカーソルを画面外に移動したとき、マップの範囲外になる対策
+    if mouse_map_pos.0 >= map.width - 1
+        || mouse_map_pos.1 >= map.height - 1
+        || mouse_map_pos.0 < 1
+        || mouse_map_pos.1 < 1
+    {
+        return;
+    }
+
+    // only show on visible tiles
+    if !map.visible_tiles[map.xy_idx(mouse_map_pos.0+1, mouse_map_pos.1+1)] {
+        return;
+    }
 
     let mut tip_boxes: Vec<Tooltip> = Vec::new();
     for (entity, name, position) in (&entities, &names, &positions).join() {
