@@ -714,7 +714,7 @@ impl State {
         gamelog::clear_log(&crate::gamelog::FIELD_LOG);
         gamelog::Logger::new()
             .append("Enter the")
-            .color(rltk::CYAN)
+            .color(rltk::RED)
             .append("dungeon...")
             .log(&crate::gamelog::LogKind::Field);
 

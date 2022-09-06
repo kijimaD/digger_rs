@@ -27,7 +27,8 @@ fn event_trigger(
         add_effect(creator, EffectType::WellFed, targets.clone());
         let names = ecs.read_storage::<Name>();
         gamelog::Logger::new()
-            .append(format!("You eat the {}.", names.get(entity).unwrap().name))
+            .append(format!("You eat the"))
+            .item_name(&names.get(entity).unwrap().name)
             .log(&crate::gamelog::LogKind::Field);
         did_something = true;
     }

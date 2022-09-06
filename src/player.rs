@@ -154,7 +154,8 @@ pub fn try_move_player(delta_x: i32, delta_y: i32, ecs: &mut World) -> RunState 
         Some(target) => match target {
             _item => {
                 gamelog::Logger::new()
-                    .append(format!("{} is there.[G]", names.get(target).unwrap().name))
+                    .item_name(&names.get(target).unwrap().name)
+                    .append(format!("is there.[G]"))
                     .log(&crate::gamelog::LogKind::Field);
             }
         },
