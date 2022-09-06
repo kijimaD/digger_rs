@@ -1,4 +1,6 @@
-use super::{camera, Faction, Map, Name, Position};
+use super::{
+    camera, clone_menu, AttributeBonus, Faction, Item, Map, MeleeWeapon, Name, Position, Wearable,
+};
 use rltk::prelude::*;
 use specs::prelude::*;
 
@@ -104,4 +106,102 @@ pub fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
     draw_batch.submit(6000);
 }
 
-pub fn draw_item_tooltips(ecs: &World, ctx: &mut Rltk) {}
+// TODO: メニューを閉じたあとmenuから消す
+pub fn draw_item_tooltips(ecs: &World, ctx: &mut Rltk) {
+    let mut draw_batch = DrawBatch::new();
+
+    ctx.set_active_console(2);
+    let names = ecs.read_storage::<Name>();
+    let items = ecs.read_storage::<Item>();
+    let weapons = ecs.read_storage::<MeleeWeapon>();
+    let wearables = ecs.read_storage::<Wearable>();
+    let attribute_bonuses = ecs.read_storage::<AttributeBonus>();
+
+    let mut tip_boxes: Vec<Tooltip> = Vec::new();
+    for menu in clone_menu().iter() {
+        if let Some(name) = names.get(menu.item.0) {
+            let entity = menu.item.0;
+            let x = menu.item.1.x;
+            let y = menu.item.1.y;
+            if x <= ctx.mouse_pos().0
+                && ctx.mouse_pos().0 <= x + 5 + name.name.len() as i32
+                && y == ctx.mouse_pos().1
+            {
+                let mut tip = Tooltip::new();
+                tip.add(name.name.to_string());
+
+                // Comments on Weapon
+                let weapon = weapons.get(entity);
+                let mut damage_bonus = "";
+                let mut hit_bonus = "";
+                if let Some(weapon) = weapon {
+                    if weapon.damage_bonus > 0 {
+                        damage_bonus = "+";
+                    }
+                    if weapon.hit_bonus > 0 {
+                        hit_bonus = "+";
+                    }
+                    tip.add(format!("Slot: Weapon"));
+                    tip.add(format!(
+                        "Weapon Class: {}d{}{}{}({}{}) {}",
+                        weapon.damage_n_dice,
+                        weapon.damage_die_type,
+                        damage_bonus,
+                        weapon.damage_bonus,
+                        weapon.hit_bonus,
+                        hit_bonus,
+                        weapon.attribute
+                    ));
+                }
+
+                // Comments on Wearable
+                let wearable = wearables.get(entity);
+                if let Some(wearable) = wearable {
+                    tip.add(format!("Slot: {}", wearable.slot));
+                    tip.add(format!("Armor Class: {}", wearable.armor_class));
+                }
+
+                // Comments on AttributeBonus
+                let attribute_bonus = attribute_bonuses.get(entity);
+                if let Some(attribute_bonus) = attribute_bonus {
+                    if attribute_bonus.might.is_some() {
+                        tip.add(format!("Might: +{}", attribute_bonus.might.unwrap()));
+                    }
+                    if attribute_bonus.fitness.is_some() {
+                        tip.add(format!("Fitness: +{}", attribute_bonus.fitness.unwrap()));
+                    }
+                    if attribute_bonus.quickness.is_some() {
+                        tip.add(format!("Quickness: +{}", attribute_bonus.quickness.unwrap()));
+                    }
+                    if attribute_bonus.intelligence.is_some() {
+                        tip.add(format!(
+                            "Intelligence: +{}",
+                            attribute_bonus.intelligence.unwrap()
+                        ));
+                    }
+                }
+
+                // Comments on Item
+                let item = items.get(entity);
+                if let Some(item) = item {
+                    tip.add(format!("Weight(kg): {}", item.weight_kg));
+                    tip.add(format!("Value: {}", item.base_value));
+                }
+
+                tip_boxes.push(tip);
+
+                if tip_boxes.is_empty() {
+                    return;
+                }
+
+                let mut y = 2;
+
+                for tip_box in tip_boxes.iter() {
+                    tip_box.render(&mut draw_batch, y);
+                    y += tip_box.height();
+                }
+            }
+        }
+    }
+    draw_batch.submit(7000);
+}

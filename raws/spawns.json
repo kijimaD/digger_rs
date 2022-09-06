@@ -230,7 +230,8 @@
       },
       "weight_kg": 2.0,
       "base_value": 5.0,
-      "initiative_penalty": 2
+      "initiative_penalty": 2,
+      "attributes" : { "might" : 1 }
     },
     {
       "name": "Dagger",
