@@ -1,10 +1,10 @@
-use std::sync::Mutex;
 use rltk::prelude::*;
 use specs::prelude::*;
+use std::sync::Mutex;
 
 #[derive(Clone)]
 pub struct MenuItem {
-    pub item: (Entity, i32, i32),
+    pub item: (Entity, Point),
 }
 
 pub type ItemType = Mutex<Vec<MenuItem>>;

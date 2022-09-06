@@ -1,6 +1,6 @@
 use super::{
-    gamelog, tooltips, Attribute, Attributes, Combatant, Consumable, Equipped, HungerClock,
-    HungerState, InBackpack, Map, Name, Party, Player, Point, Pools,
+    clone_menu, gamelog, tooltips, Attribute, Attributes, Combatant, Consumable, Equipped,
+    HungerClock, HungerState, InBackpack, Map, Name, Party, Player, Point, Pools,
 };
 use rltk::prelude::*;
 use specs::prelude::*;
@@ -193,6 +193,33 @@ fn hunger_status(ecs: &World, draw_batch: &mut DrawBatch, player_entity: &Entity
     }
 }
 
+// TODO: メニューを閉じたあとmenuから消す
+fn item_tooltip(ecs: &World, ctx: &mut Rltk) {
+    let mut draw_batch = DrawBatch::new();
+
+    ctx.set_active_console(2);
+    let names = ecs.read_storage::<Name>();
+
+    for menu in clone_menu().iter() {
+        if let Some(name) = names.get(menu.item.0) {
+            let x = menu.item.1.x;
+            let y = menu.item.1.y;
+
+            if x <= ctx.mouse_pos().0
+                && ctx.mouse_pos().0 <= x + 5 + name.name.len() as i32
+                && y == ctx.mouse_pos().1
+            {
+                draw_batch.print_color(
+                    Point::new(1, 2),
+                    name.name.to_string(),
+                    ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
+                );
+            }
+        }
+    }
+    draw_batch.submit(7000);
+}
+
 pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     let mut draw_batch = DrawBatch::new();
     draw_batch.target(2);
@@ -204,6 +231,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     draw_stats(ecs, &mut draw_batch);
     hunger_status(ecs, &mut draw_batch, &player_entity);
     tooltips::draw_tooltips(ecs, ctx);
+    item_tooltip(ecs, ctx);
 
     draw_batch.submit(5000); // There are 80x60(4800) possible tiles in the map.
 
