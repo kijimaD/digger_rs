@@ -31,6 +31,8 @@ mod vendor_menu;
 pub use vendor_menu::*;
 mod menus;
 pub use menus::*;
+mod menustore;
+pub use menustore::*;
 
 mod battle_common;
 pub use battle_common::*;
