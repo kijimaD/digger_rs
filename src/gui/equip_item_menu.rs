@@ -176,12 +176,10 @@ pub fn equipment_key_move(
         Some(key) => match key {
             VirtualKeyCode::N => {
                 let result = increment_entity(&gs.ecs, &entity, index, 1);
-                println!("{}", index);
                 (EquipmentMenuResult::Next, result.0, result.1)
             }
             VirtualKeyCode::P => {
                 let result = increment_entity(&gs.ecs, &entity, index, -1);
-                println!("{}", index);
                 (EquipmentMenuResult::Prev, result.0, result.1)
             }
             _ => (EquipmentMenuResult::NoResponse, *entity, index),
@@ -193,6 +191,11 @@ fn increment_entity(ecs: &World, old_entity: &Entity, index: i32, direction: i32
     let players = ecs.read_storage::<Player>();
     let combatants = ecs.read_storage::<Combatant>();
     let entities = ecs.entities();
+
+    let party_count = (&entities, &combatants, &players).join().count();
+    if (direction == -1 && index <= 0) || (direction == 1 && index >= party_count as i32) {
+        return (*old_entity, index);
+    }
 
     for (entity, _combatant, _player) in
         (&entities, &combatants, &players).join().nth((index + direction) as usize)

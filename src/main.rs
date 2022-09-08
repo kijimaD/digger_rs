@@ -457,14 +457,12 @@ impl GameState for State {
                 let result = gui::equipment_key_move(self, ctx, &entity, index);
                 match result.0 {
                     gui::EquipmentMenuResult::Next => {
-                        newrunstate = RunState::ShowEquipItem { entity: result.1, index: index + 1 }
+                        newrunstate = RunState::ShowEquipItem { entity: result.1, index: result.2 }
                     }
                     gui::EquipmentMenuResult::Prev => {
-                        newrunstate = RunState::ShowEquipItem { entity: result.1, index: index - 1 }
+                        newrunstate = RunState::ShowEquipItem { entity: result.1, index: result.2 }
                     }
-                    gui::EquipmentMenuResult::NoResponse => {
-                        newrunstate = RunState::ShowEquipItem { entity: result.1, index }
-                    }
+                    gui::EquipmentMenuResult::NoResponse => {}
                 }
             }
             RunState::ShowDropItem => {
