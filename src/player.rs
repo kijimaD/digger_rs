@@ -1,7 +1,7 @@
 use super::{
-    gamelog, BlocksTile, BlocksVisibility, Door, EntityMoved, Faction, HungerClock, HungerState,
-    Item, Map, Monster, Name, Player, Pools, Position, Renderable, RunState, State, TileType,
-    Vendor, VendorMode, Viewshed, WantsToEncounter, WantsToPickupItem,
+    gamelog, BlocksTile, BlocksVisibility, Combatant, Door, EntityMoved, Faction, HungerClock,
+    HungerState, Item, Map, Monster, Name, Player, Pools, Position, Renderable, RunState, State,
+    TileType, Vendor, VendorMode, Viewshed, WantsToEncounter, WantsToPickupItem,
 };
 use crate::raws::Reaction;
 use rltk::{Point, Rltk, VirtualKeyCode};
@@ -343,7 +343,18 @@ pub fn player_input(gs: &mut State, ctx: &mut Rltk) -> RunState {
             VirtualKeyCode::U => return RunState::ShowUseItem,
             VirtualKeyCode::T => return RunState::ShowDropItem,
             VirtualKeyCode::R => return RunState::ShowRemoveItem,
-            VirtualKeyCode::I => return RunState::ShowEquipItem,
+            VirtualKeyCode::I => {
+                let players = gs.ecs.read_storage::<Player>();
+                let combatants = gs.ecs.read_storage::<Combatant>();
+                let entities = gs.ecs.entities();
+
+                // 最初の1人を選択する
+                for (entity, _combatant, _player) in
+                    (&entities, &combatants, &players).join().nth(0)
+                {
+                    return RunState::ShowEquipItem { entity, index: 0 };
+                }
+            }
 
             // Save and Quit
             VirtualKeyCode::Escape => return RunState::SaveGame,
