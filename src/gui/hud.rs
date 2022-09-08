@@ -204,6 +204,7 @@ pub fn draw_ui(ecs: &World, ctx: &mut Rltk) {
     draw_stats(ecs, &mut draw_batch);
     hunger_status(ecs, &mut draw_batch, &player_entity);
     tooltips::draw_tooltips(ecs, ctx);
+    tooltips::draw_item_tooltips(ecs, ctx);
 
     draw_batch.submit(5000); // There are 80x60(4800) possible tiles in the map.
 

@@ -5,6 +5,7 @@ use specs::saveload::{SimpleMarker, SimpleMarkerAllocator};
 
 mod components;
 use components::*;
+mod formatter;
 mod map;
 use map::*;
 mod player;
@@ -169,6 +170,7 @@ impl GameState for State {
             | RunState::PreRun
             | RunState::Ticking
             | RunState::ShowUseItem
+            | RunState::ShowEquipItem
             | RunState::ItemTargeting { .. }
             | RunState::ShowDropItem
             | RunState::SaveGame
@@ -713,7 +715,7 @@ impl State {
         gamelog::clear_log(&crate::gamelog::FIELD_LOG);
         gamelog::Logger::new()
             .append("Enter the")
-            .color(rltk::CYAN)
+            .color(rltk::RED)
             .append("dungeon...")
             .log(&crate::gamelog::LogKind::Field);
 
@@ -822,10 +824,10 @@ fn main() -> rltk::BError {
     gs.ecs.insert(Map::new(1, 64, 64, "New Map"));
     gs.ecs.insert(Point::new(0, 0));
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
+
     let battle_entity1 = spawner::battle_player(&mut gs.ecs);
     let battle_entity2 = spawner::battle_player(&mut gs.ecs);
     let field_entity = spawner::player(&mut gs.ecs, 0, 0);
-
     gs.ecs.insert(battle_entity1);
     gs.ecs.insert(battle_entity2);
     gs.ecs.insert(field_entity);

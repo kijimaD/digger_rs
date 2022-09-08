@@ -1,4 +1,4 @@
-use super::{Entity, ItemMenuResult, ASCII_ALPHABET_OFFSET};
+use super::{append_menu, clear_menu, Entity, ItemMenuResult, MenuItem, ASCII_ALPHABET_OFFSET};
 use rltk::prelude::*;
 use specs::prelude::*;
 
@@ -75,9 +75,14 @@ pub fn item_result_menu<S: ToString>(
     // content
     let mut item_list: Vec<Entity> = Vec::new();
     let mut j = 0;
+    clear_menu();
     for item in items {
         menu_option(draw_batch, x, y, ASCII_ALPHABET_OFFSET + j as rltk::FontCharType, &item.1);
         item_list.push(item.0);
+
+        let menu_item = MenuItem { item: (item.0, Point::new(x, y)) };
+        append_menu(menu_item);
+
         y += 1;
         j += 1;
     }
@@ -85,8 +90,12 @@ pub fn item_result_menu<S: ToString>(
     match key {
         None => (ItemMenuResult::NoResponse, None),
         Some(key) => match key {
-            VirtualKeyCode::Escape => (ItemMenuResult::Cancel, None),
+            VirtualKeyCode::Escape => {
+                clear_menu();
+                (ItemMenuResult::Cancel, None)
+            }
             _ => {
+                clear_menu();
                 let selection = rltk::letter_to_option(key);
                 if selection > -1 && selection < count as i32 {
                     return (ItemMenuResult::Selected, Some(item_list[selection as usize]));
