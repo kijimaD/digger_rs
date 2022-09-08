@@ -9,40 +9,56 @@ pub fn equip_item_menu(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Optio
     let mut draw_batch = DrawBatch::new();
     draw_batch.target(2);
 
-    draw_batch.draw_box(
-        Rect::with_size(40, 20, 31, 10),
-        ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
-    );
+    draw_status(&gs.ecs, &mut draw_batch);
 
     let players = gs.ecs.read_storage::<Player>();
     let combatants = gs.ecs.read_storage::<Combatant>();
     let names = gs.ecs.read_storage::<Name>();
     let equipped = gs.ecs.read_storage::<Equipped>();
-    let attributes = gs.ecs.read_storage::<Attributes>();
-    let pools = gs.ecs.read_storage::<Pools>();
     let entities = gs.ecs.entities();
 
-    // 左側の装備スロット
-    // TODO: 4つの装備スロットを表示する。同じ部位の防具は同時に装備できない
-    // ダガー
-    // 鉄の鎧
-    // 空き
-    // 空き
-
     let mut items: Vec<(Entity, String)> = Vec::new();
+    for (entity, _combatant, _player) in (&entities, &combatants, &players).join().take(1) {
+        (&entities, &equipped).join().filter(|item| item.1.owner == entity).for_each(|item| {
+            let name = names.get(item.0).unwrap();
+            items.push((item.0, name.name.clone()))
+        });
+    }
+
+    let result =
+        item_result_menu(&mut draw_batch, "Equipped", items.len(), &items, ctx.key, Some(4), None);
+
+    draw_batch.submit(6000);
+    result
+}
+
+fn draw_status(ecs: &World, draw_batch: &mut DrawBatch) {
+    draw_batch.draw_box(
+        Rect::with_size(40, 20, 31, 10),
+        ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
+    );
+
+    let players = ecs.read_storage::<Player>();
+    let combatants = ecs.read_storage::<Combatant>();
+    let attributes = ecs.read_storage::<Attributes>();
+    let pools = ecs.read_storage::<Pools>();
+    let entities = ecs.entities();
+
     let x = 41;
     let mut y = 21;
     let bar_x = x + 12;
     let bar_width = 14;
 
     // TODO: まだパーティ最初の一人固定なので、選択できるようにする
-    for (entity, _combatant, _player, attribute, pools) in
+    for (_entity, _combatant, _player, attribute, pools) in
         (&entities, &combatants, &players, &attributes, &pools).join().take(1)
     {
-        (&entities, &equipped).join().filter(|item| item.1.owner == entity).for_each(|item| {
-            let name = names.get(item.0).unwrap();
-            items.push((item.0, name.name.clone()))
-        });
+        // 左側の装備スロット
+        // TODO: 4つの装備スロットを表示する。同じ部位の防具は同時に装備できない
+        // ダガー
+        // 鉄の鎧
+        // 空き
+        // 空き
 
         // 下部の選択中のメンバーのステータス
         let level = format!("LV: {}", pools.level);
@@ -136,9 +152,4 @@ pub fn equip_item_menu(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Optio
             ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
         );
     }
-    let result =
-        item_result_menu(&mut draw_batch, "Equipped", items.len(), &items, ctx.key, Some(4), None);
-
-    draw_batch.submit(6000);
-    result
 }
