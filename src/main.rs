@@ -5,6 +5,7 @@ use specs::saveload::{SimpleMarker, SimpleMarkerAllocator};
 
 mod components;
 use components::*;
+mod formatter;
 mod map;
 use map::*;
 mod player;
