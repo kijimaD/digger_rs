@@ -59,7 +59,7 @@ pub enum RunState {
     Ticking,
     ShowUseItem,
     ItemTargeting { item: Entity },
-    ShowEquipItem,
+    ShowEquipItem { entity: Entity, index: i32 },
     ShowDropItem,
     MainMenu { menu_selection: gui::MainMenuSelection },
     SaveGame,
@@ -170,7 +170,7 @@ impl GameState for State {
             | RunState::PreRun
             | RunState::Ticking
             | RunState::ShowUseItem
-            | RunState::ShowEquipItem
+            | RunState::ShowEquipItem { .. }
             | RunState::ItemTargeting { .. }
             | RunState::ShowDropItem
             | RunState::SaveGame
@@ -442,8 +442,8 @@ impl GameState for State {
                     }
                 }
             }
-            RunState::ShowEquipItem => {
-                let result = gui::equip_item_menu(self, ctx);
+            RunState::ShowEquipItem { entity, index } => {
+                let result = gui::equip_item_menu(self, ctx, entity);
                 match result.0 {
                     gui::ItemMenuResult::Cancel => newrunstate = RunState::AwaitingInput,
                     gui::ItemMenuResult::NoResponse => {}
@@ -451,6 +451,18 @@ impl GameState for State {
                         let item_entity = result.1.unwrap();
                         newrunstate = RunState::Ticking;
                     }
+                }
+
+                // 1つのmatch文ですべてのパターンを網羅したいが、共通のメニュー関数を使っているため↑に書けない。
+                let result = gui::equipment_key_move(self, ctx, &entity, index);
+                match result.0 {
+                    gui::EquipmentMenuResult::Next => {
+                        newrunstate = RunState::ShowEquipItem { entity: result.1, index: result.2 }
+                    }
+                    gui::EquipmentMenuResult::Prev => {
+                        newrunstate = RunState::ShowEquipItem { entity: result.1, index: result.2 }
+                    }
+                    gui::EquipmentMenuResult::NoResponse => {}
                 }
             }
             RunState::ShowDropItem => {
@@ -825,8 +837,8 @@ fn main() -> rltk::BError {
     gs.ecs.insert(Point::new(0, 0));
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
 
-    let battle_entity1 = spawner::battle_player(&mut gs.ecs);
-    let battle_entity2 = spawner::battle_player(&mut gs.ecs);
+    let battle_entity1 = spawner::battle_player(&mut gs.ecs, "player1".to_string());
+    let battle_entity2 = spawner::battle_player(&mut gs.ecs, "player2".to_string());
     let field_entity = spawner::player(&mut gs.ecs, 0, 0);
     gs.ecs.insert(battle_entity1);
     gs.ecs.insert(battle_entity2);

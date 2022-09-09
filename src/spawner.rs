@@ -64,7 +64,7 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
 }
 
 // TODO: rawで生成する
-pub fn battle_player(ecs: &mut World) -> Entity {
+pub fn battle_player(ecs: &mut World, name: String) -> Entity {
     let mut skills = Skills { skills: HashMap::new() };
     skills.skills.insert(Skill::Melee, 1);
     skills.skills.insert(Skill::Defense, 1);
@@ -73,7 +73,7 @@ pub fn battle_player(ecs: &mut World) -> Entity {
         .create_entity()
         .with(Player {})
         .with(Combatant {})
-        .with(Name { name: "Player".to_string() })
+        .with(Name { name })
         .with(Attributes {
             might: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
             fitness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
