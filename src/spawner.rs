@@ -63,66 +63,6 @@ pub fn player(ecs: &mut World, player_x: i32, player_y: i32) -> Entity {
     player
 }
 
-// TODO: rawで生成する
-pub fn battle_player(ecs: &mut World, name: String) -> Entity {
-    let mut skills = Skills { skills: HashMap::new() };
-    skills.skills.insert(Skill::Melee, 1);
-    skills.skills.insert(Skill::Defense, 1);
-
-    let player = ecs
-        .create_entity()
-        .with(Player {})
-        .with(Combatant {})
-        .with(Name { name })
-        .with(Attributes {
-            might: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-            fitness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-            quickness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-            intelligence: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-        })
-        .with(Pools {
-            hit_points: Pool {
-                current: player_hp_at_level(1, 1) - 1,
-                max: player_hp_at_level(1, 1),
-            },
-            sp: Pool { current: sp_at_level(11, 1) - 1, max: sp_at_level(11, 1) },
-            xp: 0,
-            level: 1,
-            gold: 0.0,
-        })
-        .with(Attributes {
-            might: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-            fitness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-            quickness: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-            intelligence: Attribute { base: 11, modifiers: 0, bonus: attr_bonus(11) },
-        })
-        .with(skills)
-        .marked::<SimpleMarker<SerializeMe>>()
-        .build();
-
-    // Equipment
-    spawn_named_entity(
-        &RAWS.lock().unwrap(),
-        ecs,
-        "Rusty Longsword",
-        SpawnType::Equipped { by: player },
-    );
-    spawn_named_entity(
-        &RAWS.lock().unwrap(),
-        ecs,
-        "Stained Tunic",
-        SpawnType::Equipped { by: player },
-    );
-    spawn_named_entity(
-        &RAWS.lock().unwrap(),
-        ecs,
-        "Torn Trousers",
-        SpawnType::Equipped { by: player },
-    );
-
-    player
-}
-
 const MAX_MONSTERS: i32 = 2;
 
 fn room_table(map_depth: i32) -> MasterTable {

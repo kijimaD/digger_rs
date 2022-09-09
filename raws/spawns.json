@@ -231,7 +231,9 @@
       "weight_kg": 2.0,
       "base_value": 5.0,
       "initiative_penalty": 2,
-      "attributes" : { "might" : 1 }
+      "attributes": {
+        "might": 1
+      }
     },
     {
       "name": "Dagger",
@@ -983,26 +985,120 @@
   ],
   "fighters": [
     {
-      "name": "Red Lime",
-      "attributes" : {
-          "might" : 3,
-          "fitness" : 3,
-          "quickness": 2,
-          "intelligence": 1
+      "name": "Ishihara",
+      "is_player": true,
+      "attributes": {
+        "might": 4,
+        "fitness": 3,
+        "quickness": 2,
+        "intelligence": 3
       },
-      "skills" : {
-          "Melee" : -1,
-          "Defense" : -1
+      "skills": {
+        "Melee": 1,
+        "Defense": 1
       },
-      "natural" : {
-          "armor_class" : 11,
-          "attacks" : [
-              { "name" : "rush", "hit_bonus" : 0, "damage" : "4d3" },
-              { "name" : "mucus", "hit_bonus" : 1, "damage" : "4d2" }
-          ]
+      "natural": {
+        "armor_class": 4,
+        "attacks": [
+          {
+            "name": "rush",
+            "hit_bonus": 0,
+            "damage": "4d3"
+          }
+        ]
       },
       "equipped": [
-        "Stained Tunic",
+        "Rusty Longsword",
+        "Shield",
+        "Stained Tunic"
+      ],
+      "gold": "10d2"
+    },
+    {
+      "name": "Shirase",
+      "is_player": true,
+      "attributes": {
+        "might": 3,
+        "fitness": 4,
+        "quickness": 4,
+        "intelligence": 5
+      },
+      "skills": {
+        "Melee": 2,
+        "Defense": 1
+      },
+      "natural": {
+        "armor_class": 4,
+        "attacks": [
+          {
+            "name": "rush",
+            "hit_bonus": 0,
+            "damage": "4d3"
+          }
+        ]
+      },
+      "equipped": [
+        "Dagger",
+        "Torn Trousers",
+        "Shield"
+      ],
+      "gold": "10d2"
+    },
+    {
+      "name": "Red Lime",
+      "attributes": {
+        "might": 3,
+        "fitness": 3,
+        "quickness": 2,
+        "intelligence": 1
+      },
+      "skills": {
+        "Melee": -1,
+        "Defense": -1
+      },
+      "natural": {
+        "armor_class": 11,
+        "attacks": [
+          {
+            "name": "rush",
+            "hit_bonus": 0,
+            "damage": "4d3"
+          },
+          {
+            "name": "mucus",
+            "hit_bonus": 1,
+            "damage": "4d2"
+          }
+        ]
+      },
+      "equipped": [
+        "Shield"
+      ],
+      "gold": "10d2"
+    },
+    {
+      "name": "Blue Lime",
+      "attributes": {
+        "might": 3,
+        "fitness": 3,
+        "quickness": 2,
+        "intelligence": 1
+      },
+      "skills": {
+        "Melee": -1,
+        "Defense": -1
+      },
+      "natural": {
+        "armor_class": 11,
+        "attacks": [
+          {
+            "name": "rush",
+            "hit_bonus": 0,
+            "damage": "4d3"
+          }
+        ]
+      },
+      "equipped": [
         "Shield"
       ],
       "gold": "10d2"

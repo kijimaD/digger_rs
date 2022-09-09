@@ -4,6 +4,7 @@ use std::collections::HashMap;
 #[derive(Deserialize, Debug)]
 pub struct Fighter {
     pub name: String,
+    pub is_player: Option<bool>,
     pub attributes: MobAttributes,
     pub skills: Option<HashMap<String, i32>>,
     pub natural: Option<MobNatural>,
