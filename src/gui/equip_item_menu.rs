@@ -14,6 +14,7 @@ pub fn equip_item_menu(
     draw_batch.target(2);
 
     draw_status(&gs.ecs, &mut draw_batch, entity);
+    draw_character_selector(&gs.ecs, &mut draw_batch, entity);
 
     let names = gs.ecs.read_storage::<Name>();
     let equipped = gs.ecs.read_storage::<Equipped>();
@@ -154,6 +155,49 @@ fn draw_status(ecs: &World, draw_batch: &mut DrawBatch, entity: Entity) {
     draw_batch.print_color(
         Point::new(x, y),
         intelligence,
+        ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
+    );
+}
+
+fn draw_character_selector(ecs: &World, draw_batch: &mut DrawBatch, entity: Entity) {
+    let players = ecs.read_storage::<Player>();
+    let combatants = ecs.read_storage::<Combatant>();
+    let names = ecs.read_storage::<Name>();
+    let entities = ecs.entities();
+    let mut x = 4;
+    let mut y = 4;
+
+    draw_batch.draw_box(
+        Rect::with_size(x, y, 40, 4),
+        ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
+    );
+    x += 1;
+    y += 2;
+
+    for (inloop_entity, _combatant, _player, name) in
+        (&entities, &combatants, &players, &names).join()
+    {
+        if inloop_entity == entity {
+            draw_batch.print_color(
+                Point::new(x, y - 1),
+                format!("↓"),
+                ColorPair::new(RGB::named(rltk::YELLOW), RGB::named(rltk::BLACK)),
+            );
+        }
+
+        draw_batch.print_color(
+            Point::new(x, y),
+            &name.name,
+            ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
+        );
+        x += name.name.len() + 1;
+    }
+    y += 1;
+
+    // TODO: アイテム数がp, nまで達するようになると、機能しなくなる
+    draw_batch.print_color(
+        Point::new(5, y),
+        format!("p <-{}-> n", " ".to_string().repeat(31)),
         ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
     );
 }
