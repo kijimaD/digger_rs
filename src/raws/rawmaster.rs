@@ -386,14 +386,19 @@ pub fn spawn_named_prop(
     None
 }
 
-/// 戦闘エンティティを生成する。今のところ敵の生成でのみ、この関数を使っている。将来的に共通化する。
+/// 戦闘エンティティを生成する。
 pub fn spawn_named_fighter(raws: &RawMaster, ecs: &mut World, key: &str) -> Option<Entity> {
     if raws.fighter_index.contains_key(key) {
         let fighter_template = &raws.raws.fighters[raws.fighter_index[key]];
         let mut eb = ecs.create_entity().marked::<SimpleMarker<SerializeMe>>();
 
         eb = eb.with(Name { name: fighter_template.name.clone() });
-        eb = eb.with(Monster {}); // TODO: 味方と敵で共通化したい
+        if let Some(_is_player) = fighter_template.is_player {
+            eb = eb.with(Player {});
+        } else {
+            eb = eb.with(Monster {});
+        }
+
         eb = eb.with(Combatant {});
         eb = eb.with(EquipmentChanged {});
 

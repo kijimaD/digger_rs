@@ -8,6 +8,8 @@ pub enum GameOverResult {
 
 pub fn game_over(ctx: &mut Rltk) -> GameOverResult {
     let mut draw_batch = DrawBatch::new();
+    draw_batch.target(2);
+
     draw_batch.print_color_centered(
         15,
         "Your journey has ended!",

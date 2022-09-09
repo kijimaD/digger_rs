@@ -1,4 +1,6 @@
-use super::{gamelog, Combatant, Monster, OnBattle, Party, Player, RunState, WantsToEncounter};
+use super::{
+    gamelog, raws, Combatant, Monster, OnBattle, Party, Player, RunState, WantsToEncounter,
+};
 use specs::prelude::*;
 
 pub fn is_encounter(ecs: &mut World) -> bool {

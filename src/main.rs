@@ -837,8 +837,11 @@ fn main() -> rltk::BError {
     gs.ecs.insert(Point::new(0, 0));
     gs.ecs.insert(rltk::RandomNumberGenerator::new());
 
-    let battle_entity1 = spawner::battle_player(&mut gs.ecs, "player1".to_string());
-    let battle_entity2 = spawner::battle_player(&mut gs.ecs, "player2".to_string());
+    let battle_entity1 =
+        raws::spawn_named_fighter(&raws::RAWS.lock().unwrap(), &mut gs.ecs, "Ishihara");
+    let battle_entity2 =
+        raws::spawn_named_fighter(&raws::RAWS.lock().unwrap(), &mut gs.ecs, "Shirase");
+
     let field_entity = spawner::player(&mut gs.ecs, 0, 0);
     gs.ecs.insert(battle_entity1);
     gs.ecs.insert(battle_entity2);
