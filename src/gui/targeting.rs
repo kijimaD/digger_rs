@@ -42,7 +42,7 @@ pub fn show_item_targeting(
 
     // とりあえず味方用アイテムだけ
     // TODO: アイテムによって対象選択画面を変えたい。敵単体や味方単体の場合には対象選択を表示し、敵全体、味方全体の場合は表示しない
-    for (entity, _pools, name, player) in (&entities, &pools, &name, &player).join() {
+    for (entity, _pools, name, _player) in (&entities, &pools, &name, &player).join() {
         targets.push(entity);
 
         draw_batch.set(

@@ -1,6 +1,5 @@
 use super::{
-    item_result_menu, Attributes, Combatant, Equippable, Equipped, InBackpack, ItemMenuResult,
-    Name, Player, Pools, State,
+    item_result_menu, Attributes, Combatant, Equipped, ItemMenuResult, Name, Player, Pools, State,
 };
 use rltk::prelude::*;
 use specs::prelude::*;

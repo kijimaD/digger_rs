@@ -1,6 +1,4 @@
-use super::{
-    gamelog, raws, Combatant, Monster, OnBattle, Party, Player, RunState, WantsToEncounter,
-};
+use super::{gamelog, Combatant, Monster, OnBattle, Party, RunState, WantsToEncounter};
 use specs::prelude::*;
 
 pub fn is_encounter(ecs: &mut World) -> bool {
@@ -18,8 +16,7 @@ pub fn invoke_battle(ecs: &mut World) {
     let mut wants_encounter = ecs.write_storage::<WantsToEncounter>();
     let mut on_battles = ecs.write_storage::<OnBattle>();
     let monster = ecs.write_storage::<Monster>();
-    let mut combatant = ecs.write_storage::<Combatant>();
-    let player = ecs.read_storage::<Player>();
+    let combatant = ecs.write_storage::<Combatant>();
 
     // 最初のwants_encounterだけ処理する
     for wants_encounter in (&wants_encounter).join().take(1) {

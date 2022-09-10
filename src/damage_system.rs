@@ -1,6 +1,6 @@
 use super::{
     gamelog, player_hp_at_level, sp_at_level, Attributes, Combatant, Equipped, InBackpack,
-    LootTable, Map, Monster, Name, OnBattle, Party, Player, Pools, Position, RunState,
+    LootTable, Monster, Name, OnBattle, Party, Player, Pools, Position, RunState,
 };
 use specs::prelude::*;
 
@@ -83,7 +83,7 @@ fn check_battle_win(ecs: &mut World) {
             let mut pools = ecs.write_storage::<Pools>();
             let mut attributes = ecs.write_storage::<Attributes>();
             let mut parties = ecs.write_storage::<Party>();
-            let mut on_battles = ecs.write_storage::<OnBattle>();
+            let on_battles = ecs.write_storage::<OnBattle>();
             let combatants = ecs.read_storage::<Combatant>();
             let players = ecs.read_storage::<Player>();
 

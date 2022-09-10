@@ -39,7 +39,6 @@ pub fn show_battle_result(gs: &mut State, ctx: &mut Rltk) -> BattleWinResult {
             format!("{} gold", gold),
             ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
         );
-        y += 1;
     }
 
     draw_batch.print_color(

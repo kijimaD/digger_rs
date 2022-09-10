@@ -1,7 +1,5 @@
 use super::*;
-use crate::components::{Attributes, OnBattle, Party, Player, Pools};
-use crate::gamelog;
-use crate::gamesystem::{player_hp_at_level, sp_at_level};
+use crate::components::{OnBattle, Party, Player, Pools};
 use crate::map::Map;
 use specs::prelude::*;
 
@@ -67,10 +65,8 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
     let mut xp_gain = 0;
     let mut gold_gain = 0.0f32;
 
-    let mut pools = ecs.write_storage::<Pools>();
-    let mut parties = ecs.write_storage::<Party>();
+    let pools = ecs.write_storage::<Pools>();
     let mut on_battles = ecs.write_storage::<OnBattle>();
-    let attributes = ecs.read_storage::<Attributes>();
     let player_entity = ecs.fetch::<Entity>();
 
     {
@@ -88,9 +84,6 @@ pub fn death(ecs: &mut World, effect: &EffectSpawner, target: Entity) {
 
             // 戦闘終了後に一気にまとめてxpやgoldの獲得をさせるため、OnBattleに格納するのみ
             if xp_gain != 0 || gold_gain != 0.0 {
-                let mut player_stats = pools.get_mut(source).unwrap();
-                let mut party = parties.get_mut(*player_entity).unwrap();
-                let player_attributes = attributes.get(source).unwrap();
                 let mut on_battle = on_battles.get_mut(*player_entity).unwrap();
 
                 on_battle.xp += xp_gain;
