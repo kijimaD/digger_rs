@@ -70,7 +70,7 @@ pub fn show_item_targeting(
         j += 1;
     }
 
-    draw_batch.submit(6000);
+    let _ = draw_batch.submit(6000);
 
     match ctx.key {
         None => (ItemTargetingResult::NoResponse, None),

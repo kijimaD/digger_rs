@@ -73,7 +73,7 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
         i += 1;
     }
 
-    draw_batch.submit(5000);
+    let _ = draw_batch.submit(5000);
 
     gamelog::print_log(
         &crate::gamelog::BATTLE_LOG,
@@ -93,5 +93,5 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
         i += 1;
     }
 
-    draw_batch.submit(6000);
+    let _ = draw_batch.submit(6000);
 }

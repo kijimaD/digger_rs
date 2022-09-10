@@ -675,7 +675,7 @@ impl GameState for State {
         }
         encounter_system::invoke_battle(&mut self.ecs);
 
-        rltk::render_draw_buffer(ctx);
+        let _ = rltk::render_draw_buffer(ctx);
     }
 }
 

@@ -48,7 +48,7 @@ pub fn show_battle_result(gs: &mut State, ctx: &mut Rltk) -> BattleWinResult {
         ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
     );
 
-    draw_batch.submit(5000);
+    let _ = draw_batch.submit(5000);
 
     match ctx.key {
         None => (BattleWinResult::NoResponse),

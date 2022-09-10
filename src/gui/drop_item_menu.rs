@@ -24,6 +24,6 @@ pub fn drop_item_menu(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Option
         None,
         None,
     );
-    draw_batch.submit(6000);
+    let _ = draw_batch.submit(6000);
     result
 }

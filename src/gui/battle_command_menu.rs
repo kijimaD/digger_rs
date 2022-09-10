@@ -41,7 +41,7 @@ pub fn show_battle_command(ecs: &mut World, ctx: &mut Rltk) -> BattleCommandResu
         ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
     );
 
-    draw_batch.submit(5000);
+    let _ = draw_batch.submit(5000);
 
     match ctx.key {
         None => BattleCommandResult::NoResponse,

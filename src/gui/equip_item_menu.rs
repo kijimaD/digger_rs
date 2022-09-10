@@ -30,7 +30,7 @@ pub fn equip_item_menu(
     let result =
         item_result_menu(&mut draw_batch, "Equipped", items.len(), &items, ctx.key, Some(4), None);
 
-    draw_batch.submit(6000);
+    let _ = draw_batch.submit(6000);
     result
 }
 
