@@ -34,7 +34,7 @@ pub fn show_cheat_mode(gs: &mut State, ctx: &mut Rltk) -> CheatMenuResult {
     y += 1;
     menu_option(&mut draw_batch, 17, y, rltk::to_cp437('S'), "Spawn Monster");
 
-    draw_batch.submit(6000);
+    let _ = draw_batch.submit(6000);
 
     match ctx.key {
         None => CheatMenuResult::NoResponse,

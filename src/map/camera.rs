@@ -38,7 +38,7 @@ pub fn render_camera(ecs: &World, ctx: &mut Rltk) {
         y += 1;
     }
 
-    draw_batch.submit(1000);
+    let _ = draw_batch.submit(1000);
 
     draw_batch.target(1);
 
@@ -69,7 +69,7 @@ pub fn render_camera(ecs: &World, ctx: &mut Rltk) {
         }
     }
 
-    draw_batch.submit(0);
+    let _ = draw_batch.submit(0);
 }
 
 pub fn get_screen_bounds(ecs: &World, ctx: &mut Rltk) -> (i32, i32, i32, i32) {

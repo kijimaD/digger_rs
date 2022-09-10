@@ -47,7 +47,7 @@ pub fn show_attack_target(
         j += 1;
     }
 
-    draw_batch.submit(5000);
+    let _ = draw_batch.submit(5000);
 
     match ctx.key {
         None => (BattleAttackTargetingResult::NoResponse, None),

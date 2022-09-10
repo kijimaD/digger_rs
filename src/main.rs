@@ -671,7 +671,7 @@ impl GameState for State {
         // systemにできない理由としては、mut ecsを使うから。ecs.create_entityする必要があるが、system内ではecsを取得できないのでそれを行うことができない。ほかのsystemではcomponentをいじくるだけで、ecsを直接必要としないので可能
         encounter_system::invoke_battle(&mut self.ecs);
 
-        rltk::render_draw_buffer(ctx);
+        let _ = rltk::render_draw_buffer(ctx);
     }
 }
 

@@ -1,6 +1,5 @@
 use super::{
-    item_result_menu, Attributes, Combatant, Equippable, Equipped, InBackpack, ItemMenuResult,
-    Name, Player, Pools, State,
+    item_result_menu, Attributes, Combatant, Equipped, ItemMenuResult, Name, Player, Pools, State,
 };
 use rltk::prelude::*;
 use specs::prelude::*;
@@ -30,7 +29,7 @@ pub fn equip_item_menu(
     let result =
         item_result_menu(&mut draw_batch, "Equipped", items.len(), &items, ctx.key, Some(4), None);
 
-    draw_batch.submit(6000);
+    let _ = draw_batch.submit(6000);
     result
 }
 

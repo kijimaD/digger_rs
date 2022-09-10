@@ -1,7 +1,7 @@
 use super::{Raws, Reaction};
 use crate::components::*;
 use crate::random_table::{MasterTable, RandomTable};
-use crate::{attr_bonus, npc_hp, sp_at_level};
+use crate::{attr_bonus, npc_hp, player_hp_at_level, sp_at_level};
 use regex::Regex;
 use rltk::prelude::*;
 use specs::prelude::*;
@@ -394,10 +394,13 @@ pub fn spawn_named_fighter(raws: &RawMaster, ecs: &mut World, key: &str) -> Opti
         let mut eb = ecs.create_entity().marked::<SimpleMarker<SerializeMe>>();
 
         eb = eb.with(Name { name: fighter_template.name.clone() });
+        let is_player: bool;
         if let Some(_is_player) = fighter_template.is_player {
             eb = eb.with(Player {});
+            is_player = true;
         } else {
             eb = eb.with(Monster {});
+            is_player = false;
         }
 
         eb = eb.with(Combatant {});
@@ -433,7 +436,12 @@ pub fn spawn_named_fighter(raws: &RawMaster, ecs: &mut World, key: &str) -> Opti
         // pool
         let fighter_level =
             if fighter_template.level.is_some() { fighter_template.level.unwrap() } else { 1 };
-        let fighter_hp = npc_hp(fighter_fitness, fighter_level);
+        let fighter_hp = if is_player {
+            player_hp_at_level(fighter_fitness, fighter_level)
+        } else {
+            npc_hp(fighter_fitness, fighter_level)
+        };
+
         let fighter_sp = sp_at_level(fighter_int, fighter_level);
         let pools = Pools {
             level: fighter_level,

@@ -20,15 +20,13 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
     let combatants = ecs.read_storage::<Combatant>();
     let pools = ecs.read_storage::<Pools>();
     let names = ecs.read_storage::<Name>();
-    let entities = ecs.entities();
 
     let mut x = 1;
     let left_width: i32 = 10;
     let right_width: i32 = 8;
     let margin: i32 = 1;
 
-    for (player, combatant, player_pools, entity, name) in
-        (&players, &combatants, &pools, &entities, &names).join()
+    for (_player, _combatant, player_pools, name) in (&players, &combatants, &pools, &names).join()
     {
         let level = format!("Lv. {}", player_pools.level);
         let health =
@@ -73,7 +71,7 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
         i += 1;
     }
 
-    draw_batch.submit(5000);
+    let _ = draw_batch.submit(5000);
 
     gamelog::print_log(
         &crate::gamelog::BATTLE_LOG,
@@ -84,7 +82,7 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
     draw_batch.target(3);
 
     let mut i = 1;
-    for (name, pools, _combatant, _monster) in (&names, &pools, &combatants, &monsters).join() {
+    for (_combatant, _monster) in (&combatants, &monsters).join() {
         draw_batch.print_color(
             Point::new((10 * i) / (combatants.count()), 1),
             format!("g"),
@@ -93,5 +91,5 @@ pub fn draw_battle_ui(ecs: &World, ctx: &mut Rltk) {
         i += 1;
     }
 
-    draw_batch.submit(6000);
+    let _ = draw_batch.submit(6000);
 }

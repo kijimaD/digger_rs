@@ -1,5 +1,5 @@
 /// 戦闘用entityごとに、wants_to_meleeを生成する
-use crate::{Combatant, Monster, NaturalAttackDefense, Player, Pools, WantsToMelee};
+use crate::{Combatant, Monster, Player, Pools, WantsToMelee};
 use specs::prelude::*;
 
 pub struct BattleActionSystem {}
@@ -15,11 +15,10 @@ impl<'a> System<'a> for BattleActionSystem {
         ReadStorage<'a, Player>,
         ReadStorage<'a, Monster>,
         ReadStorage<'a, Combatant>,
-        ReadStorage<'a, NaturalAttackDefense>,
     );
 
     fn run(&mut self, data: Self::SystemData) {
-        let (entities, _player_entity, mut wants_to_melee, pools, player, monster, combatant, nad) =
+        let (entities, _player_entity, mut wants_to_melee, pools, player, monster, combatant) =
             data;
 
         // monster -> player

@@ -1,6 +1,4 @@
-use super::{
-    gamelog, raws, Combatant, Monster, OnBattle, Party, Player, RunState, WantsToEncounter,
-};
+use super::{gamelog, raws, Combatant, Monster, OnBattle, Party, RunState, WantsToEncounter};
 use specs::prelude::*;
 
 pub fn invoke_battle(ecs: &mut World) {
