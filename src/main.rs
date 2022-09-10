@@ -668,11 +668,7 @@ impl GameState for State {
         // 毎ループ最後に実行するため、system化できない
         damage_system::delete_the_dead(&mut self.ecs);
 
-        // TODO: モンスター生成を別のsystemにする
-        if encounter_system::is_encounter(&mut self.ecs) {
-            raws::spawn_named_fighter(&raws::RAWS.lock().unwrap(), &mut self.ecs, "Red Lime");
-            raws::spawn_named_fighter(&raws::RAWS.lock().unwrap(), &mut self.ecs, "Red Lime");
-        }
+        // systemにできない理由としては、mut ecsを使うから。ecs.create_entityする必要があるが、system内ではecsを取得できないのでそれを行うことができない。ほかのsystemではcomponentをいじくるだけで、ecsを直接必要としないので可能
         encounter_system::invoke_battle(&mut self.ecs);
 
         rltk::render_draw_buffer(ctx);
