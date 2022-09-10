@@ -5,6 +5,7 @@ use std::collections::HashMap;
 #[derive(Deserialize, Debug)]
 pub struct Item {
     pub name: String,
+    pub description: String,
     pub renderable: Option<Renderable>,
     pub consumable: Option<Consumable>,
     pub weapon: Option<Weapon>,

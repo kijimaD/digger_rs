@@ -119,6 +119,11 @@ pub struct Name {
     pub name: String,
 }
 
+#[derive(Component, Debug, ConvertSaveload, Clone)]
+pub struct Description {
+    pub description: String,
+}
+
 #[derive(Component, Debug, Serialize, Deserialize, Clone)]
 pub struct BlocksTile {}
 

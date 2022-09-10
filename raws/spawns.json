@@ -143,6 +143,7 @@
   "items": [
     {
       "name": "Health Potion",
+      "description": "Restore HP",
       "renderable": {
         "glyph": "¡",
         "fg": "#FF00FF",
@@ -162,6 +163,7 @@
     },
     {
       "name": "Rations",
+      "description": "Preserved foods",
       "renderable": {
         "glyph": "%",
         "fg": "#00FF00",
@@ -181,6 +183,7 @@
     },
     {
       "name": "Dried Sausage",
+      "description": "Salty side dish",
       "renderable": {
         "glyph": "%",
         "fg": "#00FF00",
@@ -199,6 +202,7 @@
     },
     {
       "name": "Beer",
+      "description": "Recover some physical strength",
       "renderable": {
         "glyph": "!",
         "fg": "#FF00FF",
@@ -217,6 +221,7 @@
     },
     {
       "name": "Rusty Longsword",
+      "description": "Rusty, dull sword",
       "renderable": {
         "glyph": "/",
         "fg": "#BB77BB",
@@ -237,6 +242,7 @@
     },
     {
       "name": "Dagger",
+      "description": "Knife with a short blade",
       "renderable": {
         "glyph": "/",
         "fg": "#FFAAAA",
@@ -254,6 +260,7 @@
     },
     {
       "name": "Longsword",
+      "description": "Large blades with a dull gleam",
       "renderable": {
         "glyph": "/",
         "fg": "#FFAAFF",
@@ -271,6 +278,7 @@
     },
     {
       "name": "Battleaxe",
+      "description": "Axe for fighting",
       "renderable": {
         "glyph": "¶",
         "fg": "#FF55FF",
@@ -288,6 +296,7 @@
     },
     {
       "name": "Shield",
+      "description": "Shield to prevent attack",
       "renderable": {
         "glyph": "[",
         "fg": "#00AAFF",
@@ -304,6 +313,7 @@
     },
     {
       "name": "Tower Shield",
+      "description": "Shield enough to cover the body",
       "renderable": {
         "glyph": "[",
         "fg": "#00FFFF",
@@ -320,6 +330,7 @@
     },
     {
       "name": "Stained Tunic",
+      "description": "Coarsely woven, uncomfortable tunic",
       "renderable": {
         "glyph": "{",
         "fg": "#00FF00",
@@ -336,6 +347,7 @@
     },
     {
       "name": "Torn Trousers",
+      "description": "Pants with a hole in the butt",
       "renderable": {
         "glyph": "[",
         "fg": "#00FFFF",
@@ -352,6 +364,7 @@
     },
     {
       "name": "Gauntlets of Ogre Power",
+      "description": "Bright red gauntlets",
       "renderable": {
         "glyph": "[",
         "fg": "#00FF00",
@@ -377,6 +390,7 @@
     },
     {
       "name": "Old Boots",
+      "description": "Smelly boots",
       "renderable": {
         "glyph": "{",
         "fg": "#FF9999",
@@ -393,6 +407,7 @@
     },
     {
       "name": "Slippers",
+      "description": "Indoor slippers",
       "renderable": {
         "glyph": "[",
         "fg": "#FF9999",
@@ -409,6 +424,7 @@
     },
     {
       "name": "Meat",
+      "description": "raw meat",
       "renderable": {
         "glyph": "%",
         "fg": "#00FF00",
@@ -427,6 +443,7 @@
     },
     {
       "name": "Hide",
+      "description": "Hide of a beast",
       "renderable": {
         "glyph": "ß",
         "fg": "#A52A2A",
@@ -439,6 +456,7 @@
     },
     {
       "name": "Town Portal Stone",
+      "description": "Pale and shiny stone",
       "renderable": {
         "glyph": ")",
         "fg": "#AAAAFF",

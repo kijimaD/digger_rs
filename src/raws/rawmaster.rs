@@ -196,6 +196,7 @@ pub fn spawn_named_item(
         }
 
         eb = eb.with(Name { name: item_template.name.clone() });
+        eb = eb.with(Description { description: item_template.description.clone() });
 
         eb = eb.with(crate::components::Item {
             initiative_penalty: item_template.initiative_penalty.unwrap_or(0.0),

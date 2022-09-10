@@ -1,5 +1,6 @@
 use super::{
-    camera, clone_menu, AttributeBonus, Faction, Item, Map, MeleeWeapon, Name, Position, Wearable,
+    camera, clone_menu, AttributeBonus, Description, Faction, Item, Map, MeleeWeapon, Name,
+    Position, Wearable,
 };
 use rltk::prelude::*;
 use specs::prelude::*;
@@ -15,6 +16,10 @@ impl Tooltip {
 
     fn add<S: ToString>(&mut self, line: S) {
         self.lines.push(line.to_string());
+    }
+
+    fn newline(&mut self) {
+        self.lines.push("".to_string());
     }
 
     fn width(&self) -> i32 {
@@ -106,12 +111,12 @@ pub fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
     draw_batch.submit(6000);
 }
 
-// TODO: メニューを閉じたあとmenuから消す
 pub fn draw_item_tooltips(ecs: &World, ctx: &mut Rltk) {
     let mut draw_batch = DrawBatch::new();
 
     ctx.set_active_console(2);
     let names = ecs.read_storage::<Name>();
+    let descriptions = ecs.read_storage::<Description>();
     let items = ecs.read_storage::<Item>();
     let weapons = ecs.read_storage::<MeleeWeapon>();
     let wearables = ecs.read_storage::<Wearable>();
@@ -128,7 +133,14 @@ pub fn draw_item_tooltips(ecs: &World, ctx: &mut Rltk) {
                 && y == ctx.mouse_pos().1
             {
                 let mut tip = Tooltip::new();
+
                 tip.add(name.name.to_string());
+
+                let description = descriptions.get(entity);
+                if let Some(description) = description {
+                    tip.add(description.description.to_string());
+                    tip.newline();
+                }
 
                 // Comments on Weapon
                 let weapon = weapons.get(entity);

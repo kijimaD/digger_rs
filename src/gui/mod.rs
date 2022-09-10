@@ -1,8 +1,8 @@
 use super::{
     camera, gamelog, run_away_system, Attribute, AttributeBonus, Attributes, Combatant, Consumable,
-    Equippable, Equipped, Faction, HungerClock, HungerState, InBackpack, Item, Map, MeleeWeapon,
-    Monster, Name, OnBattle, Party, Player, Point, Pools, Position, RunState, State, Vendor,
-    VendorMode, Wearable,
+    Description, Equippable, Equipped, Faction, HungerClock, HungerState, InBackpack, Item, Map,
+    MeleeWeapon, Monster, Name, OnBattle, Party, Player, Point, Pools, Position, RunState, State,
+    Vendor, VendorMode, Wearable,
 };
 
 const ASCII_ALPHABET_OFFSET: u16 = 97;

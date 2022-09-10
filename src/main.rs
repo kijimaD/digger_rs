@@ -785,6 +785,7 @@ fn main() -> rltk::BError {
     gs.ecs.register::<Vendor>();
     gs.ecs.register::<Monster>();
     gs.ecs.register::<Name>();
+    gs.ecs.register::<Description>();
     gs.ecs.register::<BlocksTile>();
     gs.ecs.register::<Attributes>();
     gs.ecs.register::<Skills>();
