@@ -18,7 +18,7 @@ impl<'a> System<'a> for ItemUseSystem {
 
     #[allow(clippy::cognitive_complexity)]
     fn run(&mut self, data: Self::SystemData) {
-        let (player_entity, entities, mut wants_use, _inflict_damage, consumables, mut dirty) =
+        let (_player_entity, entities, mut wants_use, _inflict_damage, consumables, mut dirty) =
             data;
 
         for (entity, useitem) in (&entities, &wants_use).join() {

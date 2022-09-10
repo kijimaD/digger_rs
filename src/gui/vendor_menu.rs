@@ -89,7 +89,7 @@ fn vendor_sell_menu(
         j += 1;
     }
 
-    draw_batch.submit(6000);
+    let _ = draw_batch.submit(6000);
 
     match ctx.key {
         None => (VendorResult::NoResponse, None, None, None),
@@ -165,7 +165,7 @@ fn vendor_buy_menu(
         y += 1;
     }
 
-    draw_batch.submit(6000);
+    let _ = draw_batch.submit(6000);
 
     match ctx.key {
         None => (VendorResult::NoResponse, None, None, None),

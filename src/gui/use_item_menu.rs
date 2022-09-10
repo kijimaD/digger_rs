@@ -29,6 +29,6 @@ pub fn show_use_item(gs: &mut State, ctx: &mut Rltk) -> (ItemMenuResult, Option<
     let result =
         item_result_menu(&mut draw_batch, "Use Item", items.len(), &items, ctx.key, None, None);
 
-    draw_batch.submit(6000);
+    let _ = draw_batch.submit(6000);
     result
 }

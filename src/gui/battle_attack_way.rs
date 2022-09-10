@@ -61,7 +61,7 @@ pub fn show_attack_way(gs: &mut State, ctx: &mut Rltk) -> (BattleAttackWayResult
         }
     }
 
-    draw_batch.submit(5000);
+    let _ = draw_batch.submit(5000);
 
     match ctx.key {
         None => (BattleAttackWayResult::NoResponse, None),

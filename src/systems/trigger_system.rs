@@ -1,7 +1,4 @@
-use crate::{
-    effects::*, gamelog, ApplyTeleport, EntityMoved, EntryTrigger, Map, Name, Position,
-    SingleActivation, TeleportTo,
-};
+use crate::{effects::*, gamelog, EntityMoved, EntryTrigger, Map, Name, Position};
 use specs::prelude::*;
 
 pub struct TriggerSystem {}
@@ -16,26 +13,11 @@ impl<'a> System<'a> for TriggerSystem {
         ReadStorage<'a, EntryTrigger>,
         ReadStorage<'a, Name>,
         Entities<'a>,
-        ReadStorage<'a, SingleActivation>,
-        ReadStorage<'a, TeleportTo>,
-        WriteStorage<'a, ApplyTeleport>,
-        ReadExpect<'a, Entity>,
     );
 
     /// エンティティが動いたとき、その位置にトリガーエンティティがないか確認する。トリガーがあった場合、effectを生成する。effectにはtrigger entity自体を渡しているので、効果を特定できる
     fn run(&mut self, data: Self::SystemData) {
-        let (
-            map,
-            mut entity_moved,
-            position,
-            entry_trigger,
-            names,
-            entities,
-            single_activation,
-            teleporters,
-            mut apply_teleport,
-            player_entity,
-        ) = data;
+        let (map, mut entity_moved, position, entry_trigger, names, entities) = data;
 
         // Iterate the entities that moved and their final position
         for (entity, mut _entity_moved, pos) in (&entities, &mut entity_moved, &position).join() {

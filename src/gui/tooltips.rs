@@ -108,7 +108,7 @@ pub fn draw_tooltips(ecs: &World, ctx: &mut Rltk) {
         y += tip_box.height();
     }
 
-    draw_batch.submit(6000);
+    let _ = draw_batch.submit(6000);
 }
 
 pub fn draw_item_tooltips(ecs: &World, ctx: &mut Rltk) {
@@ -215,5 +215,5 @@ pub fn draw_item_tooltips(ecs: &World, ctx: &mut Rltk) {
             }
         }
     }
-    draw_batch.submit(7000);
+    let _ = draw_batch.submit(7000);
 }

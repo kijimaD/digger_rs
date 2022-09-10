@@ -1,10 +1,9 @@
 use super::{
-    random_table::MasterTable, raws::*, Attribute, Attributes, Combatant, EntryTrigger,
-    EquipmentChanged, Faction, HungerClock, HungerState, Initiative, LightSource, Map,
-    MasterDungeonMap, Name, OtherLevelPosition, Party, Player, Pool, Pools, Position, Rect,
-    Renderable, SerializeMe, SingleActivation, Skill, Skills, TeleportTo, TileType, Viewshed,
+    random_table::MasterTable, raws::*, EntryTrigger, EquipmentChanged, Faction, HungerClock,
+    HungerState, Initiative, LightSource, Map, MasterDungeonMap, Name, OtherLevelPosition, Party,
+    Player, Position, Rect, Renderable, SerializeMe, SingleActivation, TeleportTo, TileType,
+    Viewshed,
 };
-use crate::{attr_bonus, player_hp_at_level, sp_at_level};
 use rltk::{RandomNumberGenerator, RGB};
 use specs::prelude::*;
 use specs::saveload::{MarkedBuilder, SimpleMarker};
