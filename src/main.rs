@@ -601,6 +601,9 @@ impl GameState for State {
                             .unwrap()
                             .gold += price;
                         self.ecs.delete_entity(result.1.unwrap()).expect("Unable to delete");
+
+                        let mut dirties = self.ecs.write_storage::<EquipmentChanged>();
+                        dirties.insert(*self.ecs.fetch::<Entity>(), EquipmentChanged {}).expect("Unable to insert");
                     }
                     gui::VendorResult::Buy => {
                         let tag = result.2.unwrap();
@@ -617,6 +620,9 @@ impl GameState for State {
                                 &tag,
                                 SpawnType::Carried { by: player_entity },
                             );
+
+                            let mut dirties = self.ecs.write_storage::<EquipmentChanged>();
+                            dirties.insert(*self.ecs.fetch::<Entity>(), EquipmentChanged {}).expect("Unable to insert");
                         }
                     }
                     gui::VendorResult::BuyMode => {
