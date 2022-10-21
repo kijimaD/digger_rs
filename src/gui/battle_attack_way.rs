@@ -26,9 +26,10 @@ pub fn show_attack_way(gs: &mut State, ctx: &mut Rltk) -> (BattleAttackWayResult
         Rect::with_size(x, y - 2, 31, 6),
         ColorPair::new(RGB::named(rltk::WHITE), RGB::named(rltk::BLACK)),
     );
-    x += 1;
 
     for (entity, equipped_by, _weapon) in (&entities, &equipped, &weapon).join() {
+        x = 20;
+
         if players.get(equipped_by.owner).is_some() {
             let name = names.get(entity).unwrap();
             draw_batch.set(

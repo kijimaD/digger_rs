@@ -668,11 +668,7 @@ impl GameState for State {
         // 毎ループ最後に実行するため、system化できない
         damage_system::delete_the_dead(&mut self.ecs);
 
-        // TODO: モンスター生成を別のsystemにする
-        if encounter_system::is_encounter(&mut self.ecs) {
-            raws::spawn_named_fighter(&raws::RAWS.lock().unwrap(), &mut self.ecs, "Red Lime");
-            raws::spawn_named_fighter(&raws::RAWS.lock().unwrap(), &mut self.ecs, "Red Lime");
-        }
+        // systemにできない理由としては、mut ecsを使うから。ecs.create_entityする必要があるが、system内ではecsを取得できないのでそれを行うことができない。ほかのsystemではcomponentをいじくるだけで、ecsを直接必要としないので可能
         encounter_system::invoke_battle(&mut self.ecs);
 
         let _ = rltk::render_draw_buffer(ctx);
@@ -746,7 +742,7 @@ fn main() -> rltk::BError {
     rltk::embedded_resource!(DUNGEON_FONT, "../resources/dungeonfont.png");
     rltk::link_resource!(DUNGEON_FONT, "resources/dungeonfont.png");
 
-    let mut context = BTermBuilder::new()
+    let context = BTermBuilder::new()
         .with_title("Diggers")
         .with_fps_cap(60.0)
         .with_dimensions(DISPLAY_WIDTH, DISPLAY_HEIGHT)
@@ -758,8 +754,6 @@ fn main() -> rltk::BError {
         .with_sparse_console(SCREEN_WIDTH, SCREEN_HEIGHT, "vga8x16.png") // 2. 文字表示
         .with_simple_console_no_bg(DISPLAY_WIDTH / 4, DISPLAY_HEIGHT / 4, "dungeonfont.png") // 3.戦闘時の敵画像(大)
         .build()?;
-
-    context.with_post_scanlines(true);
 
     let mut gs = State {
         ecs: World::new(),
