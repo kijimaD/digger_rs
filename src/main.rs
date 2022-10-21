@@ -52,8 +52,8 @@ pub enum RunState {
     BattleRunAwayResult,
     BattleWinResult,
     BattleAwaiting,
-    BattleAttackWay,
-    BattleAttackTargeting { way: Entity },
+    BattleAttackWay { index: i32 },
+    BattleAttackTargeting { index: i32, way: Entity },
     AwaitingInput,
     PreRun,
     Ticking,
@@ -196,7 +196,7 @@ impl GameState for State {
             | RunState::BattleItemTargeting { .. }
             | RunState::BattleTurn
             | RunState::BattleAwaiting
-            | RunState::BattleAttackWay
+            | RunState::BattleAttackWay { .. }
             | RunState::BattleAttackTargeting { .. }
             | RunState::BattleRunAwayResult
             | RunState::BattleWinResult => gui::draw_battle_ui(&self.ecs, ctx),
@@ -215,7 +215,9 @@ impl GameState for State {
                 // コマンドメニュー表示
                 match result {
                     gui::BattleCommandResult::NoResponse => {}
-                    gui::BattleCommandResult::Attack => newrunstate = RunState::BattleAttackWay,
+                    gui::BattleCommandResult::Attack => {
+                        newrunstate = RunState::BattleAttackWay { index: 0 }
+                    }
                     gui::BattleCommandResult::ShowInventory => {
                         newrunstate = RunState::BattleInventory
                     }
@@ -279,7 +281,7 @@ impl GameState for State {
                     "[Enter]",
                 );
             }
-            RunState::BattleAttackWay => {
+            RunState::BattleAttackWay { index } => {
                 // 攻撃方法選択
                 let result = gui::show_attack_way(self, ctx);
 
@@ -287,11 +289,12 @@ impl GameState for State {
                     gui::BattleAttackWayResult::Cancel => newrunstate = RunState::BattleCommand,
                     gui::BattleAttackWayResult::NoResponse => {}
                     gui::BattleAttackWayResult::Selected => {
-                        newrunstate = RunState::BattleAttackTargeting { way: result.1.unwrap() }
+                        newrunstate =
+                            RunState::BattleAttackTargeting { index: index, way: result.1.unwrap() }
                     }
                 }
             }
-            RunState::BattleAttackTargeting { way } => {
+            RunState::BattleAttackTargeting { index, way } => {
                 // 攻撃目標選択
                 let result = gui::show_attack_target(self, ctx);
                 let entities = self.ecs.entities();
@@ -299,23 +302,31 @@ impl GameState for State {
                 let pools = self.ecs.write_storage::<Pools>();
                 let mut wants_to_melee = self.ecs.write_storage::<WantsToMelee>();
 
-                // TODO: 複数キャラのコマンドに対応してない
-                for (entity, _player, _pools) in (&entities, &player, &pools).join() {
-                    match result.0 {
-                        gui::BattleAttackTargetingResult::Cancel => {
-                            newrunstate = RunState::BattleAttackWay
-                        }
-                        gui::BattleAttackTargetingResult::NoResponse => {}
-                        gui::BattleAttackTargetingResult::Selected => {
-                            let target_entity = result.1.unwrap();
-                            wants_to_melee
-                                .insert(
-                                    entity,
-                                    WantsToMelee { target: target_entity, way: Some(way) },
-                                )
-                                .expect("Unable to insert WantsToMelee");
+                let mut members: Vec<Entity> = Vec::new();
 
+                for (entity, _player, _pools) in (&entities, &player, &pools).join() {
+                    members.push(entity);
+                }
+
+                match result.0 {
+                    gui::BattleAttackTargetingResult::Cancel => {
+                        newrunstate = RunState::BattleAttackWay { index }
+                    }
+                    gui::BattleAttackTargetingResult::NoResponse => {}
+                    gui::BattleAttackTargetingResult::Selected => {
+                        let target_entity = result.1.unwrap();
+                        wants_to_melee
+                            .insert(
+                                members[index as usize],
+                                WantsToMelee { target: target_entity, way: Some(way) },
+                            )
+                            .expect("Unable to insert WantsToMelee");
+
+                        if index + 1 >= members.len() as i32 {
                             newrunstate = RunState::BattleTurn
+                        } else {
+                            // 後続のキャラのコマンド選択
+                            newrunstate = RunState::BattleAttackWay { index: index + 1 }
                         }
                     }
                 }
@@ -590,6 +601,9 @@ impl GameState for State {
                             .unwrap()
                             .gold += price;
                         self.ecs.delete_entity(result.1.unwrap()).expect("Unable to delete");
+
+                        let mut dirties = self.ecs.write_storage::<EquipmentChanged>();
+                        dirties.insert(*self.ecs.fetch::<Entity>(), EquipmentChanged {}).expect("Unable to insert");
                     }
                     gui::VendorResult::Buy => {
                         let tag = result.2.unwrap();
@@ -606,6 +620,9 @@ impl GameState for State {
                                 &tag,
                                 SpawnType::Carried { by: player_entity },
                             );
+
+                            let mut dirties = self.ecs.write_storage::<EquipmentChanged>();
+                            dirties.insert(*self.ecs.fetch::<Entity>(), EquipmentChanged {}).expect("Unable to insert");
                         }
                     }
                     gui::VendorResult::BuyMode => {
